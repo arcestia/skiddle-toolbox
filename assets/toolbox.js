@@ -1,0 +1,99 @@
+/* ═══════════════════════════════════════════════════════════════
+   Developer Toolbox — Shared Theme & UI Sync
+   ═══════════════════════════════════════════════════════════════
+   Include this file on every toolbox page to keep the Catppuccin
+   theme and common UI components synchronised.
+
+   - Reads/writes the chosen theme to localStorage under `toolbox-theme`.
+   - Auto-injects a theme switcher into any element with
+     `data-tb-theme-bar`.
+   - Keeps theme in sync across open tabs via the `storage` event.
+   - Exposes `window.toolbox.setTheme(name)` for programmatic use.
+   ═══════════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'toolbox-theme';
+  const THEMES = ['latte', 'frappe', 'macchiato', 'mocha'];
+  const DEFAULT_THEME = 'mocha';
+
+  function getStoredTheme() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return THEMES.includes(raw) ? raw : DEFAULT_THEME;
+  }
+
+  function applyTheme(theme) {
+    if (!THEMES.includes(theme)) return;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    updateActiveButtons(theme);
+  }
+
+  function updateActiveButtons(theme) {
+    document.querySelectorAll('.tb-theme-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+      btn.setAttribute('aria-pressed', btn.dataset.theme === theme ? 'true' : 'false');
+    });
+  }
+
+  function themeButton(theme, variant) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tb-theme-btn';
+    btn.dataset.theme = theme;
+    btn.setAttribute('aria-label', `${theme} theme`);
+    btn.setAttribute('aria-pressed', 'false');
+
+    const dot = document.createElement('span');
+    dot.className = `tb-theme-dot ${theme}`;
+
+    if (variant === 'pills') {
+      btn.appendChild(dot);
+      btn.appendChild(document.createTextNode(theme.charAt(0).toUpperCase() + theme.slice(1)));
+    } else {
+      btn.appendChild(dot);
+    }
+
+    btn.addEventListener('click', () => applyTheme(theme));
+    return btn;
+  }
+
+  function injectThemeBars() {
+    document.querySelectorAll('[data-tb-theme-bar]').forEach(container => {
+      const variant = container.dataset.tbThemeBar === 'pills' ? 'pills' : 'dots';
+      container.classList.add('tb-theme-bar', variant);
+      container.innerHTML = '';
+      container.setAttribute('role', 'group');
+      container.setAttribute('aria-label', 'Theme switcher');
+      THEMES.forEach(theme => container.appendChild(themeButton(theme, variant)));
+    });
+  }
+
+  function init() {
+    const theme = getStoredTheme();
+    document.documentElement.setAttribute('data-theme', theme);
+    injectThemeBars();
+    updateActiveButtons(theme);
+
+    // Keep tabs in sync when localStorage changes elsewhere.
+    window.addEventListener('storage', event => {
+      if (event.key === STORAGE_KEY && THEMES.includes(event.newValue)) {
+        applyTheme(event.newValue);
+      }
+    });
+
+    // Expose a tiny public API.
+    window.toolbox = {
+      setTheme: applyTheme,
+      getTheme: getStoredTheme,
+      themes: THEMES
+    };
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

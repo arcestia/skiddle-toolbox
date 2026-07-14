@@ -3,132 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Developer Toolbox - Cloudflare Pages Hub</title>
-  
-  <!-- Modern Google Font -->
+  <title>Developer Toolbox · Cloudflare Pages Hub</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/toolbox.css">
+  <script src="/assets/toolbox.js" defer></script>
+
   <style>
-    /* Reset & CSS Variables */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* Page-specific: landing portal */
+    .tb-header-center {
+      padding-bottom: 34px;
     }
-    
-    :root {
-      --bg-main: #090d16;
-      --bg-card: rgba(30, 41, 59, 0.6);
-      --bg-card-hover: rgba(30, 41, 59, 0.9);
-      --border-color: #334155;
-      --border-color-glow: #475569;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      
-      --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
-      --accent-cyan: #0ea5e9;
-      --accent-violet: #8b5cf6;
-      
-      --color-ok: #10b981;
-      --color-info: #3b82f6;
-      
-      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    .tb-header-center .tb-logo {
+      margin-bottom: 4px;
     }
-    
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      line-height: 1.5;
-      padding: 60px 20px;
+
+    .tb-header-center h1 {
+      font-size: 2.5rem;
+      letter-spacing: -0.5px;
     }
-    
-    .container {
-      max-width: 1000px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-    
-    /* Header styling */
-    header {
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 30px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .brand-logo {
-      width: 50px;
-      height: 50px;
-      background: var(--gradient-accent);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #fff;
-      font-size: 1.8rem;
-      box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-      margin-bottom: 8px;
-    }
-    
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      background: var(--gradient-accent);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    header p {
-      color: var(--text-secondary);
+
+    .tb-header-center p {
       font-size: 1.1rem;
-      max-width: 600px;
+      max-width: 620px;
     }
-    
-    /* Grid layout for Menu Cards */
+
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
+      gap: 26px;
     }
-    
+
     @media (max-width: 768px) {
-      .tools-grid {
-        grid-template-columns: 1fr;
-      }
+      .tools-grid { grid-template-columns: 1fr; }
+      .tb-header-center h1 { font-size: 2rem; }
     }
-    
-    /* Card Component */
+
     .tool-card {
-      background-color: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 260px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       position: relative;
       overflow: hidden;
     }
-    
+
     .tool-card::before {
       content: '';
       position: absolute;
@@ -137,189 +60,125 @@
       width: 100%;
       height: 4px;
       background: transparent;
-      transition: background-color 0.3s;
+      transition: background 0.35s ease;
     }
-    
+
     .tool-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px);
       border-color: var(--border-color-glow);
-      background-color: var(--bg-card-hover);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+      background: var(--bg-card-hover);
+      box-shadow: var(--shadow-lg);
     }
-    
+
     .tool-card.active:hover::before {
       background: var(--gradient-accent);
     }
-    
-    .card-top {
-      margin-bottom: 24px;
+
+    .tool-card.active:hover {
+      border-color: color-mix(in srgb, var(--ctp-mauve) 55%, var(--border-color));
     }
-    
-    .tool-icon {
-      font-size: 2.2rem;
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       margin-bottom: 16px;
-      display: inline-block;
     }
-    
+
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--ctp-surface1) 50%, transparent);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: var(--shadow-sm);
+    }
+
     .tool-title {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--text-primary);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    
+
     .tool-desc {
-      font-size: 0.95rem;
+      font-size: 0.96rem;
       color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    
-    /* Badges */
-    .badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .badge-active {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--color-ok);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    
-    .badge-pending {
-      background: rgba(148, 163, 184, 0.1);
-      color: var(--text-secondary);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-    }
-    
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      border: none;
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      text-align: center;
-      width: 100%;
-    }
-    
-    .btn-primary {
-      color: #fff;
-      background: var(--gradient-accent);
-      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-    }
-    
-    .btn-primary:hover {
-      filter: brightness(1.1);
-      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
-    }
-    
-    .btn-disabled {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: rgba(255, 255, 255, 0.25);
-      cursor: not-allowed;
-    }
-    
-    /* Footer Deploy info */
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      border-top: 1px solid var(--border-color);
-      padding-top: 24px;
-    }
-    
-    footer code {
-      font-family: var(--font-mono);
-      background-color: rgba(255, 255, 255, 0.05);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--text-primary);
-    }
+
+    .btn-full { width: 100%; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <div class="brand-logo">CF</div>
-      <h1>Developer Toolbox</h1>
-      <p>A collection of responsive client-side utilities hosted at the edge using Cloudflare Pages.</p>
+  <div class="tb-container">
+    <header class="tb-header tb-header-center">
+      <div class="tb-logo tb-logo-lg">TB</div>
+      <h1 class="tb-gradient-text">Developer Toolbox</h1>
+      <p class="tb-secondary">A collection of responsive client-side utilities hosted at the edge using Cloudflare Pages.</p>
+      <div data-tb-theme-bar="pills"></div>
     </header>
-    
+
     <div class="tools-grid">
-      <!-- Image CDN Validator (Active) -->
-      <div class="tool-card active">
-        <div class="card-top">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+      <div class="tb-card tool-card active">
+        <div>
+          <div class="card-header-row">
             <span class="tool-icon">🖼️</span>
-            <span class="badge badge-active">Active</span>
+            <span class="tb-badge tb-badge-active">Active</span>
           </div>
           <h2 class="tool-title">Image CDN Validator</h2>
           <p class="tool-desc">Check bulk image link availability, response codes, Content-Types, and providers concurrently. Supports edge CORS proxying for local validation testing.</p>
         </div>
-        <a href="/cdn-validator" class="btn btn-primary">Launch Tool</a>
+        <a href="/cdn-validator" class="tb-btn btn-full">Launch Tool</a>
       </div>
-      
-      <!-- CORS Proxy Tester (Coming Soon) -->
-      <div class="tool-card">
-        <div class="card-top">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+
+      <div class="tb-card tool-card">
+        <div>
+          <div class="card-header-row">
             <span class="tool-icon">🌐</span>
-            <span class="badge badge-pending">Planned</span>
+            <span class="tb-badge tb-badge-pending">Planned</span>
           </div>
           <h2 class="tool-title">CORS API Tester</h2>
           <p class="tool-desc">Inspect browser cross-origin policy blockages and verify HTTP request payloads directly against target endpoints.</p>
         </div>
-        <button class="btn btn-disabled" disabled>Planned Tool</button>
+        <button class="tb-btn tb-btn-disabled btn-full" disabled>Planned Tool</button>
       </div>
-      
-      <!-- Redirect Router Generator (Coming Soon) -->
-      <div class="tool-card">
-        <div class="card-top">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+
+      <div class="tb-card tool-card">
+        <div>
+          <div class="card-header-row">
             <span class="tool-icon">🔀</span>
-            <span class="badge badge-pending">Planned</span>
+            <span class="tb-badge tb-badge-pending">Planned</span>
           </div>
           <h2 class="tool-title">Redirect Planner</h2>
           <p class="tool-desc">Map incoming request paths to custom destinations and compile real-time redirection scripts for serverless platforms.</p>
         </div>
-        <button class="btn btn-disabled" disabled>Planned Tool</button>
+        <button class="tb-btn tb-btn-disabled btn-full" disabled>Planned Tool</button>
       </div>
-      
-      <!-- Security Middleware Shield (Coming Soon) -->
-      <div class="tool-card">
-        <div class="card-top">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+
+      <div class="tb-card tool-card">
+        <div>
+          <div class="card-header-row">
             <span class="tool-icon">🛡️</span>
-            <span class="badge badge-pending">Planned</span>
+            <span class="tb-badge tb-badge-pending">Planned</span>
           </div>
           <h2 class="tool-title">Security Headers Shield</h2>
           <p class="tool-desc">Select security control parameters (CSP, HSTS, X-Frame-Options) and configure edge response middlewares.</p>
         </div>
-        <button class="btn btn-disabled" disabled>Planned Tool</button>
+        <button class="tb-btn tb-btn-disabled btn-full" disabled>Planned Tool</button>
       </div>
     </div>
-    
-    <footer>
-      Build & Deploy this pages folder: <code>npm run deploy</code>
+
+    <footer class="tb-footer">
+      <div>Build & Deploy this pages folder: <code>npm run deploy</code></div>
+      <div class="tb-crafted">Crafted with <span>♥</span> and Catppuccin</div>
     </footer>
   </div>
 

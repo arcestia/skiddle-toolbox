@@ -3,336 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image CDN Validator - Cloudflare Pages Utility</title>
-  
-  <!-- Modern Google Font -->
+  <title>Image CDN Validator · Developer Toolbox</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/toolbox.css">
+  <script src="/assets/toolbox.js" defer></script>
+
   <style>
-    /* Reset & CSS Variables */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    :root {
-      --bg-main: #090d16;
-      --bg-card: rgba(30, 41, 59, 0.7);
-      --bg-card-hover: rgba(30, 41, 59, 0.95);
-      --border-color: #334155;
-      --border-color-glow: #475569;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      
-      --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
-      --accent-cyan: #0ea5e9;
-      --accent-violet: #8b5cf6;
-      
-      --color-ok: #10b981;
-      --color-bad: #ef4444;
-      --color-warn: #f59e0b;
-      --color-info: #3b82f6;
-      
-      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-    
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      overflow-y: auto;
-      line-height: 1.5;
-      padding: 40px 20px;
-    }
-    
-    .container {
-      max-width: 850px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-    
-    /* Header styling */
-    header {
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .brand-logo {
-      width: 38px;
-      height: 38px;
-      background: var(--gradient-accent);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #fff;
-      font-size: 1.3rem;
-    }
-    
-    .brand-title h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      background: var(--gradient-accent);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .brand-title p {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-    
-    .back-link {
-      color: var(--accent-cyan);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
-    }
-    
-    .back-link:hover {
-      color: #38bdf8;
-    }
-    
-    /* Card Component */
-    .card {
-      background-color: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 28px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    
-    .card:hover {
-      border-color: var(--border-color-glow);
-    }
-    
-    /* Form Elements */
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    textarea {
-      width: 100%;
-      background-color: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-primary);
-      padding: 14px;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      transition: all 0.3s;
-      outline: none;
-      resize: vertical;
-    }
-    
-    textarea:focus {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
-      background-color: rgba(15, 23, 42, 0.9);
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .checkbox-label-container {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.9rem;
-      user-select: none;
-    }
-    
-    .checkbox-label-container input {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent-cyan);
-    }
-    
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      border: none;
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: #fff;
-      background: var(--gradient-accent);
-      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
-    }
-    
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35);
-      filter: brightness(1.1);
-    }
-    
-    .btn:active {
-      transform: translateY(0);
-    }
-    
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      box-shadow: none;
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--border-color-glow);
-    }
-    
-    .btn-danger {
-      background: var(--color-bad);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-    }
-    
-    .btn-danger:hover {
-      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
-    }
-    
-    .btn-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    
-    /* Progress Bar */
-    .progress-bar-container {
-      width: 100%;
-      background-color: rgba(15, 23, 42, 0.8);
-      border-radius: 9999px;
-      height: 8px;
-      overflow: hidden;
-      margin: 18px 0;
-      border: 1px solid var(--border-color);
-    }
-    
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--gradient-accent);
-      border-radius: 9999px;
-      transition: width 0.3s ease;
-    }
-    
-    /* Summary Boxes */
-    .summary-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    
-    .summary-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background-color: rgba(15, 23, 42, 0.4);
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border-color);
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .badge-ok { border-color: rgba(16, 185, 129, 0.3); color: var(--color-ok); }
-    .badge-bad { border-color: rgba(239, 68, 68, 0.3); color: var(--color-bad); }
-    .badge-warn { border-color: rgba(245, 158, 11, 0.3); color: var(--color-warn); }
-    .badge-info { border-color: rgba(59, 130, 246, 0.3); color: var(--color-info); }
-    
-    /* Image CDN Grid output list */
+    /* Page-specific: validator */
     .results-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
       margin-top: 16px;
-      max-height: 500px;
+      max-height: 540px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 6px;
     }
-    
+
+    .results-grid::-webkit-scrollbar { width: 6px; }
+    .results-grid::-webkit-scrollbar-track { background: var(--input-bg); border-radius: 999px; }
+    .results-grid::-webkit-scrollbar-thumb { background: var(--border-color-glow); border-radius: 999px; }
+
     .result-card {
       display: flex;
       gap: 16px;
-      background: rgba(15, 23, 42, 0.3);
+      background: color-mix(in srgb, var(--ctp-mantle) 55%, transparent);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       padding: 12px;
       align-items: center;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    
+
     .result-card:hover {
       transform: translateX(4px);
       border-color: var(--border-color-glow);
+      background: color-mix(in srgb, var(--ctp-surface0) 50%, transparent);
     }
-    
+
     .result-card img {
       width: 60px;
       height: 60px;
       object-fit: cover;
-      border-radius: 6px;
-      background-color: #0b0f17;
+      border-radius: var(--radius-sm);
+      background-color: var(--ctp-crust);
       border: 1px solid var(--border-color);
       flex-shrink: 0;
     }
-    
-    .result-info {
-      flex: 1;
-      min-width: 0;
-    }
-    
+
+    .result-info { flex: 1; min-width: 0; }
+
     .result-url {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-secondary);
       word-break: break-all;
       overflow: hidden;
@@ -340,68 +67,78 @@
       white-space: nowrap;
       margin-top: 4px;
     }
-    
+
     .result-meta {
       display: flex;
       gap: 12px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-secondary);
       margin-top: 4px;
     }
-    
-    .result-status {
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-    
+
+    .result-status { font-weight: 700; font-size: 0.85rem; }
     .status-ok { color: var(--color-ok); }
     .status-bad { color: var(--color-bad); }
     .status-warn { color: var(--color-warn); }
-    
+
     .provider-title {
       font-size: 0.95rem;
-      font-weight: 600;
-      margin: 16px 0 8px 0;
-      padding-bottom: 4px;
+      font-weight: 700;
+      margin: 18px 0 10px 0;
+      padding-bottom: 6px;
       border-bottom: 1px solid var(--border-color);
       color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    
-    .hidden {
-      display: none !important;
+
+    .provider-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gradient-accent);
     }
-    
-    footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
+
+    .broken-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      background: var(--ctp-crust);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="brand-logo">CF</div>
-        <div class="brand-title">
-          <h1>Image CDN Validator</h1>
+  <div class="tb-container">
+    <header class="tb-header">
+      <div class="tb-brand">
+        <div class="tb-logo">TB</div>
+        <div class="tb-brand-title">
+          <h1 class="tb-gradient-text">Image CDN Validator</h1>
           <p>Cloudflare Pages Edge Utility</p>
         </div>
       </div>
-      
-      <!-- Back Link instead of Badge -->
-      <a href="/" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        Back to Tools
-      </a>
+
+      <div class="tb-header-actions">
+        <div data-tb-theme-bar="dots"></div>
+        <a href="/" class="tb-back-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          Back
+        </a>
+      </div>
     </header>
-    
-    <div class="card">
-      <div class="form-group">
-        <label for="cdn-input">Image URLs (one per line). Format with <code>====== Provider Name</code> to group results.</label>
-        <textarea id="cdn-input" rows="10" placeholder="====== Cloudflare Images
+
+    <div class="tb-card">
+      <div class="tb-form-group">
+        <label class="tb-label" for="cdn-input">Image URLs (one per line). Format with <code>====== Provider Name</code> to group results.</label>
+        <textarea id="cdn-input" class="tb-textarea" rows="10" placeholder="====== Cloudflare Images
 https://imagedelivery.net/example-id/image/public
 https://imagedelivery.net/invalid-id/image/public
 
@@ -409,44 +146,39 @@ https://imagedelivery.net/invalid-id/image/public
 https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=300
 https://invalid-domain-fails-to-load.com/test.png"></textarea>
       </div>
-      
-      <div class="form-group">
-        <label class="checkbox-label-container">
+
+      <div class="tb-form-group">
+        <label class="tb-checkbox">
           <input type="checkbox" id="cdn-route-proxy" checked>
           Route checks through local Pages CORS Proxy (fixes browser CORS blocks)
         </label>
       </div>
-      
-      <div class="btn-group">
-        <button class="btn" onclick="startCdnValidator()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+
+      <div class="tb-btn-group">
+        <button class="tb-btn" onclick="startCdnValidator()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
           Verify URLs
         </button>
-        <button class="btn btn-secondary" onclick="filterCdnResults('all')">All</button>
-        <button class="btn btn-secondary" onclick="filterCdnResults('ok')">OK</button>
-        <button class="btn btn-secondary" onclick="filterCdnResults('bad')">Broken</button>
-        <button class="btn btn-secondary" onclick="filterCdnResults('warn')">Warnings</button>
-        <button class="btn btn-secondary btn-danger" onclick="copyBrokenCdnUrls()" style="margin-left: auto;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('all')">All</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('ok')">OK</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('bad')">Broken</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('warn')">Warnings</button>
+        <button class="tb-btn tb-btn-secondary tb-btn-danger" onclick="copyBrokenCdnUrls()" style="margin-left: auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           Copy Broken
         </button>
       </div>
-      
-      <div class="progress-bar-container">
-        <div id="cdn-progress" class="progress-bar-fill"></div>
+
+      <div class="tb-progress">
+        <div id="cdn-progress" class="tb-progress-fill"></div>
       </div>
-      
-      <div id="cdn-summary" class="summary-bar">
-        <!-- Populated by JS -->
-      </div>
-      
-      <div id="cdn-results" class="results-grid">
-        <!-- Populated by JS -->
-      </div>
+
+      <div id="cdn-summary" class="tb-summary"></div>
+      <div id="cdn-results" class="results-grid"></div>
     </div>
-    
-    <footer>
-      Powered by Cloudflare Pages & Edge Functions
+
+    <footer class="tb-footer">
+      Powered by Cloudflare Pages & Edge Functions · Styled with Catppuccin
     </footer>
   </div>
 
@@ -476,41 +208,41 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
       let cls = "bad";
       let reason = "";
       let ctype = "";
-      
+
       try {
         new URL(item.url);
       } catch {
         return { ...item, status: "Invalid URL", cls: "warn", reason: "Malformed URL" };
       }
-      
+
       if (!/^https?:/.test(item.url)) {
         return { ...item, status: "Invalid URL", cls: "warn", reason: "Missing HTTP/HTTPS Scheme" };
       }
-      
+
       if (!validExt.test(item.url.split("?")[0])) {
         reason = "Non-standard file extension";
       }
-      
+
       const routeProxy = document.getElementById('cdn-route-proxy').checked;
-      
+
       try {
         const ctrl = new AbortController();
         const timeoutId = setTimeout(() => ctrl.abort(), 10000);
-        
+
         let fetchUrl = item.url;
         let fetchOptions = { method: "HEAD", mode: "cors", signal: ctrl.signal };
-        
+
         if (routeProxy) {
           const useExternalProxy = window.location.protocol === 'file:';
           const proxyPrefix = useExternalProxy ? 'https://corsproxy.io/?' : '/api/cors?url=';
           fetchUrl = proxyPrefix + encodeURIComponent(item.url);
           fetchOptions = { method: "GET", signal: ctrl.signal };
         }
-        
+
         const r = await fetch(fetchUrl, fetchOptions);
         clearTimeout(timeoutId);
         ctype = r.headers.get("content-type") || "";
-        
+
         if (r.ok) {
           status = "OK";
           cls = "ok";
@@ -525,19 +257,12 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
       } catch (e) {
         await new Promise(resolve => {
           const im = new Image();
-          im.onload = () => {
-            status = "OK";
-            cls = "ok";
-            resolve();
-          };
-          im.onerror = () => {
-            reason = "Fetch failed & Image load failed (likely CORS or Offline)";
-            resolve();
-          };
+          im.onload = () => { status = "OK"; cls = "ok"; resolve(); };
+          im.onerror = () => { reason = "Fetch failed & Image load failed (likely CORS or Offline)"; resolve(); };
           im.src = item.url;
         });
       }
-      
+
       return { ...item, status, cls, reason, ctype };
     }
 
@@ -545,39 +270,39 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
       const resultsDiv = document.getElementById('cdn-results');
       const summaryDiv = document.getElementById('cdn-summary');
       const progressBar = document.getElementById('cdn-progress');
-      
-      resultsDiv.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-secondary);">Verifying image locations...</div>';
+
+      resultsDiv.innerHTML = '<div class="tb-state-message">Verifying image locations…</div>';
       brokenCdnUrls = [];
-      
+
       const items = parseCdnUrls();
       if (items.length === 0) {
-        resultsDiv.innerHTML = '<div style="padding:20px; text-align:center; color:var(--color-warn);">No URLs found to validate. Paste list in text area.</div>';
+        resultsDiv.innerHTML = '<div class="tb-state-message" style="color:var(--color-warn); border-color:var(--color-warn);">No URLs found to validate. Paste a list in the text area.</div>';
         return;
       }
-      
+
       progressBar.style.width = '0%';
       let seen = new Set();
       let okCount = 0, badCount = 0, warnCount = 0;
       const results = [];
       const concurrency = 15;
       let idx = 0;
-      
+
       async function worker() {
         while (idx < items.length) {
           const currentIdx = idx++;
           const currentItem = items[currentIdx];
-          
+
           if (seen.has(currentItem.url)) {
             results[currentIdx] = { ...currentItem, status: "Duplicate", cls: "warn", reason: "Identical URL checked" };
             warnCount++;
             progressBar.style.width = `${((currentIdx + 1) / items.length) * 100}%`;
             continue;
           }
-          
+
           seen.add(currentItem.url);
           const validationResult = await verifySingleCdnUrl(currentItem);
           results[currentIdx] = validationResult;
-          
+
           if (validationResult.cls === "ok") okCount++;
           else if (validationResult.cls === "bad") {
             badCount++;
@@ -585,24 +310,24 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
           } else {
             warnCount++;
           }
-          
+
           progressBar.style.width = `${((currentIdx + 1) / items.length) * 100}%`;
         }
       }
-      
+
       const workers = Array.from({ length: Math.min(concurrency, items.length) }, worker);
       await Promise.all(workers);
-      
+
       summaryDiv.innerHTML = `
-        <div class="summary-badge badge-info">Total checked: ${items.length}</div>
-        <div class="summary-badge badge-ok">OK: ${okCount}</div>
-        <div class="summary-badge badge-bad">Broken: ${badCount}</div>
-        <div class="summary-badge badge-warn">Warnings: ${warnCount}</div>
+        <span class="tb-badge tb-badge-info">Total checked: ${items.length}</span>
+        <span class="tb-badge tb-badge-ok">OK: ${okCount}</span>
+        <span class="tb-badge tb-badge-bad">Broken: ${badCount}</span>
+        <span class="tb-badge tb-badge-warn">Warnings: ${warnCount}</span>
       `;
-      
+
       resultsDiv.innerHTML = '';
       let currentProviderName = "";
-      
+
       results.forEach(r => {
         if (r.provider !== currentProviderName) {
           currentProviderName = r.provider;
@@ -611,24 +336,24 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
           h.textContent = currentProviderName;
           resultsDiv.appendChild(h);
         }
-        
+
         const card = document.createElement("div");
         card.className = "result-card";
         card.dataset.state = r.cls;
-        
+
         const showPreview = r.cls === "ok" || r.cls === "warn";
-        const imgHtml = showPreview 
-          ? `<img src="${r.url}" alt="Preview" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ff6b6b%22 stroke-width=%222%22><line x1=%2218%22 y1=%226%22 x2=%226%22 y2=%2218%22></line><line x1=%226%22 y1=%226%22 x2=%2218%22 y2=%2218%22></line></svg>'">` 
-          : `<div style="width:60px; height:60px; border-radius:6px; background:#0b0f17; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-             </div>`;
-             
+        const brokenSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim()}" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+
+        const imgHtml = showPreview
+          ? `<img src="${r.url}" alt="Preview" onerror="this.style.opacity='0.4'; this.src='data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%23f38ba8" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`)}'">`
+          : `<div class="broken-placeholder">${brokenSvg}</div>`;
+
         card.innerHTML = `
           ${imgHtml}
           <div class="result-info">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span class="result-status status-${r.cls}">${r.status}</span>
-              ${r.ctype ? `<span style="font-size:0.7rem; color:var(--text-secondary); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">${r.ctype}</span>` : ''}
+              ${r.ctype ? `<span style="font-size:0.7rem; color:var(--text-secondary); background:var(--ctp-surface0); padding:2px 7px; border-radius:var(--radius-sm); font-family:var(--font-mono);">${r.ctype}</span>` : ''}
             </div>
             <div class="result-url" title="${r.url}" onclick="navigator.clipboard.writeText('${r.url}'); alert('URL Copied');" style="cursor:pointer;">${r.url}</div>
             ${r.reason ? `<div class="result-meta" style="color:var(--color-${r.cls})">${r.reason}</div>` : ''}
@@ -641,9 +366,9 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
     function filterCdnResults(filter) {
       const cards = document.querySelectorAll('#cdn-results .result-card');
       cards.forEach(card => {
-        card.classList.remove('hidden');
+        card.classList.remove('tb-hidden');
         if (filter !== 'all' && card.dataset.state !== filter) {
-          card.classList.add('hidden');
+          card.classList.add('tb-hidden');
         }
       });
     }
