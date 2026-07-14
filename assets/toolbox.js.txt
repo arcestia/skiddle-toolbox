@@ -76,6 +76,11 @@
     injectThemeBars();
     updateActiveButtons(theme);
 
+    // Auto-update footer year.
+    document.querySelectorAll('#footer-year').forEach(el => {
+      el.textContent = String(new Date().getFullYear());
+    });
+
     // Keep tabs in sync when localStorage changes elsewhere.
     window.addEventListener('storage', event => {
       if (event.key === STORAGE_KEY && THEMES.includes(event.newValue)) {

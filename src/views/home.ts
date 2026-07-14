@@ -86,8 +86,9 @@ export const homeView = (): string => layout({
     </div>
 
     <footer class="tb-footer">
-      <div>Build & deploy this Worker with <code>npm run deploy</code></div>
-      <div class="tb-crafted">Crafted with <span>♥</span> and Catppuccin</div>
+      <span>© <span id="footer-year">2026</span> <a href="https://labs.skiddle.id/" target="_blank" rel="noopener">Skiddle Labs</a></span>
+      <span class="tb-footer-separator"></span>
+      <span class="tb-crafted">Crafted with <span>♥</span> and Catppuccin</span>
     </footer>
 
     <style>
