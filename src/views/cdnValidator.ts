@@ -1,0 +1,347 @@
+import { layout } from './layout.js';
+
+export const cdnValidatorView = (): string => layout({
+  title: 'Image CDN Validator · Developer Toolbox',
+  subtitle: 'Cloudflare Workers Edge Utility',
+  backHref: '/',
+  themeVariant: 'dots',
+  body: `
+    <div class="tb-card">
+      <div class="tb-form-group">
+        <label class="tb-label" for="cdn-input">Image URLs (one per line). Format with <code>====== Provider Name</code> to group results.</label>
+        <textarea id="cdn-input" class="tb-textarea" rows="10" placeholder="====== Cloudflare Images
+https://imagedelivery.net/example-id/image/public
+https://imagedelivery.net/invalid-id/image/public
+
+====== Standard CDN
+https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=300
+https://invalid-domain-fails-to-load.com/test.png"></textarea>
+      </div>
+
+      <div class="tb-form-group">
+        <label class="tb-checkbox">
+          <input type="checkbox" id="cdn-route-proxy" checked>
+          Route checks through local Worker CORS Proxy (fixes browser CORS blocks)
+        </label>
+      </div>
+
+      <div class="tb-btn-group">
+        <button class="tb-btn" onclick="startCdnValidator()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Verify URLs
+        </button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('all')">All</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('ok')">OK</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('bad')">Broken</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('warn')">Warnings</button>
+        <button class="tb-btn tb-btn-secondary tb-btn-danger" onclick="copyBrokenCdnUrls()" style="margin-left: auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy Broken
+        </button>
+      </div>
+
+      <div class="tb-progress">
+        <div id="cdn-progress" class="tb-progress-fill"></div>
+      </div>
+
+      <div id="cdn-summary" class="tb-summary"></div>
+      <div id="cdn-results" class="results-grid"></div>
+    </div>
+
+    <footer class="tb-footer">
+      Powered by Cloudflare Workers & Hono · Styled with Catppuccin
+    </footer>
+
+    <style>
+      .results-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+        max-height: 540px;
+        overflow-y: auto;
+        padding-right: 6px;
+      }
+      .results-grid::-webkit-scrollbar { width: 6px; }
+      .results-grid::-webkit-scrollbar-track { background: var(--input-bg); border-radius: 999px; }
+      .results-grid::-webkit-scrollbar-thumb { background: var(--border-color-glow); border-radius: 999px; }
+      .result-card {
+        display: flex;
+        gap: 16px;
+        background: color-mix(in srgb, var(--ctp-mantle) 55%, transparent);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 12px;
+        align-items: center;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+      .result-card:hover {
+        transform: translateX(4px);
+        border-color: var(--border-color-glow);
+        background: color-mix(in srgb, var(--ctp-surface0) 50%, transparent);
+      }
+      .result-card img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        background-color: var(--ctp-crust);
+        border: 1px solid var(--border-color);
+        flex-shrink: 0;
+      }
+      .result-info { flex: 1; min-width: 0; }
+      .result-url {
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        word-break: break-all;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 4px;
+      }
+      .result-meta {
+        display: flex;
+        gap: 12px;
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+      .result-status { font-weight: 700; font-size: 0.85rem; }
+      .status-ok { color: var(--color-ok); }
+      .status-bad { color: var(--color-bad); }
+      .status-warn { color: var(--color-warn); }
+      .provider-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 18px 0 10px 0;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .provider-title::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gradient-accent);
+      }
+      .broken-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-sm);
+        background: var(--ctp-crust);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+    </style>
+
+    <script>
+      const validExt = /\\.(jpg|jpeg|png|gif|webp|jfif|bmp|svg|avif)$/i;
+      let brokenCdnUrls = [];
+
+      function parseCdnUrls() {
+        const textarea = document.getElementById('cdn-input');
+        const lines = textarea.value.split(/\\r?\\n/);
+        let provider = "Unknown Origin";
+        const arr = [];
+        for (let l of lines) {
+          l = l.trim();
+          if (!l) continue;
+          if (l.startsWith("======")) {
+            provider = l.replace(/=/g, "").trim();
+            continue;
+          }
+          arr.push({ provider, url: l });
+        }
+        return arr;
+      }
+
+      async function verifySingleCdnUrl(item) {
+        let status = "Broken";
+        let cls = "bad";
+        let reason = "";
+        let ctype = "";
+
+        try {
+          new URL(item.url);
+        } catch {
+          return { ...item, status: "Invalid URL", cls: "warn", reason: "Malformed URL" };
+        }
+
+        if (!/^https?:/.test(item.url)) {
+          return { ...item, status: "Invalid URL", cls: "warn", reason: "Missing HTTP/HTTPS Scheme" };
+        }
+
+        if (!validExt.test(item.url.split("?")[0])) {
+          reason = "Non-standard file extension";
+        }
+
+        const routeProxy = document.getElementById('cdn-route-proxy').checked;
+
+        try {
+          const ctrl = new AbortController();
+          const timeoutId = setTimeout(() => ctrl.abort(), 10000);
+
+          let fetchUrl = item.url;
+          let fetchOptions = { method: "HEAD", mode: "cors", signal: ctrl.signal };
+
+          if (routeProxy) {
+            const useExternalProxy = window.location.protocol === 'file:';
+            const proxyPrefix = useExternalProxy ? 'https://corsproxy.io/?' : '/api/cors?url=';
+            fetchUrl = proxyPrefix + encodeURIComponent(item.url);
+            fetchOptions = { method: "GET", signal: ctrl.signal };
+          }
+
+          const r = await fetch(fetchUrl, fetchOptions);
+          clearTimeout(timeoutId);
+          ctype = r.headers.get("content-type") || "";
+
+          if (r.ok) {
+            status = "OK";
+            cls = "ok";
+            if (ctype && !ctype.startsWith("image/")) {
+              status = "Warning";
+              cls = "warn";
+              reason = "Content-Type is: " + ctype;
+            }
+          } else {
+            reason = \`HTTP Code \${r.status} (\${r.statusText || 'Error'})\`;
+          }
+        } catch (e) {
+          await new Promise(resolve => {
+            const im = new Image();
+            im.onload = () => { status = "OK"; cls = "ok"; resolve(); };
+            im.onerror = () => { reason = "Fetch failed & Image load failed (likely CORS or Offline)"; resolve(); };
+            im.src = item.url;
+          });
+        }
+
+        return { ...item, status, cls, reason, ctype };
+      }
+
+      async function startCdnValidator() {
+        const resultsDiv = document.getElementById('cdn-results');
+        const summaryDiv = document.getElementById('cdn-summary');
+        const progressBar = document.getElementById('cdn-progress');
+
+        resultsDiv.innerHTML = '<div class="tb-state-message">Verifying image locations…</div>';
+        brokenCdnUrls = [];
+
+        const items = parseCdnUrls();
+        if (items.length === 0) {
+          resultsDiv.innerHTML = '<div class="tb-state-message" style="color:var(--color-warn); border-color:var(--color-warn);">No URLs found to validate. Paste a list in the text area.</div>';
+          return;
+        }
+
+        progressBar.style.width = '0%';
+        let seen = new Set();
+        let okCount = 0, badCount = 0, warnCount = 0;
+        const results = [];
+        const concurrency = 15;
+        let idx = 0;
+
+        async function worker() {
+          while (idx < items.length) {
+            const currentIdx = idx++;
+            const currentItem = items[currentIdx];
+
+            if (seen.has(currentItem.url)) {
+              results[currentIdx] = { ...currentItem, status: "Duplicate", cls: "warn", reason: "Identical URL checked" };
+              warnCount++;
+              progressBar.style.width = \`\${((currentIdx + 1) / items.length) * 100}%\`;
+              continue;
+            }
+
+            seen.add(currentItem.url);
+            const validationResult = await verifySingleCdnUrl(currentItem);
+            results[currentIdx] = validationResult;
+
+            if (validationResult.cls === "ok") okCount++;
+            else if (validationResult.cls === "bad") {
+              badCount++;
+              brokenCdnUrls.push(currentItem.url);
+            } else {
+              warnCount++;
+            }
+
+            progressBar.style.width = \`\${((currentIdx + 1) / items.length) * 100}%\`;
+          }
+        }
+
+        const workers = Array.from({ length: Math.min(concurrency, items.length) }, worker);
+        await Promise.all(workers);
+
+        summaryDiv.innerHTML = \`
+          <span class="tb-badge tb-badge-info">Total checked: \${items.length}</span>
+          <span class="tb-badge tb-badge-ok">OK: \${okCount}</span>
+          <span class="tb-badge tb-badge-bad">Broken: \${badCount}</span>
+          <span class="tb-badge tb-badge-warn">Warnings: \${warnCount}</span>
+        \`;
+
+        resultsDiv.innerHTML = '';
+        let currentProviderName = "";
+
+        results.forEach(r => {
+          if (r.provider !== currentProviderName) {
+            currentProviderName = r.provider;
+            const h = document.createElement("div");
+            h.className = "provider-title";
+            h.textContent = currentProviderName;
+            resultsDiv.appendChild(h);
+          }
+
+          const card = document.createElement("div");
+          card.className = "result-card";
+          card.dataset.state = r.cls;
+
+          const showPreview = r.cls === "ok" || r.cls === "warn";
+          const brokenSvg = \`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="\${getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim()}" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>\`;
+
+          const imgHtml = showPreview
+            ? \`<img src="\${r.url}" alt="Preview" onerror="this.style.opacity='0.4'; this.src='data:image/svg+xml;utf8,\${encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%23f38ba8" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>\`)}'">\`
+            : \`<div class="broken-placeholder">\${brokenSvg}</div>\`;
+
+          card.innerHTML = \`
+            \${imgHtml}
+            <div class="result-info">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="result-status status-\${r.cls}">\${r.status}</span>
+                \${r.ctype ? \`<span style="font-size:0.7rem; color:var(--text-secondary); background:var(--ctp-surface0); padding:2px 7px; border-radius:var(--radius-sm); font-family:var(--font-mono);">\${r.ctype}</span>\` : ''}
+              </div>
+              <div class="result-url" title="\${r.url}" onclick="navigator.clipboard.writeText('\${r.url}'); alert('URL Copied');" style="cursor:pointer;">\${r.url}</div>
+              \${r.reason ? \`<div class="result-meta" style="color:var(--color-\${r.cls})">\${r.reason}</div>\` : ''}
+            </div>
+          \`;
+          resultsDiv.appendChild(card);
+        });
+      }
+
+      function filterCdnResults(filter) {
+        const cards = document.querySelectorAll('#cdn-results .result-card');
+        cards.forEach(card => {
+          card.classList.remove('tb-hidden');
+          if (filter !== 'all' && card.dataset.state !== filter) {
+            card.classList.add('tb-hidden');
+          }
+        });
+      }
+
+      function copyBrokenCdnUrls() {
+        if (brokenCdnUrls.length === 0) {
+          alert("No broken URLs to copy!");
+          return;
+        }
+        navigator.clipboard.writeText(brokenCdnUrls.join("\\n")).then(() => {
+          alert(\`Copied \${brokenCdnUrls.length} broken URLs to clipboard\`);
+        });
+      }
+    </script>
+  `
+});
