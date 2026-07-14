@@ -1,0 +1,13 @@
+{
+  "name": "image-cdn-validator",
+  "version": "1.0.0",
+  "description": "Image CDN Validator deployable as Cloudflare Pages",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
