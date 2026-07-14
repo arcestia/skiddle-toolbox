@@ -124,6 +124,19 @@ Behavior agents should preserve:
 - Duplicate URLs are flagged but still counted once.
 - Broken URLs can be copied to the clipboard.
 
+### API Tester (`api-tester.html`)
+
+A lightweight, browser-local HTTP client.
+
+Behavior agents should preserve:
+- Runs entirely in the browser using `fetch()`.
+- Supports common HTTP methods, editable headers, and a request body for POST/PUT/PATCH.
+- Adds a default `https://` scheme if the URL has none.
+- Applies a 10-second timeout via `AbortController`.
+- Offers an optional CORS proxy toggle that routes through `/api/cors?url=<encodedUrl>` (or `https://corsproxy.io/?` when opened via `file://`).
+- Displays response status, duration, size, headers, and body.
+- Pretty-prints JSON bodies and warns clearly when the browser blocks a request due to CORS.
+
 ## Testing
 
 There are currently no automated tests, test runners, or linting tools configured.
