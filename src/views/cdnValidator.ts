@@ -6,6 +6,14 @@ export const cdnValidatorView = (): string => layout({
   backHref: '/',
   themeVariant: 'dots',
   body: `
+    <div class="tb-page-header accent-teal">
+      <div class="tb-tool-icon">🖼️</div>
+      <div class="tb-page-header__text">
+        <h1>Image CDN Validator</h1>
+        <p>Bulk-check image URLs by provider, response code, and Content-Type.</p>
+      </div>
+    </div>
+
     <div class="tb-card">
       <div class="tb-form-group">
         <label class="tb-label" for="cdn-input">Image URLs (one per line). Format with <code>====== Provider Name</code> to group results.</label>
@@ -231,12 +239,13 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
         const summaryDiv = document.getElementById('cdn-summary');
         const progressBar = document.getElementById('cdn-progress');
 
-        resultsDiv.innerHTML = '<div class="tb-state-message">Verifying image locations…</div>';
+        const skeletonRow = '<div class="skeleton-row"><div class="skeleton-thumb"></div><div class="skeleton-lines"><div class="skeleton-line skeleton-line--short"></div><div class="skeleton-line"></div></div></div>';
+        resultsDiv.innerHTML = '<div class="skeleton-loader">' + skeletonRow.repeat(4) + '</div>';
         brokenCdnUrls = [];
 
         const items = parseCdnUrls();
         if (items.length === 0) {
-          resultsDiv.innerHTML = '<div class="tb-state-message" style="color:var(--color-warn); border-color:var(--color-warn);">No URLs found to validate. Paste a list in the text area.</div>';
+          resultsDiv.innerHTML = '<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-warn)" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><p>No URLs found to validate.</p><span>Paste a list of image URLs in the text area above, then click Verify URLs.</span></div>';
           return;
         }
 

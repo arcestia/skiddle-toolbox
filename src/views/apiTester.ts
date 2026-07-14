@@ -6,6 +6,14 @@ export const apiTesterView = (): string => layout({
   backHref: '/',
   themeVariant: 'dots',
   body: `
+    <div class="tb-page-header accent-blue">
+      <div class="tb-tool-icon">🌐</div>
+      <div class="tb-page-header__text">
+        <h1>API Tester</h1>
+        <p>Browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy.</p>
+      </div>
+    </div>
+
     <div class="tb-card">
       <div class="api-layout">
         <!-- Request form -->

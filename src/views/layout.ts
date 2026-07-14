@@ -4,6 +4,7 @@ export interface PageContext {
   title: string;
   subtitle?: string;
   centered?: boolean;
+  compactHeader?: boolean;
   backHref?: string;
   themeVariant?: 'dots' | 'pills';
   body: string;
@@ -26,10 +27,12 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     <header class="tb-header ${ctx.centered ? 'tb-header-center' : ''}">
       <div class="tb-brand">
         <div class="tb-logo ${ctx.centered ? 'tb-logo-lg' : ''}">TB</div>
+        ${ctx.compactHeader ? '' : `
         <div class="tb-brand-title">
           <h1 class="tb-gradient-text">${ctx.title.replace(' · Developer Toolbox', '').replace(' · ', ' ')}</h1>
           ${ctx.subtitle ? `<p>${ctx.subtitle}</p>` : ''}
         </div>
+        `}
       </div>
       ${ctx.backHref ? `
       <div class="tb-header-actions">
