@@ -35,7 +35,9 @@ This document contains project-specific guidance for AI coding agents working on
 │   │   ├── layout.ts          # Shared page shell
 │   │   ├── home.ts            # Landing page
 │   │   ├── cdnValidator.ts    # Image CDN Validator page
-│   │   └── apiTester.ts       # API Tester page
+│   │   ├── apiTester.ts       # API Tester page
+│   │   ├── textExtractor.ts   # Text Extractor page
+│   │   └── regexPlayground.ts # Regex Playground page
 │   ├── lib/
 │   │   └── assets.ts          # Imports toolbox.css/toolbox.js as raw strings
 │   └── types/
@@ -53,6 +55,8 @@ This document contains project-specific guidance for AI coding agents working on
   - `GET /` → `homeView()`
   - `GET /cdn-validator` → `cdnValidatorView()`
   - `GET /api-tester` → `apiTesterView()`
+  - `GET /text-extractor` → `textExtractorView()`
+  - `GET /regex-playground` → `regexPlaygroundView()`
 - `src/routes/cors.ts` mounts under `/api`.
   - `ALL /api/cors?url=...` → forwards the request to the target URL with permissive CORS headers.
 
@@ -137,6 +141,29 @@ Behavior agents should preserve:
 - Offers an optional CORS proxy toggle that routes through `/api/cors?url=<encodedUrl>` (or `https://corsproxy.io/?` when opened via `file://`).
 - Displays response status, duration, size, headers, and body.
 - Pretty-prints JSON bodies and warns clearly when the browser blocks a request due to CORS.
+
+### Text Extractor (`/text-extractor`)
+
+A lightweight tool to parse text (logs, HTML, markdown) and extract structured data.
+
+Behavior agents should preserve:
+- Supports extracting URLs, Emails, Domains, and IP addresses.
+- Supports deduplication and sorting options.
+- Executes client-side in the browser.
+- Domain extraction handles boundary checking (using `index` from regexp matches to avoid shadows) and filters out email domains.
+
+### Regex Playground (`/regex-playground`)
+
+Interactive regular expression editor and visualizer.
+
+Behavior agents should preserve:
+- Real-time compilation and error checking in a dedicated input block.
+- Match visualization with highlight span wrappers displaying matches on the original test string.
+- Detailed matches breakdown cards listing indices, lengths, and captured group labels/values.
+- Pre-defined loadable patterns (templates) and interactive cheatsheet sidebar.
+- Executes completely client-side in the browser.
+
+
 
 ## Testing
 

@@ -3,6 +3,9 @@ import { htmlContentType } from '../lib/assets.js';
 import { homeView } from '../views/home.js';
 import { cdnValidatorView } from '../views/cdnValidator.js';
 import { apiTesterView } from '../views/apiTester.js';
+import { dnsLookupView } from '../views/dnsLookup.js';
+import { textExtractorView } from '../views/textExtractor.js';
+import { regexPlaygroundView } from '../views/regexPlayground.js';
 
 export const pagesRoute = new Hono();
 
@@ -16,4 +19,16 @@ pagesRoute.get('/cdn-validator', (c) => {
 
 pagesRoute.get('/api-tester', (c) => {
   return c.html(apiTesterView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/dns-lookup', (c) => {
+  return c.html(dnsLookupView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/text-extractor', (c) => {
+  return c.html(textExtractorView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/regex-playground', (c) => {
+  return c.html(regexPlaygroundView(), 200, { 'Content-Type': htmlContentType });
 });

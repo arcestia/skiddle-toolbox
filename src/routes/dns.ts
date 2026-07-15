@@ -34,8 +34,7 @@ dnsRoute.get('/dns', async (c) => {
       headers: {
         Accept: 'application/dns-json',
         'User-Agent': 'DeveloperToolbox/1.0'
-      },
-      cf: { cacheTtl: 60 }
+      }
     });
 
     if (!upstream.ok) {

@@ -22,6 +22,36 @@ const tools = [
     active: true
   },
   {
+    icon: '🔍',
+    status: 'Active',
+    category: 'Network',
+    accent: 'mauve',
+    title: 'DNS Lookup',
+    desc: 'Query public DNS-over-HTTPS resolvers for A, AAAA, MX, TXT, CNAME, and other record types.',
+    href: '/dns-lookup',
+    active: true
+  },
+  {
+    icon: '🔗',
+    status: 'Active',
+    category: 'Text',
+    accent: 'green',
+    title: 'Text Extractor',
+    desc: 'Paste logs, HTML, or markdown and extract URLs, emails, domains, or IP addresses with deduplication, sorting, and one-click copy.',
+    href: '/text-extractor',
+    active: true
+  },
+  {
+    icon: '🧩',
+    status: 'Active',
+    category: 'Regex',
+    accent: 'mauve',
+    title: 'Regex Playground',
+    desc: 'Test, visualize, and debug regular expressions in real-time. Includes syntax highlighting, match breakdowns, and group captures.',
+    href: '/regex-playground',
+    active: true
+  },
+  {
     icon: '🔀',
     status: 'Planned',
     category: 'Routing',
@@ -129,11 +159,8 @@ export const homeView = (): string => layout({
       }
       .tools-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 26px;
-      }
-      @media (max-width: 768px) {
-        .tools-grid { grid-template-columns: 1fr; }
       }
       .tool-card {
         min-height: 280px;
@@ -189,6 +216,14 @@ export const homeView = (): string => layout({
       .tool-card--red {
         --card-accent: linear-gradient(135deg, var(--ctp-red), var(--ctp-maroon));
         --card-accent-color: var(--ctp-red);
+      }
+      .tool-card--mauve {
+        --card-accent: linear-gradient(135deg, var(--ctp-mauve), var(--ctp-pink));
+        --card-accent-color: var(--ctp-mauve);
+      }
+      .tool-card--green {
+        --card-accent: linear-gradient(135deg, var(--ctp-green), var(--ctp-teal));
+        --card-accent-color: var(--ctp-green);
       }
       .card-top {
         margin-bottom: 24px;

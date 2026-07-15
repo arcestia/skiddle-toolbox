@@ -669,6 +669,40 @@ body::after {
   background-color: var(--input-bg-focus);
 }
 
+.tb-input,
+.tb-select {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.tb-input::placeholder {
+  color: var(--text-muted);
+}
+
+.tb-input:focus,
+.tb-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: var(--glow-focus);
+  background-color: var(--input-bg-focus);
+}
+
+.tb-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2389b4fa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 38px;
+}
+
 .tb-form-group {
   margin-bottom: 22px;
 }
@@ -851,6 +885,8 @@ body::after {
 .tb-tag--blue { color: var(--ctp-sapphire); border-color: color-mix(in srgb, var(--ctp-sapphire) 35%, var(--border-color)); background: color-mix(in srgb, var(--ctp-sapphire) 10%, transparent); }
 .tb-tag--peach { color: var(--ctp-peach); border-color: color-mix(in srgb, var(--ctp-peach) 35%, var(--border-color)); background: color-mix(in srgb, var(--ctp-peach) 10%, transparent); }
 .tb-tag--red { color: var(--ctp-red); border-color: color-mix(in srgb, var(--ctp-red) 35%, var(--border-color)); background: color-mix(in srgb, var(--ctp-red) 10%, transparent); }
+.tb-tag--mauve { color: var(--ctp-mauve); border-color: color-mix(in srgb, var(--ctp-mauve) 35%, var(--border-color)); background: color-mix(in srgb, var(--ctp-mauve) 10%, transparent); }
+.tb-tag--green { color: var(--ctp-green); border-color: color-mix(in srgb, var(--ctp-green) 35%, var(--border-color)); background: color-mix(in srgb, var(--ctp-green) 10%, transparent); }
 
 /* ── Mobile ── */
 @media (max-width: 640px) {
@@ -912,6 +948,8 @@ body::after {
 .accent-blue { --page-accent: var(--ctp-sapphire); }
 .accent-peach { --page-accent: var(--ctp-peach); }
 .accent-red { --page-accent: var(--ctp-red); }
+.accent-mauve { --page-accent: var(--ctp-mauve); }
+.accent-green { --page-accent: var(--ctp-green); }
 
 /* ── Skeleton loader ── */
 .skeleton-loader {
