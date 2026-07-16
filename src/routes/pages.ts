@@ -9,6 +9,7 @@ import { regexPlaygroundView } from '../views/regexPlayground.js';
 import { spreadsheetViewerView } from '../views/spreadsheetViewer.js';
 import { markdownEditorView } from '../views/markdownEditor.js';
 import { creditsView } from '../views/credits.js';
+import { changelogView } from '../views/changelog.js';
 
 export const pagesRoute = new Hono();
 
@@ -46,4 +47,8 @@ pagesRoute.get('/markdown-editor', (c) => {
 
 pagesRoute.get('/credits', (c) => {
   return c.html(creditsView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/changelog', (c) => {
+  return c.html(changelogView(), 200, { 'Content-Type': htmlContentType });
 });
