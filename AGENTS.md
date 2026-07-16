@@ -59,6 +59,7 @@ This document contains project-specific guidance for AI coding agents working on
   - `GET /text-extractor` → `textExtractorView()`
   - `GET /regex-playground` → `regexPlaygroundView()`
   - `GET /spreadsheet-viewer` → `spreadsheetViewerView()`
+  - `GET /markdown-editor` → `markdownEditorView()`
 - `src/routes/cors.ts` mounts under `/api`.
   - `ALL /api/cors?url=...` → forwards the request to the target URL with permissive CORS headers.
 
@@ -113,7 +114,7 @@ rules = [
   - Component classes are prefixed with `tb-`.
   - Catppuccin token system with four switchable themes (Latte, Frappé, Macchiato, Mocha).
   - Page-specific styles can live in a small inline `<style>` block inside the view.
-- **Theme:** The theme switcher is auto-injected by `assets/toolbox.js` into any element with `data-tb-theme-bar`. The chosen theme is persisted in `localStorage` under `toolbox-theme` and synced across pages.
+- **Theme & Settings:** `assets/toolbox.js` injects the theme switcher into any element with `data-tb-theme-bar`, persists the chosen theme in `localStorage` under `toolbox-theme`, and keeps it synced across tabs. It also provides a global settings modal (compact mode, clear recent tools) and tracks recently used tools in `localStorage` under `toolbox-recent`.
 
 ## Current Tools
 
@@ -176,6 +177,16 @@ Behavior agents should preserve:
 - Supports multi-sheet Excel/ODS files via a sheet selector.
 - Falls back to the `/api/cors?url=<encodedUrl>` proxy when loading a spreadsheet by URL.
 
+### Markdown Editor (`/markdown-editor`)
+
+Browser-local Markdown editor with live preview.
+
+Behavior agents should preserve:
+- Runs entirely in the browser using `marked` and `DOMPurify` loaded from CDN.
+- Provides a split-pane editor and preview.
+- Includes a formatting toolbar for common Markdown syntax.
+- Supports loading `.md` files and exporting the source as `.md` or the preview as HTML.
+
 
 
 ## Testing
@@ -201,5 +212,5 @@ When making changes, verify manually:
 1. Create a new view function in `src/views/<tool-name>.ts` that returns an HTML string via `layout()`.
 2. Add the route in `src/routes/pages.ts` (e.g., `app.get('/my-tool', ...)`).
 3. Add a card to `src/views/home.ts`.
-4. Re-use the shared `tb-*` component classes and inline any page-specific styles in a `<style>` block inside the view.
+4. Re-use the shared `tb-*` component classes and inline any page-specific styles in a `<style>` block inside the view. Use `.empty-state` for consistent empty/search-no-results UI.
 5. If server-side logic is needed, add it in `src/lib/` or directly in `src/routes/`.

@@ -1027,3 +1027,226 @@ body::after {
   max-width: 420px;
   line-height: 1.5;
 }
+
+/* ── Top navigation bar ── */
+.tb-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: color-mix(in srgb, var(--ctp-crust) 70%, transparent);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.tb-top-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: opacity 0.2s ease;
+}
+
+.tb-top-bar__brand:hover {
+  opacity: 0.85;
+}
+
+.tb-top-bar__title {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tb-top-bar__title--home {
+  display: none;
+}
+
+.tb-top-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tb-top-bar__settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tb-top-bar__settings:hover {
+  border-color: var(--border-color-glow);
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.tb-back-link--icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Settings modal ── */
+.tb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: color-mix(in srgb, var(--ctp-crust) 65%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.tb-settings-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  z-index: 201;
+  width: min(420px, calc(100% - 32px));
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.tb-settings-modal:not(.tb-hidden) {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.tb-settings-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tb-settings-modal__header h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.tb-settings-modal__close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease;
+}
+
+.tb-settings-modal__close:hover {
+  color: var(--text-primary);
+}
+
+.tb-settings-modal__body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.tb-settings-section h3 {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.tb-settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.tb-settings-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.tb-settings-about {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+/* ── Compact mode ── */
+body.tb-compact .tb-card {
+  padding: 22px;
+}
+
+body.tb-compact .tb-form-group {
+  margin-bottom: 16px;
+}
+
+body.tb-compact .tb-page-header {
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+body.tb-compact .tb-tool-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+}
+
+/* ── Mobile adjustments for top bar ── */
+@media (max-width: 640px) {
+  .tb-top-bar {
+    padding: 12px 16px;
+  }
+
+  .tb-top-bar__title {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tb-top-bar__actions .tb-theme-bar.pills .tb-theme-btn {
+    padding: 5px 9px;
+    font-size: 0;
+  }
+
+  .tb-top-bar__actions .tb-theme-bar.pills .tb-theme-btn .tb-theme-dot {
+    margin: 0;
+  }
+}

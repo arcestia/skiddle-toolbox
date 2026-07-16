@@ -1,32 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════
-   Developer Toolbox — Shared Theme & UI Sync
+   Skiddle Toolbox — Shared Theme, Settings & UI Sync
    ═══════════════════════════════════════════════════════════════
    Include this file on every toolbox page to keep the Catppuccin
-   theme and common UI components synchronised.
+   theme, settings, and common UI components synchronised.
 
    - Reads/writes the chosen theme to localStorage under `toolbox-theme`.
    - Auto-injects a theme switcher into any element with
      `data-tb-theme-bar`.
    - Keeps theme in sync across open tabs via the `storage` event.
-   - Exposes `window.toolbox.setTheme(name)` for programmatic use.
+   - Tracks recently used tools in localStorage under `toolbox-recent`.
+   - Provides a global settings modal.
+   - Exposes `window.toolbox` for programmatic use.
    ═══════════════════════════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'toolbox-theme';
+  const THEME_KEY = 'toolbox-theme';
+  const SETTINGS_KEY = 'toolbox-settings';
+  const RECENT_KEY = 'toolbox-recent';
   const THEMES = ['latte', 'frappe', 'macchiato', 'mocha'];
   const DEFAULT_THEME = 'mocha';
 
   function getStoredTheme() {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(THEME_KEY);
     return THEMES.includes(raw) ? raw : DEFAULT_THEME;
   }
 
   function applyTheme(theme) {
     if (!THEMES.includes(theme)) return;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(STORAGE_KEY, theme);
+    localStorage.setItem(THEME_KEY, theme);
     updateActiveButtons(theme);
   }
 
@@ -42,11 +46,11 @@
     btn.type = 'button';
     btn.className = 'tb-theme-btn';
     btn.dataset.theme = theme;
-    btn.setAttribute('aria-label', `${theme} theme`);
+    btn.setAttribute('aria-label', theme + ' theme');
     btn.setAttribute('aria-pressed', 'false');
 
     const dot = document.createElement('span');
-    dot.className = `tb-theme-dot ${theme}`;
+    dot.className = 'tb-theme-dot ' + theme;
 
     if (variant === 'pills') {
       btn.appendChild(dot);
@@ -70,11 +74,118 @@
     });
   }
 
+  function getSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function setSettings(settings) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  function applyCompactMode(enabled) {
+    document.body.classList.toggle('tb-compact', !!enabled);
+  }
+
+  function loadSettings() {
+    const settings = getSettings();
+    applyCompactMode(settings.compact);
+    const checkbox = document.getElementById('tb-setting-compact');
+    if (checkbox) checkbox.checked = !!settings.compact;
+  }
+
+  function openSettings() {
+    loadSettings();
+    document.getElementById('tb-settings-overlay').classList.remove('tb-hidden');
+    document.getElementById('tb-settings-modal').classList.remove('tb-hidden');
+  }
+
+  function closeSettings() {
+    document.getElementById('tb-settings-overlay').classList.add('tb-hidden');
+    document.getElementById('tb-settings-modal').classList.add('tb-hidden');
+  }
+
+  function toggleCompact(enabled) {
+    const settings = getSettings();
+    settings.compact = !!enabled;
+    setSettings(settings);
+    applyCompactMode(settings.compact);
+  }
+
+  function getRecentTools() {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function setRecentTools(tools) {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(tools.slice(0, 6)));
+  }
+
+  function recordToolUse(tool) {
+    if (!tool || !tool.href) return;
+    const recent = getRecentTools().filter(t => t.href !== tool.href);
+    recent.unshift({ href: tool.href, title: tool.title, icon: tool.icon || '🧰' });
+    setRecentTools(recent);
+  }
+
+  function clearRecentTools() {
+    localStorage.removeItem(RECENT_KEY);
+    document.querySelectorAll('[data-recent-tools]').forEach(el => {
+      el.innerHTML = '<p class="tb-muted" style="font-size:0.85rem;">No recent tools yet.</p>';
+    });
+  }
+
+  function renderRecentTools(container) {
+    const recent = getRecentTools();
+    if (recent.length === 0) {
+      container.innerHTML = '<p class="tb-muted" style="font-size:0.85rem;">No recent tools yet.</p>';
+      return;
+    }
+    let html = '<div class="recent-tools-grid">';
+    recent.forEach(tool => {
+      html += '<a href="' + tool.href + '" class="tb-back-link recent-tool-link">' +
+        '<span class="recent-tool-icon">' + (tool.icon || '🧰') + '</span>' +
+        '<span>' + tool.title + '</span>' +
+        '</a>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function initRecentTools() {
+    document.querySelectorAll('[data-recent-tools]').forEach(container => {
+      renderRecentTools(container);
+    });
+
+    document.querySelectorAll('[data-tool-card] a[href^="/"]').forEach(link => {
+      link.addEventListener('click', () => {
+        const card = link.closest('[data-tool-card]');
+        if (!card) return;
+        recordToolUse({
+          href: link.getAttribute('href'),
+          title: card.dataset.toolTitle || link.innerText,
+          icon: card.dataset.toolIcon || '🧰'
+        });
+      });
+    });
+  }
+
   function init() {
     const theme = getStoredTheme();
     document.documentElement.setAttribute('data-theme', theme);
     injectThemeBars();
     updateActiveButtons(theme);
+    loadSettings();
+    initRecentTools();
 
     // Auto-update footer year.
     document.querySelectorAll('#footer-year').forEach(el => {
@@ -83,16 +194,29 @@
 
     // Keep tabs in sync when localStorage changes elsewhere.
     window.addEventListener('storage', event => {
-      if (event.key === STORAGE_KEY && THEMES.includes(event.newValue)) {
+      if (event.key === THEME_KEY && THEMES.includes(event.newValue)) {
         applyTheme(event.newValue);
       }
+      if (event.key === SETTINGS_KEY) {
+        loadSettings();
+      }
+    });
+
+    // Close settings on Escape.
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closeSettings();
     });
 
     // Expose a tiny public API.
     window.toolbox = {
       setTheme: applyTheme,
       getTheme: getStoredTheme,
-      themes: THEMES
+      themes: THEMES,
+      openSettings: openSettings,
+      closeSettings: closeSettings,
+      toggleCompact: toggleCompact,
+      clearRecentTools: clearRecentTools,
+      recordToolUse: recordToolUse
     };
   }
 

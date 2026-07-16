@@ -23,30 +23,54 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   ${scriptTag()}
 </head>
 <body>
-  <div class="tb-container">
-    <header class="tb-header ${ctx.centered ? 'tb-header-center' : ''}">
-      <div class="tb-brand">
-        <div class="tb-logo ${ctx.centered ? 'tb-logo-lg' : ''}">TB</div>
-        ${ctx.compactHeader ? '' : `
-        <div class="tb-brand-title">
-          <h1 class="tb-gradient-text">${ctx.title.replace(' · Skiddle Toolbox', '').replace(' · ', ' ')}</h1>
-          ${ctx.subtitle ? `<p>${ctx.subtitle}</p>` : ''}
-        </div>
-        `}
-      </div>
+  <div class="tb-top-bar">
+    <a href="/" class="tb-top-bar__brand" aria-label="Skiddle Toolbox home">
+      <div class="tb-logo tb-logo-sm">TB</div>
+      <span class="tb-top-bar__title ${ctx.centered ? 'tb-top-bar__title--home' : ''}">${ctx.centered ? 'Skiddle Toolbox' : ctx.title.replace(' · Skiddle Toolbox', '')}</span>
+    </a>
+    <div class="tb-top-bar__actions">
+      <div data-tb-theme-bar="${ctx.themeVariant ?? (ctx.centered ? 'pills' : 'dots')}"></div>
+      <button type="button" class="tb-top-bar__settings" onclick="window.toolbox.openSettings()" aria-label="Open settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
       ${ctx.backHref ? `
-      <div class="tb-header-actions">
-        <div data-tb-theme-bar="${ctx.themeVariant ?? 'dots'}"></div>
-        <a href="${ctx.backHref}" class="tb-back-link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          Back
-        </a>
-      </div>
-      ` : `
-      <div data-tb-theme-bar="${ctx.themeVariant ?? 'pills'}"></div>
-      `}
-    </header>
+      <a href="${ctx.backHref}" class="tb-back-link tb-back-link--icon" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+      ` : ''}
+    </div>
+  </div>
+
+  <div class="tb-container ${ctx.centered ? 'tb-container--centered' : ''}">
     ${ctx.body}
+  </div>
+
+  <div id="tb-settings-overlay" class="tb-overlay tb-hidden" onclick="if(event.target===this) window.toolbox.closeSettings()"></div>
+  <div id="tb-settings-modal" class="tb-settings-modal tb-hidden" role="dialog" aria-modal="true" aria-labelledby="tb-settings-title">
+    <div class="tb-settings-modal__header">
+      <h2 id="tb-settings-title">Settings</h2>
+      <button type="button" class="tb-settings-modal__close" onclick="window.toolbox.closeSettings()" aria-label="Close settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="tb-settings-modal__body">
+      <div class="tb-settings-section">
+        <h3>Appearance</h3>
+        <label class="tb-settings-row">
+          <span>Compact mode</span>
+          <input type="checkbox" id="tb-setting-compact" onchange="window.toolbox.toggleCompact(this.checked)">
+        </label>
+      </div>
+      <div class="tb-settings-section">
+        <h3>Data</h3>
+        <button type="button" class="tb-btn tb-btn-secondary" onclick="window.toolbox.clearRecentTools()">Clear recent tools</button>
+      </div>
+      <div class="tb-settings-section">
+        <h3>About</h3>
+        <p class="tb-settings-about">Skiddle Toolbox — a developer utility suite on Cloudflare Workers + Hono.</p>
+        <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener" class="tb-back-link">View on GitHub</a>
+      </div>
+    </div>
   </div>
 </body>
 </html>`;
