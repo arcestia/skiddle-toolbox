@@ -126,7 +126,10 @@ export const ddosSimulatorView = (): string => layout({
             <span class="ddos-stat__unit" id="cb-trace-label">0% — invisible</span>
           </div>
         </div>
-        <p class="ddos-hint ddos-farm-hint">💡 <strong>Click land on the map</strong> to infect devices manually. Auto-scan and Worm Spread farm for you over time. Progress auto-saves every 5s — or hit <strong>💾 Save progress</strong> anytime.</p>
+        <div class="ddos-farm-row">
+          <p class="ddos-hint ddos-farm-hint">💡 <strong>Click land on the map</strong> to infect devices manually — or use the button, same infection. Auto-scan and Worm Spread farm for you over time. Progress auto-saves every 5s — or hit <strong>💾 Save progress</strong> anytime.</p>
+          <button type="button" id="sim-infect" class="tb-btn tb-btn-secondary ddos-infect-btn">🧟 Infect devices <span id="sim-infect-n">+1</span></button>
+        </div>
         <div class="ddos-io tb-hidden" id="sim-io-panel">
           <textarea id="sim-io-text" class="tb-textarea ddos-io-text" rows="3" spellcheck="false" placeholder="Paste a save string here and hit ✅ Apply import — or press 📤 Export to fill this box with your current save."></textarea>
           <div class="ddos-io-actions">
@@ -312,7 +315,9 @@ export const ddosSimulatorView = (): string => layout({
       .ddos-control.is-disabled { opacity: 0.45; }
       .ddos-control.is-disabled input, .ddos-control.is-disabled select { cursor: not-allowed; }
       .ddos-hint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
-      .ddos-farm-hint { margin: 14px 0 0; font-size: 0.78rem; }
+      .ddos-farm-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 14px 0 0; }
+      .ddos-farm-hint { margin: 0; font-size: 0.78rem; flex: 1; min-width: 260px; }
+      .ddos-infect-btn { white-space: nowrap; }
       .ddos-farm-hint strong { color: var(--text-primary); }
 
       .ddos-mode-switch { display: flex; gap: 8px; }
@@ -1442,6 +1447,8 @@ export const ddosSimulatorView = (): string => layout({
           document.getElementById('cb-credits-unit').textContent = c.prestige > 0
             ? '🌟 +' + c.prestige * 25 + '% from prestige'
             : '💰 spend below';
+          document.getElementById('sim-infect-n').textContent = '+' + (1 + c.up.kit);
+          document.getElementById('sim-infect').disabled = Math.floor(c.bots) >= botCap();
           renderLifetime();
           renderShopAfford();
         }
@@ -1614,6 +1621,11 @@ export const ddosSimulatorView = (): string => layout({
           document.getElementById('shop-' + k).addEventListener('click', function () { buyUpgrade(k); });
         });
         document.getElementById('sim-prestige').addEventListener('click', doPrestige);
+        document.getElementById('sim-infect').addEventListener('click', function () {
+          var p = LAND[Math.floor(Math.random() * LAND.length)];
+          var q = px(p);
+          infectAt(p, q.x, q.y);
+        });
         document.getElementById('sim-reset-save').addEventListener('click', function () {
           if (!window.confirm('Reset campaign progress? Your botnet, credits, upgrades, and prestige will be wiped.')) return;
           state.campaign.bots = 0;

@@ -24,6 +24,7 @@ export const changelogEntries: ChangelogEntry[] = [
       'Export/import campaign saves as a copy-paste JSON string — move your botnet between browsers or keep a backup.',
       'Lifetime campaign stats: total bots farmed, credits earned, busts, targets pwned, and playtime — persisted in the save.',
       '🌟 Prestige endgame: pwn all 7 targets to unlock a campaign reset with permanent +25% credits and +50 starting bots per prestige level.',
+      'Keyboard-accessible farming: an Infect devices button grants the same +N per click as map clicking — campaign mode is fully playable without a pointer.',
     ],
   },
   {
