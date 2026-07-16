@@ -12,13 +12,13 @@ export const ddosSimulatorView = (): string => layout({
       <div class="tb-tool-icon">🌩️</div>
       <div class="tb-page-header__text">
         <h1>DDoS Simulator</h1>
-        <p>Watch how a distributed denial-of-service attack unfolds on a live cyber-war map — then flip on mitigations and fight back.</p>
+        <p>Farm a botnet from scratch, pwn increasingly defended targets, and stay one step ahead of the trace — all on a live cyber-war map.</p>
       </div>
     </div>
 
     <div class="tb-card ddos-disclaimer">
       <span class="tb-tag tb-tag--green">100% Simulated</span>
-      <p>This is an <strong>educational visualization</strong>. Every bot, packet, and attack arc is generated locally in your browser — <strong>no real network traffic ever leaves this page.</strong></p>
+      <p>This is an <strong>educational game</strong>. Every bot, packet, and attack arc is generated locally in your browser — <strong>no real network traffic ever leaves this page.</strong></p>
     </div>
 
     <div class="tb-card">
@@ -26,10 +26,11 @@ export const ddosSimulatorView = (): string => layout({
         <div class="ddos-control">
           <label class="tb-label">Mode</label>
           <div class="ddos-mode-switch">
-            <button type="button" id="sim-mode-sandbox" class="ddos-mode-btn active">🧪 Sandbox</button>
-            <button type="button" id="sim-mode-defense" class="ddos-mode-btn">🎮 Defense Game</button>
+            <button type="button" id="sim-mode-campaign" class="ddos-mode-btn active">🧟 Campaign</button>
+            <button type="button" id="sim-mode-sandbox" class="ddos-mode-btn">🧪 Sandbox</button>
+            <button type="button" id="sim-mode-defense" class="ddos-mode-btn">🎮 Defense</button>
           </div>
-          <span class="ddos-hint" id="sim-mode-hint">Free play — pick an attack and watch the map burn.</span>
+          <span class="ddos-hint" id="sim-mode-hint">Farm bots, pwn targets, spend credits. Trace is the enemy.</span>
         </div>
         <div class="ddos-control">
           <label class="tb-label" for="sim-attack">Attack type</label>
@@ -41,9 +42,9 @@ export const ddosSimulatorView = (): string => layout({
             <option value="slowloris">Slowloris (Low &amp; Slow)</option>
           </select>
         </div>
-        <div class="ddos-control">
+        <div class="ddos-control" id="sim-target-ctrl">
           <label class="tb-label" for="sim-target">Target server</label>
-          <select id="sim-target" class="tb-select">
+          <select id="sim-target" class="tb-select" disabled>
             <option value="na">US East</option>
             <option value="sa">São Paulo</option>
             <option value="eu">Frankfurt</option>
@@ -51,17 +52,125 @@ export const ddosSimulatorView = (): string => layout({
             <option value="as">Tokyo</option>
             <option value="oc">Sydney</option>
           </select>
+          <span class="ddos-hint" id="sim-target-hint">Set by campaign level.</span>
         </div>
-        <div class="ddos-control">
+        <div class="ddos-control" id="sim-bots-ctrl">
           <label class="tb-label" for="sim-bots">Botnet size — <span id="sim-bots-val">120</span> bots</label>
-          <input type="range" id="sim-bots" min="10" max="500" step="10" value="120">
+          <input type="range" id="sim-bots" min="10" max="500" step="10" value="120" disabled>
+          <span class="ddos-hint" id="sim-bots-hint">Farm bots on the map instead!</span>
         </div>
         <div class="ddos-control">
           <label class="tb-label" for="sim-intensity">Attack intensity — <span id="sim-intensity-val">5</span>/10</label>
           <input type="range" id="sim-intensity" min="1" max="10" step="1" value="5">
+          <span class="ddos-hint" id="sim-intensity-hint">Higher intensity = faster trace.</span>
         </div>
         <div class="ddos-control ddos-control--launch">
           <button type="button" id="sim-launch" class="tb-btn">🚀 Launch Attack</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sim-campaign-panel">
+      <div class="tb-card">
+        <div class="ddos-section-head">
+          <h2 class="ddos-section-title">🎯 Current Target</h2>
+          <div class="ddos-tag-row">
+            <span class="tb-tag tb-tag--mauve tb-hidden" id="ct-prestige">🌟 P1</span>
+            <span class="tb-tag tb-tag--red" id="ct-level">Level 1</span>
+          </div>
+        </div>
+        <div class="ddos-target-row">
+          <div class="ddos-target-name" id="ct-name">Personal Blog</div>
+          <div class="ddos-target-stats">
+            <span>Capacity <b id="ct-cap">800</b> load</span>
+            <span>Mitigation <b id="ct-block">0%</b></span>
+            <span>Weakness <b id="ct-weak">UDP Flood</b></span>
+            <span>Payout <b id="ct-payout">💰 150</b></span>
+          </div>
+        </div>
+        <div class="ddos-prestige tb-hidden" id="ct-prestige-row">
+          <button type="button" id="sim-prestige" class="tb-btn">🌟 Prestige</button>
+          <span class="ddos-hint" id="sim-prestige-hint"></span>
+        </div>
+      </div>
+
+      <div class="tb-card">
+        <div class="ddos-section-head">
+          <h2 class="ddos-section-title">🧟 Your Botnet</h2>
+          <div class="ddos-save-actions">
+            <button type="button" id="sim-save-progress" class="tb-btn tb-btn-secondary ddos-save-btn">💾 Save progress</button>
+            <button type="button" id="sim-export-save" class="tb-btn tb-btn-secondary ddos-save-btn">📤 Export</button>
+            <button type="button" id="sim-import-save" class="tb-btn tb-btn-secondary ddos-save-btn">📥 Import</button>
+            <button type="button" id="sim-reset-save" class="tb-btn tb-btn-secondary ddos-reset-btn">Reset save</button>
+          </div>
+        </div>
+        <div class="ddos-botnet-grid">
+          <div class="ddos-botnet-stat">
+            <span class="ddos-stat__label">Bots</span>
+            <span class="ddos-stat__value" id="cb-bots">0</span>
+            <span class="ddos-stat__unit">of <span id="cb-cap">500</span> cap</span>
+          </div>
+          <div class="ddos-botnet-stat">
+            <span class="ddos-stat__label">Credits</span>
+            <span class="ddos-stat__value ddos-credits" id="cb-credits">0</span>
+            <span class="ddos-stat__unit" id="cb-credits-unit">💰 spend below</span>
+          </div>
+          <div class="ddos-botnet-stat">
+            <span class="ddos-stat__label">Auto-scan</span>
+            <span class="ddos-stat__value" id="cb-rate">0.5</span>
+            <span class="ddos-stat__unit">infections/s</span>
+          </div>
+          <div class="ddos-botnet-stat ddos-botnet-stat--trace">
+            <span class="ddos-stat__label">🥷 Trace Level</span>
+            <div class="ddos-tracebar"><div id="cb-trace-fill" class="ddos-tracebar__fill is-ok" style="width:0%"></div></div>
+            <span class="ddos-stat__unit" id="cb-trace-label">0% — invisible</span>
+          </div>
+        </div>
+        <p class="ddos-hint ddos-farm-hint">💡 <strong>Click land on the map</strong> to infect devices manually. Auto-scan and Worm Spread farm for you over time. Progress auto-saves every 5s — or hit <strong>💾 Save progress</strong> anytime.</p>
+        <div class="ddos-io tb-hidden" id="sim-io-panel">
+          <textarea id="sim-io-text" class="tb-textarea ddos-io-text" rows="3" spellcheck="false" placeholder="Paste a save string here and hit ✅ Apply import — or press 📤 Export to fill this box with your current save."></textarea>
+          <div class="ddos-io-actions">
+            <button type="button" id="sim-io-copy" class="tb-btn tb-btn-secondary ddos-save-btn">📋 Copy</button>
+            <button type="button" id="sim-io-apply" class="tb-btn tb-btn-secondary ddos-save-btn">✅ Apply import</button>
+            <button type="button" id="sim-io-close" class="tb-btn tb-btn-secondary ddos-save-btn">✕ Close</button>
+          </div>
+        </div>
+        <div class="ddos-lifetime">
+          <span class="ddos-lifetime-title">📈 Lifetime</span>
+          <div class="ddos-lifetime-grid">
+            <div class="ddos-lifetime-stat"><span>🧟 Bots farmed</span><b id="lt-farmed">0</b></div>
+            <div class="ddos-lifetime-stat"><span>💰 Credits earned</span><b id="lt-earned">0</b></div>
+            <div class="ddos-lifetime-stat"><span>🚨 Busts</span><b id="lt-busts">0</b></div>
+            <div class="ddos-lifetime-stat"><span>🏆 Targets pwned</span><b id="lt-pwned">0</b></div>
+            <div class="ddos-lifetime-stat"><span>⏱️ Playtime</span><b id="lt-time">0m</b></div>
+          </div>
+        </div>
+        <div class="ddos-shop-grid">
+          <button type="button" class="ddos-shop-item" id="shop-kit">
+            <span class="ddos-shop-top">🧠 <strong>Exploit Kit</strong> <span class="ddos-shop-lv" id="shop-lv-kit">Lv.0</span></span>
+            <span class="ddos-shop-desc">+1 bot per map click, +0.5 auto-scan/s</span>
+            <span class="ddos-shop-cost" id="shop-cost-kit">💰 100</span>
+          </button>
+          <button type="button" class="ddos-shop-item" id="shop-worm">
+            <span class="ddos-shop-top">🪱 <strong>Worm Spread</strong> <span class="ddos-shop-lv" id="shop-lv-worm">Lv.0</span></span>
+            <span class="ddos-shop-desc">Bots self-replicate +0.5%/s per level</span>
+            <span class="ddos-shop-cost" id="shop-cost-worm">💰 250</span>
+          </button>
+          <button type="button" class="ddos-shop-item" id="shop-clock">
+            <span class="ddos-shop-top">⚡ <strong>Bot Overclock</strong> <span class="ddos-shop-lv" id="shop-lv-clock">Lv.0</span></span>
+            <span class="ddos-shop-desc">+25% packet rate per bot</span>
+            <span class="ddos-shop-cost" id="shop-cost-clock">💰 200</span>
+          </button>
+          <button type="button" class="ddos-shop-item" id="shop-proxy">
+            <span class="ddos-shop-top">🥷 <strong>Proxy Chains</strong> <span class="ddos-shop-lv" id="shop-lv-proxy">Lv.0</span></span>
+            <span class="ddos-shop-desc">Trace gain −20% per level</span>
+            <span class="ddos-shop-cost" id="shop-cost-proxy">💰 150</span>
+          </button>
+          <button type="button" class="ddos-shop-item" id="shop-c2">
+            <span class="ddos-shop-top">🖥️ <strong>C2 Servers</strong> <span class="ddos-shop-lv" id="shop-lv-c2">Lv.0</span></span>
+            <span class="ddos-shop-desc">Botnet capacity +500 per level</span>
+            <span class="ddos-shop-cost" id="shop-cost-c2">💰 300</span>
+          </button>
         </div>
       </div>
     </div>
@@ -84,6 +193,7 @@ export const ddosSimulatorView = (): string => layout({
       <div class="ddos-legend">
         <span><i class="ddos-dot" style="background:var(--ctp-surface2)"></i> Land</span>
         <span><i class="ddos-dot" style="background:var(--ctp-blue)"></i> Normal traffic</span>
+        <span><i class="ddos-dot" style="background:var(--ctp-green)"></i> Your botnet</span>
         <span><i class="ddos-dot" style="background:var(--ctp-red)"></i> Attack packets</span>
         <span><i class="ddos-dot" style="background:var(--ctp-teal)"></i> Mitigated</span>
         <span><i class="ddos-dot ddos-dot--pulse" style="background:var(--accent-primary)"></i> Target server</span>
@@ -117,13 +227,13 @@ export const ddosSimulatorView = (): string => layout({
         <span class="ddos-stat__unit">zombies</span>
       </div>
       <div class="tb-card ddos-stat">
-        <span class="ddos-stat__label" id="st-wave-label">Mode</span>
-        <span class="ddos-stat__value" id="st-wave">Sandbox</span>
-        <span class="ddos-stat__unit" id="st-score">free play</span>
+        <span class="ddos-stat__label" id="st-wave-label">Campaign</span>
+        <span class="ddos-stat__value" id="st-wave">Level 1</span>
+        <span class="ddos-stat__unit" id="st-score">💰 0</span>
       </div>
     </div>
 
-    <div class="tb-card">
+    <div class="tb-card tb-hidden" id="sim-defenses-card">
       <div class="ddos-section-head">
         <h2 class="ddos-section-title">🛡️ Mitigations</h2>
         <span class="ddos-hint">Sandbox: combine freely. Defense Game: max 2 active.</span>
@@ -169,16 +279,20 @@ export const ddosSimulatorView = (): string => layout({
 
     <div class="ddos-edu">
       <div class="tb-card ddos-edu-card">
-        <h3>🧟 1 · Build a botnet</h3>
-        <p>Attackers compromise thousands of devices — routers, cameras, old servers — and command them in unison. Each glowing dot on the map is one simulated zombie.</p>
+        <h3>🧟 1 · Farm the botnet</h3>
+        <p>Every zombie starts somewhere: click land on the map to infect devices, let auto-scan find vulnerable hosts, and research Worm Spread so the botnet replicates itself. Your botnet even keeps farming while you're away (up to 4 hours).</p>
       </div>
       <div class="tb-card ddos-edu-card">
         <h3>🌊 2 · Flood the target</h3>
-        <p>Every server has a capacity. When fake requests drown it, real users get timeouts. Watch the health bar buckle as delivered traffic exceeds what the server can handle.</p>
+        <p>Each target has a capacity and its own mitigations — but also a weakness. Pick the attack type it is weak against, overwhelm it for 3 seconds, and collect the payout. Pwn all 7 targets to unlock 🌟 Prestige and start over stronger.</p>
       </div>
       <div class="tb-card ddos-edu-card">
-        <h3>🛡️ 3 · Defenses absorb</h3>
-        <p>Real-world mitigations filter or soak up junk traffic before it reaches the origin. Toggle mitigations and watch the mitigated counter climb and the shield ring appear.</p>
+        <h3>🥷 3 · Manage your trace</h3>
+        <p>Big, loud attacks raise your trace level. Hit 100% and the authorities seize 40% of your botnet. Throttle intensity or invest in Proxy Chains to stay dark.</p>
+      </div>
+      <div class="tb-card ddos-edu-card">
+        <h3>🛡️ 4 · Or play defense</h3>
+        <p>Flip to Defense mode to experience the other side: combine rate limiting, anycast scrubbing, WAF rules, and geo-blocking to survive escalating waves.</p>
       </div>
     </div>
 
@@ -187,6 +301,7 @@ export const ddosSimulatorView = (): string => layout({
 
     <style>
       .ddos-stack > * + * { margin-top: 24px; }
+      #sim-campaign-panel > * + * { margin-top: 24px; }
 
       .ddos-disclaimer { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
       .ddos-disclaimer p { margin: 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; flex: 1; min-width: 240px; }
@@ -194,7 +309,11 @@ export const ddosSimulatorView = (): string => layout({
       .ddos-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; align-items: end; }
       .ddos-control { display: flex; flex-direction: column; gap: 8px; }
       .ddos-control input[type="range"] { width: 100%; accent-color: var(--accent-primary); cursor: pointer; }
+      .ddos-control.is-disabled { opacity: 0.45; }
+      .ddos-control.is-disabled input, .ddos-control.is-disabled select { cursor: not-allowed; }
       .ddos-hint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
+      .ddos-farm-hint { margin: 14px 0 0; font-size: 0.78rem; }
+      .ddos-farm-hint strong { color: var(--text-primary); }
 
       .ddos-mode-switch { display: flex; gap: 8px; }
       .ddos-mode-btn {
@@ -203,12 +322,13 @@ export const ddosSimulatorView = (): string => layout({
         border: 1px solid var(--border-color);
         color: var(--text-secondary);
         border-radius: var(--radius-md);
-        padding: 8px 10px;
+        padding: 8px 6px;
         font-family: var(--font-sans);
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
+        white-space: nowrap;
       }
       .ddos-mode-btn:hover { border-color: var(--border-color-glow); color: var(--text-primary); }
       .ddos-mode-btn.active {
@@ -217,6 +337,59 @@ export const ddosSimulatorView = (): string => layout({
         border-color: transparent;
         box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-primary) 30%, transparent);
       }
+
+      .ddos-target-row { display: flex; flex-direction: column; gap: 10px; }
+      .ddos-tag-row { display: flex; gap: 8px; align-items: center; }
+      .ddos-prestige { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color); }
+      .ddos-prestige .ddos-hint { flex: 1; min-width: 220px; }
+      .ddos-target-name { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); }
+      .ddos-target-stats { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.82rem; color: var(--text-secondary); }
+      .ddos-target-stats b { color: var(--accent-primary); }
+
+      .ddos-botnet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+      .ddos-botnet-stat { display: flex; flex-direction: column; gap: 6px; }
+      .ddos-credits { color: var(--ctp-yellow); }
+      .ddos-reset-btn { padding: 5px 12px; font-size: 0.75rem; }
+      .ddos-save-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .ddos-save-btn { padding: 5px 12px; font-size: 0.75rem; }
+      .ddos-save-btn.is-saved { border-color: var(--ctp-green); color: var(--ctp-green); }
+      .ddos-io { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+      .ddos-io-text { font-size: 0.75rem; padding: 10px 12px; }
+      .ddos-io-text.is-error { border-color: var(--ctp-red); }
+      .ddos-io-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .ddos-lifetime { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color); }
+      .ddos-lifetime-title { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; }
+      .ddos-lifetime-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
+      .ddos-lifetime-stat { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; color: var(--text-muted); }
+      .ddos-lifetime-stat b { font-size: 0.95rem; font-weight: 700; color: var(--text-secondary); }
+
+      .ddos-tracebar { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--ctp-surface1) 60%, transparent); overflow: hidden; min-width: 140px; }
+      .ddos-tracebar__fill { height: 100%; border-radius: 999px; transition: width 0.25s ease, background 0.25s ease; }
+      .ddos-tracebar__fill.is-ok { background: var(--ctp-green); }
+      .ddos-tracebar__fill.is-warn { background: var(--ctp-yellow); }
+      .ddos-tracebar__fill.is-crit { background: var(--ctp-red); animation: ddosPulse 0.7s infinite; }
+
+      .ddos-shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 14px; }
+      .ddos-shop-item {
+        text-align: left;
+        background: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-family: var(--font-sans);
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+      }
+      .ddos-shop-item:hover:not(:disabled) { border-color: var(--ctp-yellow); color: var(--text-primary); transform: translateY(-2px); }
+      .ddos-shop-item:disabled { opacity: 0.55; cursor: not-allowed; }
+      .ddos-shop-top { display: flex; align-items: center; gap: 7px; color: var(--text-primary); font-size: 0.9rem; flex-wrap: wrap; }
+      .ddos-shop-lv { margin-left: auto; font-size: 0.7rem; font-weight: 700; color: var(--ctp-mauve); }
+      .ddos-shop-desc { font-size: 0.76rem; line-height: 1.5; }
+      .ddos-shop-cost { font-size: 0.8rem; font-weight: 700; color: var(--ctp-yellow); }
 
       .ddos-canvas-wrap { position: relative; }
       #sim-canvas {
@@ -227,6 +400,7 @@ export const ddosSimulatorView = (): string => layout({
         border: 1px solid var(--border-color);
         background: color-mix(in srgb, var(--ctp-crust) 60%, transparent);
       }
+      #sim-canvas.is-farmable { cursor: crosshair; }
       .ddos-banner {
         position: absolute;
         top: 14px;
@@ -290,10 +464,8 @@ export const ddosSimulatorView = (): string => layout({
       .ddos-healthbar__fill.is-crit { background: var(--ctp-peach); }
       .ddos-healthbar__fill.is-down { background: var(--ctp-red); animation: ddosPulse 0.7s infinite; }
 
-      .ddos-section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-      .ddos-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-secondary); margin: 0 0 14px; }
-      .ddos-section-head .ddos-section-title { margin-bottom: 0; }
-      .ddos-section-head { margin-bottom: 14px; }
+      .ddos-section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+      .ddos-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-secondary); margin: 0; }
 
       .ddos-def-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
       .ddos-def-chip {
@@ -424,6 +596,30 @@ export const ddosSimulatorView = (): string => layout({
         var CAPACITY = 1200;
         var DEF_CAP = 2;
 
+        /* ---------- Campaign model ---------- */
+        var CAMPAIGN_TARGETS = [
+          { name: 'Personal Blog', loc: 'na', cap: 800, block: 0, weak: 'udp', payout: 150 },
+          { name: 'Small E-Shop', loc: 'sa', cap: 2200, block: 0.25, weak: 'syn', payout: 300 },
+          { name: 'News Portal', loc: 'eu', cap: 5000, block: 0.4, weak: 'http', payout: 600 },
+          { name: 'Online Bank', loc: 'af', cap: 12000, block: 0.55, weak: 'slowloris', payout: 1200 },
+          { name: 'Tech Giant', loc: 'as', cap: 30000, block: 0.7, weak: 'dnsamp', payout: 2500 },
+          { name: 'Government Grid', loc: 'oc', cap: 70000, block: 0.82, weak: 'udp', payout: 6000 },
+          { name: 'Edge Network Titan', loc: 'na', cap: 160000, block: 0.9, weak: 'http', payout: 15000 }
+        ];
+        var UPGRADES = {
+          kit: { name: 'Exploit Kit', base: 100, mult: 1.8 },
+          worm: { name: 'Worm Spread', base: 250, mult: 2.2 },
+          clock: { name: 'Bot Overclock', base: 200, mult: 2.0 },
+          proxy: { name: 'Proxy Chains', base: 150, mult: 2.0 },
+          c2: { name: 'C2 Servers', base: 300, mult: 2.2 }
+        };
+        var UPGRADE_MAX = 10;
+        var TRACE_K = 0.0015;
+        var TAKEDOWN_SECONDS = 3;
+        var OFFLINE_CAP_SECONDS = 4 * 3600;
+        var OFFLINE_MIN_SECONDS = 60;
+        var TRACE_OFFLINE_DECAY = 0.5;
+
         /* ---------- Theme colors ---------- */
         var COL = {};
         function cssVar(v) {
@@ -442,14 +638,136 @@ export const ddosSimulatorView = (): string => layout({
 
         /* ---------- State ---------- */
         var state = {
-          mode: 'sandbox', running: false, phase: 'idle',
+          mode: 'campaign', running: false, phase: 'idle',
           attack: 'udp', target: 'na', bots: 120, intensity: 5,
           defenses: { ratelimit: false, anycast: false, waf: false, geoblock: false },
           health: 100, rps: 0, blockedRps: 0, mbps: 0,
           totalBlocked: 0, wave: 0, score: 0, best: 0, survived: 0,
-          nextType: 'udp', waveTimer: 0
+          nextType: 'udp', waveTimer: 0,
+          campaign: {
+            bots: 0, credits: 0, trace: 0, level: 1, offline: 0,
+            prestige: 0, finalPwned: false,
+            up: { kit: 0, worm: 0, clock: 0, proxy: 0, c2: 0 },
+            stats: { farmed: 0, earned: 0, busts: 0, pwned: 0, time: 0 }
+          }
         };
         try { state.best = Number(localStorage.getItem('toolbox-ddos-best') || 0) || 0; } catch (e) {}
+
+        function botCap() { return 500 + 500 * state.campaign.up.c2; }
+        function upCost(k) { return Math.floor(UPGRADES[k].base * Math.pow(UPGRADES[k].mult, state.campaign.up[k])); }
+        function creditMult() { return 1 + 0.25 * state.campaign.prestige; }
+        function startingBots() { return 50 * state.campaign.prestige; }
+
+        function campaignSnapshot() {
+          return {
+            b: Math.floor(state.campaign.bots),
+            c: Math.floor(state.campaign.credits),
+            l: state.campaign.level,
+            tr: state.campaign.trace,
+            t: Date.now(),
+            pr: state.campaign.prestige,
+            fp: state.campaign.finalPwned ? 1 : 0,
+            up: state.campaign.up,
+            st: {
+              f: Math.floor(state.campaign.stats.farmed),
+              e: Math.floor(state.campaign.stats.earned),
+              b: state.campaign.stats.busts,
+              p: state.campaign.stats.pwned,
+              t: Math.floor(state.campaign.stats.time)
+            }
+          };
+        }
+        function saveCampaign() {
+          try {
+            localStorage.setItem('toolbox-ddos-campaign', JSON.stringify(campaignSnapshot()));
+          } catch (e) {}
+        }
+        function offlineBotsAfter(bots, elapsed, kitLv, wormLv) {
+          var flat = 0.5 + 0.5 * kitLv;
+          var w = 0.005 * wormLv;
+          if (w <= 0) return bots + flat * elapsed;
+          return (bots + flat / w) * Math.exp(w * elapsed) - flat / w;
+        }
+        function applySave(d) {
+          var offline = null;
+          state.campaign.credits = Number(d.c) || 0;
+          state.campaign.level = Math.min(Math.max(Number(d.l) || 1, 1), CAMPAIGN_TARGETS.length);
+          Object.keys(UPGRADES).forEach(function (k) {
+            state.campaign.up[k] = Math.min(Math.max(Number(d.up && d.up[k]) || 0, 0), UPGRADE_MAX);
+          });
+          var st = d.st || {};
+          state.campaign.stats.farmed = Math.max(0, Number(st.f) || 0);
+          state.campaign.stats.earned = Math.max(0, Number(st.e) || 0);
+          state.campaign.stats.busts = Math.max(0, Math.floor(Number(st.b) || 0));
+          state.campaign.stats.pwned = Math.max(0, Math.floor(Number(st.p) || 0));
+          state.campaign.stats.time = Math.max(0, Number(st.t) || 0);
+          state.campaign.bots = Math.min(Math.max(Number(d.b) || 0, 0), botCap());
+          state.campaign.trace = Math.min(Math.max(Number(d.tr) || 0, 0), 100);
+          state.campaign.prestige = Math.max(0, Math.floor(Number(d.pr) || 0));
+          state.campaign.finalPwned = d.fp === 1 || d.fp === true;
+          var t = CAMPAIGN_TARGETS[state.campaign.level - 1];
+          state.target = t.loc;
+          var elapsed = (Date.now() - (Number(d.t) || 0)) / 1000;
+          if (d.t && elapsed >= OFFLINE_MIN_SECONDS) {
+            elapsed = Math.min(elapsed, OFFLINE_CAP_SECONDS);
+            var before = state.campaign.bots;
+            state.campaign.bots = Math.min(botCap(), offlineBotsAfter(before, elapsed, state.campaign.up.kit, state.campaign.up.worm));
+            var traceBefore = state.campaign.trace;
+            state.campaign.trace = Math.max(0, state.campaign.trace - TRACE_OFFLINE_DECAY * elapsed);
+            offline = {
+              seconds: elapsed,
+              bots: Math.max(0, Math.floor(state.campaign.bots - before)),
+              traceDropped: Math.max(0, traceBefore - state.campaign.trace)
+            };
+            state.campaign.stats.farmed += offline.bots;
+          }
+          return offline;
+        }
+        function loadCampaign() {
+          try {
+            var raw = localStorage.getItem('toolbox-ddos-campaign');
+            if (!raw) return null;
+            var d = JSON.parse(raw);
+            if (!d || typeof d !== 'object') return null;
+            return applySave(d);
+          } catch (e) { return null; }
+        }
+        function copyText(text, cb) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () { cb(true); }, function () { cb(false); });
+            return;
+          }
+          try {
+            var ta = document.getElementById('sim-io-text');
+            ta.value = text;
+            ta.select();
+            cb(document.execCommand('copy'));
+          } catch (e) { cb(false); }
+        }
+        function importSave(text) {
+          var d;
+          try { d = JSON.parse(text); } catch (e) { return 'not valid JSON.'; }
+          if (!d || typeof d !== 'object' || Array.isArray(d)) return 'save data must be a JSON object.';
+          if (typeof d.b === 'undefined' && typeof d.c === 'undefined' && typeof d.l === 'undefined' && typeof d.up === 'undefined') {
+            return 'no campaign data found in that string.';
+          }
+          state.running = false;
+          state.health = 100;
+          arcs = []; conns = []; flashes = [];
+          var offline = applySave(d);
+          saveCampaign();
+          document.getElementById('sim-target').value = state.target;
+          syncFarmVisuals();
+          renderCampaign();
+          renderShop();
+          renderStats();
+          updateLaunchLabel();
+          var msg = 'Save imported — ' + fmt(Math.floor(state.campaign.bots)) + ' bots, 💰' + fmt(Math.floor(state.campaign.credits)) + ', Level ' + state.campaign.level + '.';
+          if (offline && offline.bots > 0) msg += ' (+' + fmt(offline.bots) + ' bots farmed while away)';
+          log(msg);
+          banner('📥 Save imported!');
+          return null;
+        }
 
         /* ---------- Canvas ---------- */
         var canvas = document.getElementById('sim-canvas');
@@ -490,7 +808,7 @@ export const ddosSimulatorView = (): string => layout({
         }
 
         /* ---------- Bots, arcs, particles ---------- */
-        var bots = [], arcs = [], flashes = [], conns = [];
+        var bots = [], farmVisuals = [], arcs = [], flashes = [], conns = [], floaters = [];
 
         function rebuildBots() {
           bots = [];
@@ -501,7 +819,16 @@ export const ddosSimulatorView = (): string => layout({
           }
         }
 
-        function blockFrac() {
+        function syncFarmVisuals() {
+          var target = Math.min(Math.floor(state.campaign.bots), 160);
+          while (farmVisuals.length < target) {
+            var p = LAND[Math.floor(Math.random() * LAND.length)];
+            farmVisuals.push({ c: p.c, r: p.r, phase: Math.random() * 6.2832 });
+          }
+          if (farmVisuals.length > target) farmVisuals.length = target;
+        }
+
+        function playerBlockFrac() {
           var f = 0;
           Object.keys(state.defenses).forEach(function (k) {
             if (state.defenses[k]) f = 1 - (1 - f) * (1 - DEFENSES[k].block[state.attack]);
@@ -509,11 +836,24 @@ export const ddosSimulatorView = (): string => layout({
           return f;
         }
 
+        function effectiveBlock() {
+          if (state.mode === 'campaign') {
+            var t = CAMPAIGN_TARGETS[state.campaign.level - 1];
+            return t.block * (state.attack === t.weak ? 0.5 : 1);
+          }
+          return playerBlockFrac();
+        }
+
+        function activeBots() {
+          return state.mode === 'campaign' ? Math.floor(state.campaign.bots) : state.bots;
+        }
+
         function spawnArc(ambient) {
           var atk = ATTACKS[state.attack];
+          var srcPool = state.mode === 'campaign' ? farmVisuals : bots;
           var srcCell = ambient
             ? LAND[Math.floor(Math.random() * LAND.length)]
-            : bots[Math.floor(Math.random() * bots.length)];
+            : srcPool[Math.floor(Math.random() * srcPool.length)];
           if (!srcCell) return;
           var dstCell = ambient
             ? LAND[Math.floor(Math.random() * LAND.length)]
@@ -535,7 +875,7 @@ export const ddosSimulatorView = (): string => layout({
             size: ambient ? 1.1 : (atk.amp ? 2.6 : 1.7),
             ambient: ambient,
             slow: !!atk.slow,
-            blocked: !ambient && Math.random() < blockFrac(),
+            blocked: !ambient && Math.random() < effectiveBlock(),
             via: null
           };
           if (!ambient && atk.amp) {
@@ -573,14 +913,14 @@ export const ddosSimulatorView = (): string => layout({
         }
 
         /* ---------- Simulation ---------- */
-        var ambAcc = 0, atkAcc = 0, simAcc = 0;
+        var ambAcc = 0, atkAcc = 0, simAcc = 0, saveAcc = 0;
         var REDUCED = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
 
         function update(dt) {
           ambAcc += dt * (REDUCED ? 0.6 : 2);
           while (ambAcc >= 1) { ambAcc -= 1; spawnArc(true); }
-          if (state.running) {
-            atkAcc += dt * Math.min(16, 2.5 + state.intensity * 1.1 + state.bots / 90);
+          if (state.running && activeBots() > 0) {
+            atkAcc += dt * Math.min(16, 2.5 + state.intensity * 1.1 + activeBots() / 90);
             while (atkAcc >= 1) { atkAcc -= 1; spawnArc(false); }
           }
           if (state.mode === 'defense' && state.phase !== 'idle') {
@@ -618,15 +958,24 @@ export const ddosSimulatorView = (): string => layout({
             conns[i].t += dt;
             if (conns[i].t >= conns[i].ttl) conns.splice(i, 1);
           }
+          for (i = floaters.length - 1; i >= 0; i--) {
+            floaters[i].t += dt;
+            if (floaters[i].t >= floaters[i].ttl) floaters.splice(i, 1);
+          }
           simAcc += dt;
           if (simAcc >= 0.2) { simTick(simAcc); simAcc = 0; }
         }
 
         function simTick(dt) {
+          if (state.mode === 'campaign') {
+            campaignTick(dt);
+            renderStats();
+            return;
+          }
           if (state.running) {
             var atk = ATTACKS[state.attack];
             var pps = state.bots * atk.pps * state.intensity;
-            var frac = blockFrac();
+            var frac = playerBlockFrac();
             var delivered = pps * (1 - frac);
             state.rps = pps;
             state.blockedRps = pps * frac;
@@ -652,122 +1001,159 @@ export const ddosSimulatorView = (): string => layout({
           renderStats();
         }
 
-        /* ---------- Rendering ---------- */
-        function draw(time) {
-          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-          ctx.clearRect(0, 0, W, H);
-          ctx.drawImage(mapLayer, 0, 0, W, H);
-          var atk = ATTACKS[state.attack];
-          var tp = px(TARGETS[state.target]);
-          var i, j;
+        /* ---------- Campaign ---------- */
+        function campaignTick(dt) {
+          var c = state.campaign;
+          var t = CAMPAIGN_TARGETS[c.level - 1];
+          var cap = botCap();
+          var before = Math.floor(c.bots);
+          c.bots = Math.min(cap, c.bots + (0.5 + 0.5 * c.up.kit) * dt + c.bots * 0.005 * c.up.worm * dt);
+          if (Math.floor(c.bots) !== before) syncFarmVisuals();
+          c.stats.farmed += Math.max(0, c.bots - before);
+          c.stats.time += dt;
 
-          if (state.running) {
-            ctx.fillStyle = COL[atk.color];
-            for (i = 0; i < bots.length; i++) {
-              var q = px(bots[i]);
-              ctx.globalAlpha = 0.3 + 0.4 * (0.5 + 0.5 * Math.sin(time * 3 + bots[i].phase));
-              ctx.beginPath();
-              ctx.arc(q.x, q.y, Math.max(1.2, cellW * 0.3), 0, 6.2832);
-              ctx.fill();
+          if (state.running && Math.floor(c.bots) > 0) {
+            var atk = ATTACKS[state.attack];
+            var block = effectiveBlock();
+            var n = Math.floor(c.bots);
+            var pps = n * atk.pps * state.intensity * (1 + 0.25 * c.up.clock);
+            var delivered = pps * (1 - block);
+            state.rps = pps;
+            state.blockedRps = pps * block;
+            state.mbps = delivered * atk.bytes * 8 / 1000000;
+            state.totalBlocked += state.blockedRps * dt;
+            var load = delivered * atk.weight;
+            if (load > t.cap) {
+              state.health = Math.max(0, state.health - (load - t.cap) / t.cap * 22 * dt);
+            } else {
+              state.health = Math.min(100, state.health + 10 * dt);
             }
-            ctx.globalAlpha = 1;
-          }
-
-          for (i = 0; i < arcs.length; i++) {
-            var a = arcs[i];
-            var upto = Math.min(a.t, a.blocked ? 0.85 : 1);
-            ctx.beginPath();
-            for (j = 0; j <= 20; j++) {
-              var pt = arcPoint(a, upto * j / 20);
-              if (j === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+            c.trace = Math.min(100, c.trace + n * state.intensity * TRACE_K * Math.pow(0.8, c.up.proxy) * dt);
+            if (state.health <= 0) {
+              c.offline += dt;
+              var trickle = c.level * 2 * dt * creditMult();
+              c.credits += trickle;
+              c.stats.earned += trickle;
+              if (c.offline >= TAKEDOWN_SECONDS) levelComplete();
+            } else {
+              c.offline = 0;
             }
-            ctx.strokeStyle = a.color;
-            ctx.globalAlpha = a.alpha * 0.3;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            var head = arcPoint(a, upto);
-            ctx.globalAlpha = Math.min(1, a.alpha + 0.15);
-            ctx.shadowColor = a.color;
-            ctx.shadowBlur = 8;
-            ctx.fillStyle = a.color;
-            ctx.beginPath();
-            ctx.arc(head.x, head.y, a.size, 0, 6.2832);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
+            if (c.trace >= 100) busted();
+          } else {
+            state.rps = 0;
+            state.blockedRps = 0;
+            state.mbps = 0;
+            state.health = Math.min(100, state.health + 14 * dt);
+            c.trace = Math.max(0, c.trace - 10 * dt);
+            c.offline = 0;
           }
 
-          var anyDef = state.defenses.ratelimit || state.defenses.anycast || state.defenses.waf || state.defenses.geoblock;
-          if (anyDef && state.running) {
-            ctx.beginPath();
-            ctx.strokeStyle = COL.teal;
-            ctx.globalAlpha = 0.45 + 0.2 * Math.sin(time * 2.5);
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 4]);
-            ctx.arc(tp.x, tp.y, 16, 0, 6.2832);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.globalAlpha = 1;
+          saveAcc += dt;
+          if (saveAcc >= 5) { saveAcc = 0; saveCampaign(); }
+          renderCampaign();
+        }
+
+        function levelComplete() {
+          var c = state.campaign;
+          var t = CAMPAIGN_TARGETS[c.level - 1];
+          var gain = t.payout * creditMult();
+          c.credits += gain;
+          c.stats.earned += gain;
+          c.stats.pwned += 1;
+          c.offline = 0;
+          state.health = 100;
+          banner('🏆 ' + t.name + ' PWNED — +💰' + fmt(gain));
+          log('Target offline for ' + TAKEDOWN_SECONDS + 's. Payout received: ' + fmt(gain) + ' credits.');
+          if (c.level < CAMPAIGN_TARGETS.length) {
+            c.level += 1;
+            var nt = CAMPAIGN_TARGETS[c.level - 1];
+            state.target = nt.loc;
+            document.getElementById('sim-target').value = nt.loc;
+            log('New target acquired: ' + nt.name + ' (Level ' + c.level + ').');
+          } else if (!c.finalPwned) {
+            c.finalPwned = true;
+            banner('🌟 PRESTIGE UNLOCKED');
+            log('Every target pwned! 🌟 Prestige is now available — reset to Level 1 with permanent bonuses.');
+          } else {
+            log('Final target pwned again — the internet is yours.');
           }
+          saveCampaign();
+          renderCampaign();
+          renderShop();
+        }
 
-          for (i = 0; i < conns.length; i++) {
-            var cn = conns[i];
-            var ang = time * 0.6 + cn.seed;
-            var x = tp.x + Math.cos(ang) * 16, y = tp.y + Math.sin(ang) * 16;
-            var fade = Math.max(0, 1 - cn.t / cn.ttl);
-            ctx.beginPath();
-            ctx.moveTo(tp.x, tp.y);
-            ctx.lineTo(x, y);
-            ctx.strokeStyle = COL.sky;
-            ctx.globalAlpha = 0.3 * fade;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.fillStyle = COL.sky;
-            ctx.globalAlpha = 0.8 * fade;
-            ctx.arc(x, y, 1.6, 0, 6.2832);
-            ctx.fill();
-            ctx.globalAlpha = 1;
+        function doPrestige() {
+          var c = state.campaign;
+          if (!c.finalPwned) return;
+          if (!window.confirm('Prestige and restart the campaign at Level 1? Bots, credits, trace, and upgrades reset — you keep lifetime stats and gain permanent bonuses.')) return;
+          c.prestige += 1;
+          c.bots = startingBots();
+          c.credits = 0;
+          c.trace = 0;
+          c.level = 1;
+          c.offline = 0;
+          c.up = { kit: 0, worm: 0, clock: 0, proxy: 0, c2: 0 };
+          c.finalPwned = false;
+          state.health = 100;
+          state.running = false;
+          state.target = CAMPAIGN_TARGETS[0].loc;
+          document.getElementById('sim-target').value = state.target;
+          arcs = []; conns = []; flashes = [];
+          syncFarmVisuals();
+          renderCampaign();
+          renderShop();
+          renderStats();
+          updateLaunchLabel();
+          saveCampaign();
+          banner('🌟 PRESTIGE ' + c.prestige + ' — richer, faster, louder');
+          log('Prestige ' + c.prestige + '! Permanent bonuses: +' + c.prestige * 25 + '% credits, ' + fmt(startingBots()) + ' starting bots. Level 1 awaits.');
+        }
+
+        function busted() {
+          var c = state.campaign;
+          var lost = Math.floor(c.bots * 0.4);
+          c.bots = Math.max(0, c.bots - lost);
+          c.trace = 35;
+          c.stats.busts += 1;
+          state.running = false;
+          syncFarmVisuals();
+          banner('🚨 BUSTED — ' + fmt(lost) + ' bots seized!');
+          log('Authorities traced the C2 network. ' + fmt(lost) + ' bots lost. Lay low while trace decays.');
+          updateLaunchLabel();
+          saveCampaign();
+        }
+
+        function buyUpgrade(k) {
+          var c = state.campaign;
+          if (c.up[k] >= UPGRADE_MAX) return;
+          var cost = upCost(k);
+          if (c.credits < cost) {
+            log('Not enough credits for ' + UPGRADES[k].name + ' (need ' + fmt(cost) + ').');
+            return;
           }
+          c.credits -= cost;
+          c.up[k] += 1;
+          log('Purchased ' + UPGRADES[k].name + ' Lv.' + c.up[k] + ' for ' + fmt(cost) + ' credits.');
+          if (k === 'c2') syncFarmVisuals();
+          renderShop();
+          renderCampaign();
+          saveCampaign();
+        }
 
-          for (i = 0; i < flashes.length; i++) {
-            var f = flashes[i], k = f.t / f.ttl;
-            ctx.beginPath();
-            ctx.strokeStyle = f.color;
-            ctx.globalAlpha = Math.max(0, 0.9 * (1 - k));
-            ctx.lineWidth = 2;
-            ctx.arc(f.x, f.y, f.size * (0.4 + k * 1.6), 0, 6.2832);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
+        function infectAt(cell, x, y) {
+          var c = state.campaign;
+          var cap = botCap();
+          if (Math.floor(c.bots) >= cap) {
+            floaters.push({ x: x, y: y, t: 0, ttl: 0.9, text: 'CAP', color: COL.peach });
+            return;
           }
-
-          var pulseCol = state.health <= 0 ? COL.red : (state.health < 40 ? COL.peach : COL.accent);
-          ctx.beginPath();
-          ctx.strokeStyle = pulseCol;
-          ctx.globalAlpha = 0.4 + 0.25 * Math.sin(time * (state.running ? 6 : 2));
-          ctx.lineWidth = 2;
-          ctx.arc(tp.x, tp.y, 10, 0, 6.2832);
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-          ctx.shadowColor = pulseCol;
-          ctx.shadowBlur = 12;
-          ctx.fillStyle = pulseCol;
-          ctx.fillRect(tp.x - 3.5, tp.y - 3.5, 7, 7);
-          ctx.shadowBlur = 0;
-
-          ctx.font = '600 10px "JetBrains Mono", monospace';
-          ctx.textAlign = 'center';
-          ctx.fillStyle = COL.text;
-          ctx.globalAlpha = 0.9;
-          ctx.fillText(TARGETS[state.target].name, tp.x, tp.y + 24);
-          ctx.globalAlpha = 1;
-
-          if (state.health <= 0) {
-            ctx.fillStyle = COL.red;
-            ctx.globalAlpha = 0.07 + 0.03 * Math.sin(time * 4);
-            ctx.fillRect(0, 0, W, H);
-            ctx.globalAlpha = 1;
-          }
+          var n = 1 + c.up.kit;
+          var beforeBots = c.bots;
+          c.bots = Math.min(cap, c.bots + n);
+          c.stats.farmed += c.bots - beforeBots;
+          syncFarmVisuals();
+          flashes.push({ x: x, y: y, t: 0, ttl: 0.5, color: COL.green, size: 8 });
+          floaters.push({ x: x, y: y, t: 0, ttl: 0.9, text: '+' + n, color: COL.green });
         }
 
         /* ---------- Defense Game ---------- */
@@ -851,11 +1237,150 @@ export const ddosSimulatorView = (): string => layout({
           updateLaunchLabel();
         }
 
+        /* ---------- Rendering ---------- */
+        function draw(time) {
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          ctx.clearRect(0, 0, W, H);
+          ctx.drawImage(mapLayer, 0, 0, W, H);
+          var atk = ATTACKS[state.attack];
+          var tp = px(TARGETS[state.target]);
+          var i, j;
+
+          var visualBots = state.mode === 'campaign' ? farmVisuals : bots;
+          if (visualBots.length > 0 && (state.running || state.mode === 'campaign')) {
+            ctx.fillStyle = state.running ? COL[atk.color] : COL.green;
+            for (i = 0; i < visualBots.length; i++) {
+              var q = px(visualBots[i]);
+              ctx.globalAlpha = 0.3 + 0.4 * (0.5 + 0.5 * Math.sin(time * 3 + visualBots[i].phase));
+              ctx.beginPath();
+              ctx.arc(q.x, q.y, Math.max(1.2, cellW * 0.3), 0, 6.2832);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+          }
+
+          for (i = 0; i < arcs.length; i++) {
+            var a = arcs[i];
+            var upto = Math.min(a.t, a.blocked ? 0.85 : 1);
+            ctx.beginPath();
+            for (j = 0; j <= 20; j++) {
+              var pt = arcPoint(a, upto * j / 20);
+              if (j === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+            }
+            ctx.strokeStyle = a.color;
+            ctx.globalAlpha = a.alpha * 0.3;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            var head = arcPoint(a, upto);
+            ctx.globalAlpha = Math.min(1, a.alpha + 0.15);
+            ctx.shadowColor = a.color;
+            ctx.shadowBlur = 8;
+            ctx.fillStyle = a.color;
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, a.size, 0, 6.2832);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1;
+          }
+
+          var anyDef = state.defenses.ratelimit || state.defenses.anycast || state.defenses.waf || state.defenses.geoblock;
+          if (anyDef && state.running && state.mode !== 'campaign') {
+            ctx.beginPath();
+            ctx.strokeStyle = COL.teal;
+            ctx.globalAlpha = 0.45 + 0.2 * Math.sin(time * 2.5);
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.arc(tp.x, tp.y, 16, 0, 6.2832);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1;
+          }
+
+          for (i = 0; i < conns.length; i++) {
+            var cn = conns[i];
+            var ang = time * 0.6 + cn.seed;
+            var x = tp.x + Math.cos(ang) * 16, y = tp.y + Math.sin(ang) * 16;
+            var fade = Math.max(0, 1 - cn.t / cn.ttl);
+            ctx.beginPath();
+            ctx.moveTo(tp.x, tp.y);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = COL.sky;
+            ctx.globalAlpha = 0.3 * fade;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.fillStyle = COL.sky;
+            ctx.globalAlpha = 0.8 * fade;
+            ctx.arc(x, y, 1.6, 0, 6.2832);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+
+          for (i = 0; i < flashes.length; i++) {
+            var f = flashes[i], k = f.t / f.ttl;
+            ctx.beginPath();
+            ctx.strokeStyle = f.color;
+            ctx.globalAlpha = Math.max(0, 0.9 * (1 - k));
+            ctx.lineWidth = 2;
+            ctx.arc(f.x, f.y, f.size * (0.4 + k * 1.6), 0, 6.2832);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+
+          for (i = 0; i < floaters.length; i++) {
+            var fl = floaters[i], fk = fl.t / fl.ttl;
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = fl.color;
+            ctx.globalAlpha = Math.max(0, 1 - fk);
+            ctx.fillText(fl.text, fl.x, fl.y - 8 - fk * 18);
+            ctx.globalAlpha = 1;
+          }
+
+          var pulseCol = state.health <= 0 ? COL.red : (state.health < 40 ? COL.peach : COL.accent);
+          ctx.beginPath();
+          ctx.strokeStyle = pulseCol;
+          ctx.globalAlpha = 0.4 + 0.25 * Math.sin(time * (state.running ? 6 : 2));
+          ctx.lineWidth = 2;
+          ctx.arc(tp.x, tp.y, 10, 0, 6.2832);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+          ctx.shadowColor = pulseCol;
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = pulseCol;
+          ctx.fillRect(tp.x - 3.5, tp.y - 3.5, 7, 7);
+          ctx.shadowBlur = 0;
+
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = COL.text;
+          ctx.globalAlpha = 0.9;
+          var targetLabel = state.mode === 'campaign'
+            ? CAMPAIGN_TARGETS[state.campaign.level - 1].name
+            : TARGETS[state.target].name;
+          ctx.fillText(targetLabel, tp.x, tp.y + 24);
+          ctx.globalAlpha = 1;
+
+          if (state.health <= 0) {
+            ctx.fillStyle = COL.red;
+            ctx.globalAlpha = 0.07 + 0.03 * Math.sin(time * 4);
+            ctx.fillRect(0, 0, W, H);
+            ctx.globalAlpha = 1;
+          }
+        }
+
         /* ---------- UI ---------- */
         function fmt(n) {
           if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
           if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
           return String(Math.floor(n));
+        }
+
+        function durStr(s) {
+          var h = Math.floor(s / 3600);
+          var m = Math.round((s % 3600) / 60);
+          if (h > 0) return h + 'h ' + m + 'm';
+          return Math.max(1, m) + 'm';
         }
 
         function renderStats() {
@@ -869,8 +1394,14 @@ export const ddosSimulatorView = (): string => layout({
           document.getElementById('st-mbps').textContent = state.mbps >= 1000
             ? (state.mbps / 1000).toFixed(2) + ' Gbps'
             : Math.round(state.mbps) + ' Mbps';
-          document.getElementById('st-bots').textContent = state.running ? fmt(state.bots) : '0';
-          if (state.mode === 'defense') {
+          document.getElementById('st-bots').textContent = state.mode === 'campaign'
+            ? fmt(Math.floor(state.campaign.bots))
+            : (state.running ? fmt(state.bots) : '0');
+          if (state.mode === 'campaign') {
+            document.getElementById('st-wave-label').textContent = 'Campaign';
+            document.getElementById('st-wave').textContent = 'Level ' + state.campaign.level;
+            document.getElementById('st-score').textContent = '💰 ' + fmt(Math.floor(state.campaign.credits));
+          } else if (state.mode === 'defense') {
             document.getElementById('st-wave-label').textContent = 'Defense Game';
             document.getElementById('st-wave').textContent = state.wave > 0 ? 'Wave ' + state.wave : 'Get ready';
             document.getElementById('st-score').textContent = 'score ' + fmt(state.score) + ' · best ' + fmt(state.best);
@@ -881,12 +1412,73 @@ export const ddosSimulatorView = (): string => layout({
           }
         }
 
+        function renderCampaign() {
+          var c = state.campaign;
+          var t = CAMPAIGN_TARGETS[c.level - 1];
+          document.getElementById('ct-level').textContent = 'Level ' + c.level;
+          document.getElementById('ct-name').textContent = t.name;
+          document.getElementById('ct-cap').textContent = fmt(t.cap);
+          document.getElementById('ct-block').textContent = Math.round(t.block * 100) + '%';
+          document.getElementById('ct-weak').textContent = ATTACKS[t.weak].name;
+          document.getElementById('ct-payout').textContent = '💰 ' + fmt(t.payout);
+          document.getElementById('cb-bots').textContent = fmt(Math.floor(c.bots));
+          document.getElementById('cb-cap').textContent = fmt(botCap());
+          document.getElementById('cb-credits').textContent = fmt(Math.floor(c.credits));
+          document.getElementById('cb-rate').textContent = (0.5 + 0.5 * c.up.kit).toFixed(1);
+          var tr = Math.round(c.trace);
+          var tf = document.getElementById('cb-trace-fill');
+          tf.style.width = tr + '%';
+          tf.className = 'ddos-tracebar__fill ' + (tr < 40 ? 'is-ok' : tr < 75 ? 'is-warn' : 'is-crit');
+          document.getElementById('cb-trace-label').textContent = tr + '% — ' + (tr < 40 ? 'invisible' : tr < 75 ? 'noticed' : 'hunted');
+          var pTag = document.getElementById('ct-prestige');
+          pTag.classList.toggle('tb-hidden', c.prestige < 1);
+          if (c.prestige > 0) pTag.textContent = '🌟 P' + c.prestige;
+          document.getElementById('ct-prestige-row').classList.toggle('tb-hidden', !c.finalPwned);
+          if (c.finalPwned) {
+            document.getElementById('sim-prestige-hint').textContent = c.prestige === 0
+              ? 'Reset to Level 1 and restart with permanent bonuses: +25% credits and +50 starting bots per prestige. Lifetime stats are kept.'
+              : 'Reset to Level 1 again. Current bonuses: +' + c.prestige * 25 + '% credits and ' + fmt(50 * c.prestige) + ' starting bots — next prestige raises both.';
+          }
+          document.getElementById('cb-credits-unit').textContent = c.prestige > 0
+            ? '🌟 +' + c.prestige * 25 + '% from prestige'
+            : '💰 spend below';
+          renderLifetime();
+          renderShopAfford();
+        }
+
+        function renderLifetime() {
+          var s = state.campaign.stats;
+          document.getElementById('lt-farmed').textContent = fmt(s.farmed);
+          document.getElementById('lt-earned').textContent = fmt(s.earned);
+          document.getElementById('lt-busts').textContent = fmt(s.busts);
+          document.getElementById('lt-pwned').textContent = fmt(s.pwned);
+          document.getElementById('lt-time').textContent = durStr(s.time);
+        }
+
+        function renderShop() {
+          Object.keys(UPGRADES).forEach(function (k) {
+            var lv = state.campaign.up[k];
+            document.getElementById('shop-lv-' + k).textContent = 'Lv.' + lv;
+            var costEl = document.getElementById('shop-cost-' + k);
+            if (lv >= UPGRADE_MAX) costEl.textContent = 'MAX';
+            else costEl.textContent = '💰 ' + fmt(upCost(k));
+          });
+          renderShopAfford();
+        }
+
+        function renderShopAfford() {
+          Object.keys(UPGRADES).forEach(function (k) {
+            var btn = document.getElementById('shop-' + k);
+            btn.disabled = state.campaign.up[k] >= UPGRADE_MAX || state.campaign.credits < upCost(k);
+          });
+        }
+
         function updateLaunchLabel() {
           var btn = document.getElementById('sim-launch');
-          if (state.mode === 'sandbox') {
-            btn.innerHTML = state.running ? '⏹ Stop Attack' : '🚀 Launch Attack';
-          } else {
+          if (state.mode === 'defense') {
             btn.innerHTML = state.phase !== 'idle' ? '⏹ Abort Game' : '🎮 Start Defense Game';
+          } else {
+            btn.innerHTML = state.running ? '⏹ Stop Attack' : '🚀 Launch Attack';
           }
         }
 
@@ -941,12 +1533,42 @@ export const ddosSimulatorView = (): string => layout({
           if (state.mode === mode) return;
           stopAll();
           state.mode = mode;
-          document.getElementById('sim-mode-sandbox').classList.toggle('active', mode === 'sandbox');
-          document.getElementById('sim-mode-defense').classList.toggle('active', mode === 'defense');
-          document.getElementById('sim-mode-hint').textContent = mode === 'sandbox'
-            ? 'Free play — pick an attack and watch the map burn.'
-            : 'Survive escalating waves. Max ' + DEF_CAP + ' mitigations active at once!';
-          log(mode === 'sandbox' ? 'Sandbox mode.' : 'Defense Game mode — press Start when ready.');
+          ['campaign', 'sandbox', 'defense'].forEach(function (m) {
+            document.getElementById('sim-mode-' + m).classList.toggle('active', m === mode);
+          });
+          var hints = {
+            campaign: 'Farm bots, pwn targets, spend credits. Trace is the enemy.',
+            sandbox: 'Free play — pick an attack and watch the map burn.',
+            defense: 'Survive escalating waves. Max ' + DEF_CAP + ' mitigations active at once!'
+          };
+          document.getElementById('sim-mode-hint').textContent = hints[mode];
+          document.getElementById('sim-campaign-panel').classList.toggle('tb-hidden', mode !== 'campaign');
+          document.getElementById('sim-defenses-card').classList.toggle('tb-hidden', mode === 'campaign');
+          var botsCtrl = document.getElementById('sim-bots-ctrl');
+          botsCtrl.classList.toggle('is-disabled', mode === 'campaign');
+          document.getElementById('sim-bots').disabled = mode === 'campaign';
+          document.getElementById('sim-bots-hint').textContent = mode === 'campaign'
+            ? 'Farm bots on the map instead!'
+            : 'Used in Sandbox & Defense modes.';
+          var targetCtrl = document.getElementById('sim-target-ctrl');
+          targetCtrl.classList.toggle('is-disabled', mode === 'campaign');
+          document.getElementById('sim-target').disabled = mode === 'campaign';
+          document.getElementById('sim-target-hint').textContent = mode === 'campaign'
+            ? 'Set by campaign level.'
+            : 'Pick any region to target.';
+          document.getElementById('sim-intensity-hint').textContent = mode === 'campaign'
+            ? 'Higher intensity = faster trace.'
+            : 'Packets per bot.';
+          canvas.classList.toggle('is-farmable', mode === 'campaign');
+          if (mode === 'campaign') {
+            syncFarmVisuals();
+            renderCampaign();
+            log('Campaign mode — click land on the map to start farming your botnet.');
+          } else if (mode === 'defense') {
+            log('Defense Game mode — press Start when ready.');
+          } else {
+            log('Sandbox mode.');
+          }
           renderStats();
         }
 
@@ -964,6 +1586,7 @@ export const ddosSimulatorView = (): string => layout({
         }
 
         /* ---------- Wiring ---------- */
+        document.getElementById('sim-mode-campaign').addEventListener('click', function () { setMode('campaign'); });
         document.getElementById('sim-mode-sandbox').addEventListener('click', function () { setMode('sandbox'); });
         document.getElementById('sim-mode-defense').addEventListener('click', function () { setMode('defense'); });
         document.getElementById('sim-attack').addEventListener('change', function (e) {
@@ -987,8 +1610,106 @@ export const ddosSimulatorView = (): string => layout({
         Object.keys(DEFENSES).forEach(function (k) {
           document.getElementById('def-' + k).addEventListener('click', function () { toggleDefense(k); });
         });
+        Object.keys(UPGRADES).forEach(function (k) {
+          document.getElementById('shop-' + k).addEventListener('click', function () { buyUpgrade(k); });
+        });
+        document.getElementById('sim-prestige').addEventListener('click', doPrestige);
+        document.getElementById('sim-reset-save').addEventListener('click', function () {
+          if (!window.confirm('Reset campaign progress? Your botnet, credits, upgrades, and prestige will be wiped.')) return;
+          state.campaign.bots = 0;
+          state.campaign.credits = 0;
+          state.campaign.trace = 0;
+          state.campaign.level = 1;
+          state.campaign.offline = 0;
+          state.campaign.prestige = 0;
+          state.campaign.finalPwned = false;
+          state.campaign.up = { kit: 0, worm: 0, clock: 0, proxy: 0, c2: 0 };
+          state.campaign.stats = { farmed: 0, earned: 0, busts: 0, pwned: 0, time: 0 };
+          state.target = CAMPAIGN_TARGETS[0].loc;
+          document.getElementById('sim-target').value = state.target;
+          state.running = false;
+          syncFarmVisuals();
+          try { localStorage.removeItem('toolbox-ddos-campaign'); } catch (e) {}
+          document.getElementById('sim-io-panel').classList.add('tb-hidden');
+          renderCampaign();
+          renderShop();
+          renderStats();
+          updateLaunchLabel();
+          log('Campaign reset. Time to rebuild from zero.');
+        });
+        var saveBtn = document.getElementById('sim-save-progress');
+        var saveBtnTimer = null;
+        saveBtn.addEventListener('click', function () {
+          saveAcc = 0;
+          saveCampaign();
+          log('Progress saved — botnet, credits, and upgrades stored in this browser.');
+          saveBtn.classList.add('is-saved');
+          saveBtn.textContent = '✓ Saved';
+          if (saveBtnTimer) clearTimeout(saveBtnTimer);
+          saveBtnTimer = setTimeout(function () {
+            saveBtn.classList.remove('is-saved');
+            saveBtn.textContent = '💾 Save progress';
+          }, 1400);
+        });
+        window.addEventListener('beforeunload', saveCampaign);
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'hidden') saveCampaign();
+        });
+        var ioPanel = document.getElementById('sim-io-panel');
+        var ioText = document.getElementById('sim-io-text');
+        document.getElementById('sim-export-save').addEventListener('click', function () {
+          var data = JSON.stringify(campaignSnapshot());
+          ioPanel.classList.remove('tb-hidden');
+          ioText.classList.remove('is-error');
+          ioText.value = data;
+          ioText.select();
+          copyText(data, function (ok) {
+            log(ok ? 'Save exported — copied to clipboard. Keep it somewhere safe.' : 'Save exported — copy it from the box below.');
+          });
+        });
+        document.getElementById('sim-import-save').addEventListener('click', function () {
+          ioPanel.classList.remove('tb-hidden');
+          ioText.classList.remove('is-error');
+          ioText.value = '';
+          ioText.focus();
+          log('Paste a save string into the box and hit Apply import.');
+        });
+        document.getElementById('sim-io-copy').addEventListener('click', function () {
+          if (!ioText.value) { log('Nothing to copy — export first.'); return; }
+          ioText.select();
+          copyText(ioText.value, function (ok) {
+            log(ok ? 'Copied to clipboard.' : 'Copy failed — select and copy the text manually.');
+          });
+        });
+        document.getElementById('sim-io-apply').addEventListener('click', function () {
+          var err = importSave(ioText.value);
+          if (err) {
+            ioText.classList.add('is-error');
+            log('Import failed: ' + err);
+            return;
+          }
+          ioPanel.classList.add('tb-hidden');
+        });
+        document.getElementById('sim-io-close').addEventListener('click', function () {
+          ioPanel.classList.add('tb-hidden');
+        });
         document.getElementById('sim-launch').addEventListener('click', function () {
-          if (state.mode === 'sandbox') {
+          if (state.mode === 'defense') {
+            if (state.phase === 'idle') startDefenseGame();
+            else { stopAll(); log('Defense game aborted.'); }
+          } else if (state.mode === 'campaign') {
+            if (state.running) {
+              state.running = false;
+              log('Attack halted. Trace decaying.');
+            } else if (Math.floor(state.campaign.bots) < 1) {
+              log('Farm some bots first — click land on the map!');
+              banner('🧟 Click land on the map to infect your first devices');
+            } else {
+              state.running = true;
+              var t = CAMPAIGN_TARGETS[state.campaign.level - 1];
+              log('Attack launched: ' + ATTACKS[state.attack].name + ' targeting ' + t.name + ' (' + fmt(Math.floor(state.campaign.bots)) + ' bots).');
+            }
+          } else {
             state.running = !state.running;
             if (state.running) {
               rebuildBots();
@@ -996,9 +1717,6 @@ export const ddosSimulatorView = (): string => layout({
             } else {
               log('Attack halted. Server recovering.');
             }
-          } else {
-            if (state.phase === 'idle') startDefenseGame();
-            else { stopAll(); log('Defense game aborted.'); }
           }
           updateLaunchLabel();
         });
@@ -1007,16 +1725,45 @@ export const ddosSimulatorView = (): string => layout({
           startDefenseGame();
         });
 
+        canvas.addEventListener('pointerdown', function (e) {
+          if (state.mode !== 'campaign') return;
+          var rect = canvas.getBoundingClientRect();
+          var x = e.clientX - rect.left, y = e.clientY - rect.top;
+          var gc = x / cellW - 0.5, gr = y / cellH - 0.5;
+          var best = null, bd = 1.6;
+          for (var i = 0; i < LAND.length; i++) {
+            var d = Math.sqrt((LAND[i].c - gc) * (LAND[i].c - gc) + (LAND[i].r - gr) * (LAND[i].r - gr));
+            if (d < bd) { bd = d; best = LAND[i]; }
+          }
+          if (!best) return;
+          infectAt(best, x, y);
+        });
+
         /* ---------- Init ---------- */
+        var offline = loadCampaign();
+        document.getElementById('sim-target').value = state.target;
         refreshColors();
         resize();
         window.addEventListener('resize', resize);
         rebuildBots();
+        syncFarmVisuals();
         updateAttackInfo();
         updateDefPanel();
+        renderCampaign();
+        renderShop();
         renderStats();
         updateLaunchLabel();
-        log('Simulator ready. All traffic on this page is fake — promise.');
+        if (state.campaign.bots < 1 && state.campaign.credits < 1) {
+          log('Welcome, script kiddie. Click land on the map to infect your first devices.');
+        } else if (offline && (offline.bots > 0 || offline.traceDropped >= 1)) {
+          var awayBits = [];
+          if (offline.bots > 0) awayBits.push('+' + fmt(offline.bots) + ' bots farmed');
+          if (offline.traceDropped >= 1) awayBits.push('trace cooled to ' + Math.round(state.campaign.trace) + '%');
+          log('Welcome back — away ' + durStr(offline.seconds) + ': ' + awayBits.join(', ') + '.');
+          if (offline.bots > 0) banner('😴 While you were away: +' + fmt(offline.bots) + ' bots');
+        } else {
+          log('Welcome back. Botnet and credits restored from save.');
+        }
         setInterval(refreshColors, 2000);
 
         var last = performance.now();

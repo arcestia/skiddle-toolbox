@@ -10,6 +10,21 @@ export const changelogEntries: ChangelogEntry[] = [
   {
     version: 'Unreleased',
     date: 'In progress',
+    added: [
+      'DDoS Simulator: fully client-side, 100% simulated cyber-war map with zero real network traffic.',
+      'Campaign mode: farm a botnet from zero by clicking land on the map, plus auto-scan and self-replicating Worm Spread.',
+      'Campaign progression: 7 targets from Personal Blog to Edge Network Titan, each with capacity, mitigation level, and a weakness attack type.',
+      'Credits economy and upgrade shop: Exploit Kit, Worm Spread, Bot Overclock, Proxy Chains, and C2 Servers.',
+      'Trace level mechanic: loud attacks raise heat; at 100% the authorities seize 40% of your botnet.',
+      'Sandbox mode with 5 attack types (UDP, SYN, HTTP floods, DNS Amplification, Slowloris) and 4 toggleable mitigations.',
+      'Defense Game mode: survive escalating waves with max 2 active mitigations; best score persisted locally.',
+      'Campaign save persistence in localStorage: auto-save every 5s, manual 💾 Save progress button, and save on page unload.',
+      'Offline earnings: your botnet keeps farming while you are away (auto-scan + Worm rates, capped at 4 hours) with a welcome-back summary.',
+      'Trace level persists across sessions and cools slowly while away — refreshing the page no longer dodges the heat.',
+      'Export/import campaign saves as a copy-paste JSON string — move your botnet between browsers or keep a backup.',
+      'Lifetime campaign stats: total bots farmed, credits earned, busts, targets pwned, and playtime — persisted in the save.',
+      '🌟 Prestige endgame: pwn all 7 targets to unlock a campaign reset with permanent +25% credits and +50 starting bots per prestige level.',
+    ],
   },
   {
     version: '1.1.0',

@@ -78,7 +78,7 @@ const tools = [
     category: 'Fun',
     accent: 'red',
     title: 'DDoS Simulator',
-    desc: 'Watch a simulated DDoS attack unfold on a live cyber-war map. Launch botnets, toggle mitigations, and survive waves in Defense Game mode. 100% simulated.',
+    desc: 'Farm a botnet by clicking the map, manage your trace, buy upgrades, and pwn 7 targets — or play defense against waves. 100% simulated.',
     href: '/ddos-simulator',
     active: true
   },
