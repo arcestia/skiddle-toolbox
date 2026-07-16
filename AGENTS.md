@@ -66,6 +66,7 @@ This document contains project-specific guidance for AI coding agents working on
 │   │   └── density.ts         # Density preset registry
 │   └── types/
 │       └── assets.d.ts        # Type declarations for raw asset imports
+├── scratch/                 # Ad-hoc Node scratch scripts (not part of the Worker or any test suite)
 ├── package.json
 ├── tsconfig.json
 ├── wrangler.toml

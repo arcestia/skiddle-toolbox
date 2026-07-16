@@ -16,7 +16,7 @@ npm run deploy   # wrangler deploy — requires wrangler login
 
 There are no automated tests. Manual verification: `npm run dev`, click through tools at http://localhost:8788, and check the proxy with `curl -I "http://localhost:8788/api/cors?url=https%3A%2F%2Fexample.com"`.
 
-The `*.js` files in the repo root (`test-rgx-dom.js`, `escapetest4.js`, etc.) are ad-hoc Node scratch scripts, not part of the Worker or any test suite.
+The `*.js` files in `scratch/` (`test-rgx-dom.js`, `escapetest4.js`, etc.) are ad-hoc Node scratch scripts, not part of the Worker or any test suite.
 
 ## Architecture
 
