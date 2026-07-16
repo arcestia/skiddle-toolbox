@@ -1,7 +1,7 @@
 {
-  "name": "workers-toolbox",
+  "name": "skiddle-toolbox",
   "version": "1.0.0",
-  "description": "Developer Toolbox as a Cloudflare Workers + Hono application",
+  "description": "Skiddle Toolbox — a developer utility suite on Cloudflare Workers + Hono",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",

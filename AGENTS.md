@@ -1,10 +1,10 @@
-# Agent Notes for Developer Toolbox
+# Agent Notes for Skiddle Toolbox
 
 This document contains project-specific guidance for AI coding agents working on this repository.
 
 ## Project Overview
 
-**Developer Toolbox** is a server-side rendered utility suite running on **Cloudflare Workers** with **Hono**. All HTML pages, shared assets, and the CORS proxy are served by a single Worker.
+**Skiddle Toolbox** is a server-side rendered utility suite running on **Cloudflare Workers** with **Hono**. All HTML pages, shared assets, and the CORS proxy are served by a single Worker.
 
 - The root route (`/`) serves the landing page.
 - Each tool is a server-rendered HTML page generated from a TypeScript view.
@@ -89,7 +89,7 @@ npm run deploy
 `wrangler.toml`:
 
 ```toml
-name = "workers-toolbox"
+name = "skiddle-toolbox"
 main = "src/index.ts"
 compatibility_date = "2024-07-01"
 

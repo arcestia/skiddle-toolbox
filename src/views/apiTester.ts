@@ -1,7 +1,7 @@
 import { layout } from './layout.js';
 
 export const apiTesterView = (): string => layout({
-  title: 'API Tester · Developer Toolbox',
+  title: 'API Tester · Skiddle Toolbox',
   subtitle: 'Browser-local HTTP client',
   backHref: '/',
   themeVariant: 'dots',

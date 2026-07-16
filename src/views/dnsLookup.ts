@@ -15,7 +15,7 @@ const TYPE_NAMES: Record<number, string> = {
 };
 
 export const dnsLookupView = (): string => layout({
-  title: 'DNS Lookup · Developer Toolbox',
+  title: 'DNS Lookup · Skiddle Toolbox',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

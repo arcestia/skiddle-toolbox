@@ -1,7 +1,7 @@
 import { layout } from './layout.js';
 
 export const spreadsheetViewerView = (): string => layout({
-  title: 'Spreadsheet Viewer · Developer Toolbox',
+  title: 'Spreadsheet Viewer · Skiddle Toolbox',
   subtitle: 'View CSV, Excel, ODS, JSON, and Markdown tables in the browser',
   backHref: '/',
   themeVariant: 'dots',

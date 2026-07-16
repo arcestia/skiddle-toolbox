@@ -89,7 +89,7 @@ const toolCard = (tool: typeof tools[0], index: number) => `
 `;
 
 export const homeView = (): string => layout({
-  title: 'Developer Toolbox · Cloudflare Workers Hub',
+  title: 'Skiddle Toolbox · Cloudflare Workers Hub',
   centered: true,
   compactHeader: true,
   themeVariant: 'pills',
@@ -99,7 +99,7 @@ export const homeView = (): string => layout({
         <span class="pulse-dot"></span>
         Running on Cloudflare Workers + Hono
       </div>
-      <h1 class="tb-gradient-text">Developer Toolbox</h1>
+      <h1 class="tb-gradient-text">Skiddle Toolbox</h1>
       <p>A collection of responsive client-side utilities hosted at the edge. Pick a tool below and start debugging in your browser.</p>
     </section>
 

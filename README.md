@@ -1,6 +1,8 @@
-# Developer Toolbox — Cloudflare Workers + Hono
+# Skiddle Toolbox — Cloudflare Workers + Hono
 
 A small developer utility suite served entirely from a single Cloudflare Worker using [Hono](https://hono.dev/). All tools run in the browser; the Worker only serves HTML and proxies cross-origin requests when needed.
+
+Repository: https://github.com/arcestia/skiddle-toolbox
 
 ## Tools
 

@@ -1,7 +1,7 @@
 import { layout } from './layout.js';
 
 export const textExtractorView = (): string => layout({
-  title: 'Text Extractor · Developer Toolbox',
+  title: 'Text Extractor · Skiddle Toolbox',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

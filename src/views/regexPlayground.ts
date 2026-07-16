@@ -1,7 +1,7 @@
 import { layout } from './layout.js';
 
 export const regexPlaygroundView = (): string => layout({
-  title: 'Regex Playground · Developer Toolbox',
+  title: 'Regex Playground · Skiddle Toolbox',
   subtitle: 'Interactive Regular Expression Visualizer',
   backHref: '/',
   themeVariant: 'dots',

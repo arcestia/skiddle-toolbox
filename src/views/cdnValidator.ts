@@ -1,7 +1,7 @@
 import { layout } from './layout.js';
 
 export const cdnValidatorView = (): string => layout({
-  title: 'Image CDN Validator · Developer Toolbox',
+  title: 'Image CDN Validator · Skiddle Toolbox',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

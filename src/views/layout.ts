@@ -29,7 +29,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <div class="tb-logo ${ctx.centered ? 'tb-logo-lg' : ''}">TB</div>
         ${ctx.compactHeader ? '' : `
         <div class="tb-brand-title">
-          <h1 class="tb-gradient-text">${ctx.title.replace(' · Developer Toolbox', '').replace(' · ', ' ')}</h1>
+          <h1 class="tb-gradient-text">${ctx.title.replace(' · Skiddle Toolbox', '').replace(' · ', ' ')}</h1>
           ${ctx.subtitle ? `<p>${ctx.subtitle}</p>` : ''}
         </div>
         `}

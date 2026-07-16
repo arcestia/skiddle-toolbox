@@ -33,7 +33,7 @@ dnsRoute.get('/dns', async (c) => {
     const upstream = await fetch(url, {
       headers: {
         Accept: 'application/dns-json',
-        'User-Agent': 'DeveloperToolbox/1.0'
+        'User-Agent': 'SkiddleToolbox/1.0'
       }
     });
 
