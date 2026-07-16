@@ -51,11 +51,33 @@ export const regexPlaygroundView = (): string => layout({
             <div id="rgx-visualizer" class="rgx-visualizer-pane"></div>
           </div>
 
-          <!-- Results Summary -->
-          <div id="rgx-summary" class="tb-summary"></div>
+          <!-- Results Summary & Copy Buttons -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <div id="rgx-summary" class="tb-summary" style="margin-bottom:0;"></div>
+            <button id="rgx-copy-matches-btn" class="tb-btn tb-btn-secondary tb-hidden" onclick="copyAllMatches()" style="padding:8px 14px; font-size:0.82rem; gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Matches
+            </button>
+          </div>
           
           <!-- Matches List -->
           <div id="rgx-results"></div>
+        </div>
+
+        <!-- Snippets Card -->
+        <div class="tb-card" style="margin-top: 24px;">
+          <h3 class="rgx-sidebar-title" style="margin-bottom: 12px; border-bottom: none; padding-bottom: 0;">Code Snippets</h3>
+          <div class="rgx-snippet-tabs">
+            <button class="rgx-tab-btn active" data-tab="js" onclick="switchSnippetTab('js')">JavaScript</button>
+            <button class="rgx-tab-btn" data-tab="python" onclick="switchSnippetTab('python')">Python</button>
+            <button class="rgx-tab-btn" data-tab="php" onclick="switchSnippetTab('php')">PHP</button>
+          </div>
+          <div class="rgx-snippet-container">
+            <pre><code id="rgx-snippet-code" class="tb-mono"></code></pre>
+            <button class="rgx-copy-snippet-btn" onclick="copySnippet()" title="Copy Code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -92,29 +114,30 @@ export const regexPlaygroundView = (): string => layout({
         <div class="tb-card rgx-card-sidebar">
           <h3 class="rgx-sidebar-title">Cheatsheet</h3>
           <div class="rgx-cheatsheet">
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px; line-height:1.4;">Tip: Click any code token to insert it into your pattern.</p>
             <div class="rgx-cheat-section">
               <h4>Character Classes</h4>
-              <div class="rgx-cheat-row"><code>.</code> <span>Any character except line break</span></div>
-              <div class="rgx-cheat-row"><code>\\d</code> <span>Any digit (0-9)</span></div>
-              <div class="rgx-cheat-row"><code>\\w</code> <span>Alphanumeric + underscore</span></div>
-              <div class="rgx-cheat-row"><code>\\s</code> <span>Any whitespace character</span></div>
-              <div class="rgx-cheat-row"><code>\\b</code> <span>Word boundary</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">.</code> <span>Any character except line break</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">\\d</code> <span>Any digit (0-9)</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">\\w</code> <span>Alphanumeric + underscore</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">\\s</code> <span>Any whitespace character</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">\\b</code> <span>Word boundary</span></div>
             </div>
             <div class="rgx-cheat-section">
               <h4>Quantifiers</h4>
-              <div class="rgx-cheat-row"><code>*</code> <span>0 or more times</span></div>
-              <div class="rgx-cheat-row"><code>+</code> <span>1 or more times</span></div>
-              <div class="rgx-cheat-row"><code>?</code> <span>0 or 1 time (optional)</span></div>
-              <div class="rgx-cheat-row"><code>{n}</code> <span>Exactly n times</span></div>
-              <div class="rgx-cheat-row"><code>{n,m}</code> <span>Between n and m times</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">*</code> <span>0 or more times</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">+</code> <span>1 or more times</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">?</code> <span>0 or 1 time (optional)</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">{n}</code> <span>Exactly n times</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">{n,m}</code> <span>Between n and m times</span></div>
             </div>
             <div class="rgx-cheat-section">
               <h4>Anchors & Groups</h4>
-              <div class="rgx-cheat-row"><code>^</code> <span>Start of string / line</span></div>
-              <div class="rgx-cheat-row"><code>$</code> <span>End of string / line</span></div>
-              <div class="rgx-cheat-row"><code>(abc)</code> <span>Capture group</span></div>
-              <div class="rgx-cheat-row"><code>(?:abc)</code> <span>Non-capturing group</span></div>
-              <div class="rgx-cheat-row"><code>a|b</code> <span>Match a OR b</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">^</code> <span>Start of string / line</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">$</code> <span>End of string / line</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">(abc)</code> <span>Capture group</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">(?:abc)</code> <span>Non-capturing group</span></div>
+              <div class="rgx-cheat-row"><code title="Insert token">a|b</code> <span>Match a OR b</span></div>
             </div>
           </div>
         </div>
@@ -126,10 +149,6 @@ export const regexPlaygroundView = (): string => layout({
     </footer>
 
     <style>
-      .accent-pink {
-        --page-accent: var(--ctp-pink);
-      }
-
       .rgx-layout {
         display: grid;
         grid-template-columns: 1fr 320px;
@@ -348,15 +367,18 @@ export const regexPlaygroundView = (): string => layout({
       .rgx-group-label {
         font-family: var(--font-sans);
         font-weight: 700;
-        font-size: 0.76rem;
-        color: var(--ctp-pink);
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        background: color-mix(in srgb, var(--border-color) 12%, transparent);
         min-width: 68px;
+        text-align: center;
         text-transform: uppercase;
       }
 
       .rgx-group-val {
         font-family: var(--font-mono);
-        color: var(--ctp-lavender);
         word-break: break-all;
       }
 
@@ -450,11 +472,90 @@ export const regexPlaygroundView = (): string => layout({
         border-radius: 4px;
         text-align: center;
         font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+      }
+
+      .rgx-cheat-row code:hover {
+        background: color-mix(in srgb, var(--ctp-pink) 20%, transparent);
+        border-color: var(--ctp-pink);
+        transform: scale(1.06);
       }
 
       .rgx-cheat-row span {
         color: var(--text-secondary);
         line-height: 1.3;
+      }
+
+      /* Snippets styling */
+      .rgx-snippet-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
+
+      .rgx-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s ease;
+      }
+
+      .rgx-tab-btn:hover {
+        color: var(--text-primary);
+        background: color-mix(in srgb, var(--ctp-surface0) 40%, transparent);
+      }
+
+      .rgx-tab-btn.active {
+        color: var(--ctp-pink);
+        background: color-mix(in srgb, var(--ctp-pink) 15%, transparent);
+      }
+
+      .rgx-snippet-container {
+        position: relative;
+        background: color-mix(in srgb, var(--ctp-mantle) 60%, transparent);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        overflow-x: auto;
+      }
+
+      .rgx-snippet-container pre {
+        margin: 0;
+        white-space: pre;
+      }
+
+      .rgx-snippet-container code {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: var(--ctp-lavender);
+      }
+
+      .rgx-copy-snippet-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+        padding: 6px 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .rgx-copy-snippet-btn:hover {
+        border-color: var(--ctp-pink);
+        color: var(--ctp-pink);
       }
     </style>
 
@@ -464,22 +565,22 @@ export const regexPlaygroundView = (): string => layout({
           email: {
             pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$',
             flags: 'gm',
-            test: 'hello@example.com\\ninvalid-email@\\nanother.user+tag@domain.co.uk'
+            test: 'hello@example.com\\\\ninvalid-email@\\\\nanother.user+tag@domain.co.uk'
           },
           url: {
             pattern: '^(https?:\\\\/\\\\/)?(www\\\\.)?([a-zA-Z0-9-]+)\\\\.([a-zA-Z]{2,})(\\\\/[a-zA-Z0-9-_./?%&=]*)?$',
             flags: 'gm',
-            test: 'https://www.google.com/search?q=regex\\nhttp://example.org/path/to/page\\ninvalid_url'
+            test: 'https://www.google.com/search?q=regex\\\\nhttp://example.org/path/to/page\\\\ninvalid_url'
           },
           phone: {
             pattern: '\\\\(?(\\\\d{3})\\\\)?[-. ]?(\\\\d{3})[-. ]?(\\\\d{4})',
             flags: 'g',
-            test: 'Call me at (123) 456-7890 or 987-654-3210.\\nWork number is 555.123.4567.'
+            test: 'Call me at (123) 456-7890 or 987-654-3210.\\\\nWork number is 555.123.4567.'
           },
           html: {
             pattern: '<([a-z1-6]+)([^>]*)>(.*?)</\\\\1>',
             flags: 'gi',
-            test: '<div>Hello <b>world</b>!</div>\\n<p class="text">Paragraph content</p>'
+            test: '<div>Hello <b>world</b>!</div>\\\\n<p class="text">Paragraph content</p>'
           },
           ipv4: {
             pattern: '\\\\b(?:(?:25[0-5]|2[0-4]\\\\d|[01]?\\\\d\\\\d?)\\\\.){3}(?:25[0-5]|2[0-4]\\\\d|[01]?\\\\d\\\\d?)\\\\b',
@@ -487,6 +588,18 @@ export const regexPlaygroundView = (): string => layout({
             test: 'IP addresses detected: 192.168.1.1, 10.0.0.254, 999.999.999.999 (invalid)'
           }
         };
+
+        const GROUP_COLORS = [
+          'var(--ctp-lavender)',
+          'var(--ctp-pink)',
+          'var(--ctp-peach)',
+          'var(--ctp-yellow)',
+          'var(--ctp-sky)',
+          'var(--ctp-green)'
+        ];
+
+        let currentMatches = [];
+        let activeSnippetTab = 'js';
 
         function escapeHtml(str) {
           return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -528,10 +641,124 @@ export const regexPlaygroundView = (): string => layout({
           if (!t) return;
           document.getElementById('rgx-pattern').value = t.pattern;
           document.getElementById('rgx-flags').value = t.flags;
-          document.getElementById('rgx-test-string').value = t.test;
+          document.getElementById('rgx-test-string').value = t.test.replace(/\\\\n/g, '\\n');
           updateActiveFlagButtons();
           runRegexPlayground();
         };
+
+        window.switchSnippetTab = function (tab) {
+          activeSnippetTab = tab;
+          document.querySelectorAll('.rgx-tab-btn').forEach(btn => {
+            if (btn.dataset.tab === tab) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+          updateCodeSnippet();
+        };
+
+        window.copySnippet = async function () {
+          const codeEl = document.getElementById('rgx-snippet-code');
+          if (!codeEl.innerText || codeEl.innerText.startsWith('//')) return;
+          try {
+            await navigator.clipboard.writeText(codeEl.innerText);
+            const btn = document.querySelector('.rgx-copy-snippet-btn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            setTimeout(() => { btn.innerHTML = orig; }, 1200);
+          } catch (e) {
+            alert('Failed to copy: ' + e.message);
+          }
+        };
+
+        window.copyAllMatches = async function () {
+          if (!currentMatches || !currentMatches.length) return;
+          const text = currentMatches.map(m => m[0]).join('\\n');
+          try {
+            await navigator.clipboard.writeText(text);
+            const btn = document.getElementById('rgx-copy-matches-btn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+            setTimeout(() => { btn.innerHTML = orig; }, 1200);
+          } catch (err) {
+            alert('Could not copy matches: ' + (err.message || err));
+          }
+        };
+
+        function updateCodeSnippet() {
+          const pattern = document.getElementById('rgx-pattern').value;
+          const flags = document.getElementById('rgx-flags').value;
+          const codeEl = document.getElementById('rgx-snippet-code');
+
+          if (!pattern) {
+            codeEl.innerText = '// Enter a regular expression to see code snippets';
+            return;
+          }
+
+          if (activeSnippetTab === 'js') {
+            const jsPattern = pattern.replace(/\\\//g, '\\\\/');
+            const jsLines = [
+              'const pattern = /' + jsPattern + '/' + flags + ';',
+              'const subject = "your test string";',
+              '',
+              '// Match validation',
+              'const isValid = pattern.test(subject);',
+              '',
+              '// Get all matches',
+              'const matches = [...subject.matchAll(pattern)];',
+              'matches.forEach(match => {',
+              '  console.log("Found match:", match[0], "at index", match.index);',
+              '});'
+            ];
+            codeEl.innerText = jsLines.join('\\n');
+          } else if (activeSnippetTab === 'python') {
+            let pyFlags = [];
+            if (flags.includes('i')) pyFlags.push('re.IGNORECASE');
+            if (flags.includes('m')) pyFlags.push('re.MULTILINE');
+            if (flags.includes('s')) pyFlags.push('re.DOTALL');
+            if (flags.includes('u')) pyFlags.push('re.UNICODE');
+            const flagsStr = pyFlags.length ? ', ' + pyFlags.join(' | ') : '';
+
+            const pyPattern = pattern.replace(/"/g, '\\\\"');
+            const pyLines = [
+              'import re',
+              '',
+              'pattern = r"' + pyPattern + '"',
+              'subject = "your test string"',
+              '',
+              '# Search or validate',
+              'match = re.search(pattern, subject' + flagsStr + ')',
+              'if match:',
+              '    print("Valid match:", match.group(0))',
+              '',
+              '# Find all occurrences',
+              'for m in re.finditer(pattern, subject' + flagsStr + '):',
+              '    print("Found:", m.group(0), "at start index", m.start())'
+            ];
+            codeEl.innerText = pyLines.join('\\n');
+          } else if (activeSnippetTab === 'php') {
+            const phpPattern = pattern.replace(/\\\//g, '\\\\/').replace(/"/g, '\\\\"');
+            const phpLines = [
+              '<?php',
+              '$pattern = "/' + phpPattern + '/' + flags + '";',
+              '$subject = "your test string";',
+              '',
+              '// Validate match',
+              'if (preg_match($pattern, $subject)) {',
+              '    echo "Match found!\\\\n";',
+              '}',
+              '',
+              '// Get all matches',
+              'if (preg_match_all($pattern, $subject, $matches, PREG_OFFSET_CAPTURE)) {',
+              '    foreach ($matches[0] as $match) {',
+              '        echo "Found: " . $match[0] . " at index " . $match[1] . "\\\\n";',
+              '    }',
+              '}'
+            ];
+            codeEl.innerText = phpLines.join('\\n');
+          }
+        }
 
         window.runRegexPlayground = function () {
           const pattern = document.getElementById('rgx-pattern').value;
@@ -541,6 +768,7 @@ export const regexPlaygroundView = (): string => layout({
           const visualizerDiv = document.getElementById('rgx-visualizer');
           const summaryDiv = document.getElementById('rgx-summary');
           const resultsDiv = document.getElementById('rgx-results');
+          const copyMatchesBtn = document.getElementById('rgx-copy-matches-btn');
 
           errorDiv.classList.add('tb-hidden');
           errorDiv.innerHTML = '';
@@ -548,7 +776,10 @@ export const regexPlaygroundView = (): string => layout({
           if (!pattern) {
             visualizerDiv.innerHTML = escapeHtml(testString);
             summaryDiv.innerHTML = '<span class="tb-badge tb-badge-pending">0 matches</span>';
+            copyMatchesBtn.classList.add('tb-hidden');
             resultsDiv.innerHTML = '<div class="tb-state-message">Enter a regular expression pattern to begin.</div>';
+            currentMatches = [];
+            updateCodeSnippet();
             return;
           }
 
@@ -560,7 +791,10 @@ export const regexPlaygroundView = (): string => layout({
             errorDiv.innerText = e.message;
             visualizerDiv.innerHTML = escapeHtml(testString);
             summaryDiv.innerHTML = '<span class="tb-badge tb-badge-bad">Invalid Regex</span>';
+            copyMatchesBtn.classList.add('tb-hidden');
             resultsDiv.innerHTML = '<div class="tb-state-message" style="color:var(--color-bad);">Regex syntax error. Please correct the pattern above.</div>';
+            currentMatches = [];
+            updateCodeSnippet();
             return;
           }
 
@@ -583,9 +817,11 @@ export const regexPlaygroundView = (): string => layout({
               }
             }
           } catch (e) {
-            // Standard backup in case exec fails
             console.error(e);
           }
+
+          // Store matches globally
+          currentMatches = matches;
 
           // Build Match Highlights safely
           let vizHtml = '';
@@ -616,8 +852,15 @@ export const regexPlaygroundView = (): string => layout({
           summaryDiv.innerHTML = '<span class="tb-badge ' + (matchCount > 0 ? 'tb-badge-active' : 'tb-badge-pending') + '">' +
             matchCount + ' match' + (matchCount === 1 ? '' : 'es') + '</span>';
 
+          if (matchCount > 0) {
+            copyMatchesBtn.classList.remove('tb-hidden');
+          } else {
+            copyMatchesBtn.classList.add('tb-hidden');
+          }
+
           if (matchCount === 0) {
             resultsDiv.innerHTML = '<div class="tb-state-message">No matches found.</div>';
+            updateCodeSnippet();
             return;
           }
 
@@ -634,9 +877,10 @@ export const regexPlaygroundView = (): string => layout({
               groupsHtml += '<div class="rgx-groups">';
               for (let g = 1; g < m.length; g++) {
                 const groupVal = m[g] !== undefined ? m[g] : 'undefined';
+                const color = GROUP_COLORS[(g - 1) % GROUP_COLORS.length];
                 groupsHtml += '<div class="rgx-group-row">' +
-                  '<span class="rgx-group-label">Group ' + g + '</span>' +
-                  '<span class="rgx-group-val">' + escapeHtml(groupVal) + '</span>' +
+                  '<span class="rgx-group-label" style="color: ' + color + '; border-color: ' + color + '">Group ' + g + '</span>' +
+                  '<span class="rgx-group-val" style="color: ' + color + '">' + escapeHtml(groupVal) + '</span>' +
                 '</div>';
               }
               groupsHtml += '</div>';
@@ -653,11 +897,28 @@ export const regexPlaygroundView = (): string => layout({
           });
           cardsHtml += '</div>';
           resultsDiv.innerHTML = cardsHtml;
+          
+          updateCodeSnippet();
         };
 
         // Initialize state
         updateActiveFlagButtons();
         runRegexPlayground();
+
+        // Cheatsheet click insertion listener
+        document.querySelectorAll('.rgx-cheatsheet code').forEach(codeEl => {
+          codeEl.addEventListener('click', function () {
+            const token = this.innerText;
+            const input = document.getElementById('rgx-pattern');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const val = input.value;
+            input.value = val.slice(0, start) + token + val.slice(end);
+            input.focus();
+            input.selectionStart = input.selectionEnd = start + token.length;
+            runRegexPlayground();
+          });
+        });
       })();
     </script>
   `
