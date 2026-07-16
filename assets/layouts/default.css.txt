@@ -1,0 +1,1 @@
+/* Default layout uses the base stylesheet values. */

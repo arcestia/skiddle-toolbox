@@ -1,4 +1,6 @@
 import { scriptTag, styleTag } from '../lib/assets.js';
+import { defaultTheme, themes } from '../lib/themes.js';
+import { defaultLayout, layouts, renderLayoutOptions } from '../lib/layouts.js';
 
 export interface PageContext {
   title: string;
@@ -10,6 +12,15 @@ export interface PageContext {
   body: string;
 }
 
+const layoutIds = layouts.map(l => l.id);
+
+const runtimeConfig = JSON.stringify({
+  themes: themes.map(t => ({ id: t.id, name: t.name, swatch: t.swatch })),
+  layouts: layouts.map(l => ({ id: l.id, name: l.name, description: l.description })),
+  defaultTheme,
+  defaultLayout,
+});
+
 export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,13 +31,14 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   ${styleTag()}
+  <script id="tb-config" type="application/json">${runtimeConfig}</script>
   ${scriptTag()}
   <script>
     (function() {
       try {
-        const layouts = ['default', 'compact', 'wide'];
+        const layouts = ${JSON.stringify(layoutIds)};
         const raw = localStorage.getItem('toolbox-layout');
-        const layout = layouts.includes(raw) ? raw : 'default';
+        const layout = layouts.includes(raw) ? raw : ${JSON.stringify(defaultLayout)};
         document.documentElement.classList.add('tb-layout-' + layout);
       } catch (e) {}
     })();
@@ -71,23 +83,12 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <h3>Appearance</h3>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Theme</span>
-          <div data-tb-theme-bar="pills"></div>
+          <div data-tb-theme-bar="${ctx.themeVariant ?? 'dots'}"></div>
         </label>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Layout template</span>
           <div class="tb-layout-options" id="tb-layout-options">
-            <button type="button" class="tb-layout-option" data-layout="default" onclick="window.toolbox.setLayout('default')">
-              <strong>Default</strong>
-              <span>Balanced spacing and card size</span>
-            </button>
-            <button type="button" class="tb-layout-option" data-layout="compact" onclick="window.toolbox.setLayout('compact')">
-              <strong>Compact</strong>
-              <span>Smaller hero and tighter spacing</span>
-            </button>
-            <button type="button" class="tb-layout-option" data-layout="wide" onclick="window.toolbox.setLayout('wide')">
-              <strong>Wide</strong>
-              <span>Full-width container for large screens</span>
-            </button>
+            ${renderLayoutOptions()}
           </div>
         </label>
         <label class="tb-settings-row">

@@ -1,0 +1,47 @@
+html.tb-layout-compact .home-hero {
+  padding: 12px 0 20px;
+  gap: 12px;
+}
+
+html.tb-layout-compact .home-hero__title {
+  font-size: 2.4rem;
+}
+
+html.tb-layout-compact .home-hero__subtitle {
+  font-size: 1rem;
+}
+
+html.tb-layout-compact .home-stats {
+  display: none;
+}
+
+html.tb-layout-compact .home-controls {
+  top: 58px;
+}
+
+html.tb-layout-compact .tools-grid {
+  gap: 18px;
+}
+
+html.tb-layout-compact .tool-card {
+  min-height: auto;
+  padding: 20px;
+}
+
+html.tb-layout-compact .tool-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 1.4rem;
+}
+
+html.tb-layout-compact .tool-title {
+  font-size: 1.15rem;
+}
+
+html.tb-layout-compact .tool-desc {
+  font-size: 0.85rem;
+}
+
+html.tb-layout-compact .card-top {
+  margin-bottom: 16px;
+}

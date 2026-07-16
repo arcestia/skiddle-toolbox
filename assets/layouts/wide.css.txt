@@ -1,0 +1,8 @@
+html.tb-layout-wide .tb-container,
+html.tb-layout-wide .tb-top-bar {
+  max-width: 1400px;
+}
+
+html.tb-layout-wide body {
+  padding: 32px 24px;
+}

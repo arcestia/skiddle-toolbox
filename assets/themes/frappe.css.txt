@@ -1,0 +1,28 @@
+[data-theme="frappe"] {
+  --ctp-crust: #232634;
+  --ctp-mantle: #292c3c;
+  --ctp-base: #303446;
+  --ctp-surface0: #414559;
+  --ctp-surface1: #51576d;
+  --ctp-surface2: #626880;
+  --ctp-overlay0: #737994;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay2: #949cbb;
+  --ctp-subtext0: #a5adce;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-text: #c6d0f5;
+  --ctp-lavender: #babbf1;
+  --ctp-blue: #8caaee;
+  --ctp-sapphire: #85c1dc;
+  --ctp-sky: #99d1db;
+  --ctp-teal: #81c8be;
+  --ctp-green: #a6d189;
+  --ctp-yellow: #e5c890;
+  --ctp-peach: #ef9f76;
+  --ctp-maroon: #ea999c;
+  --ctp-red: #e78284;
+  --ctp-mauve: #ca9ee6;
+  --ctp-pink: #f4b8e4;
+  --ctp-flamingo: #eebebe;
+  --ctp-rosewater: #f2d5cf;
+}

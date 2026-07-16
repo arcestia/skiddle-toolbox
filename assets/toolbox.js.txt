@@ -4,6 +4,8 @@
    Include this file on every toolbox page to keep the Catppuccin
    theme, settings, and common UI components synchronised.
 
+   - Reads runtime configuration from #tb-config (injected by the
+     server) so themes and layouts can be added without editing JS.
    - Reads/writes the chosen theme to localStorage under `toolbox-theme`.
    - Auto-injects a theme switcher into any element with
      `data-tb-theme-bar`.
@@ -20,27 +22,45 @@
   const SETTINGS_KEY = 'toolbox-settings';
   const LAYOUT_KEY = 'toolbox-layout';
   const RECENT_KEY = 'toolbox-recent';
-  const THEMES = ['latte', 'frappe', 'macchiato', 'mocha'];
-  const LAYOUTS = ['default', 'compact', 'wide'];
-  const DEFAULT_THEME = 'mocha';
-  const DEFAULT_LAYOUT = 'default';
+
+  function loadConfig() {
+    try {
+      const el = document.getElementById('tb-config');
+      if (el) return JSON.parse(el.textContent || '{}');
+    } catch (e) {}
+    return {
+      themes: [{ id: 'mocha', name: 'Mocha', swatch: '#1e1e2e' }],
+      layouts: [{ id: 'default', name: 'Default', description: 'Default layout' }],
+      defaultTheme: 'mocha',
+      defaultLayout: 'default',
+    };
+  }
+
+  const config = loadConfig();
+  const THEMES = config.themes || [];
+  const LAYOUTS = config.layouts || [];
+  const THEME_IDS = THEMES.map(t => t.id);
+  const LAYOUT_IDS = LAYOUTS.map(l => l.id);
+  const DEFAULT_THEME = config.defaultTheme || THEME_IDS[0] || 'mocha';
+  const DEFAULT_LAYOUT = config.defaultLayout || LAYOUT_IDS[0] || 'default';
 
   function getStoredTheme() {
     const raw = localStorage.getItem(THEME_KEY);
-    return THEMES.includes(raw) ? raw : DEFAULT_THEME;
+    return THEME_IDS.includes(raw) ? raw : DEFAULT_THEME;
   }
 
-  function applyTheme(theme) {
-    if (!THEMES.includes(theme)) return;
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
-    updateActiveButtons(theme);
+  function applyTheme(themeId) {
+    if (!THEME_IDS.includes(themeId)) return;
+    document.documentElement.setAttribute('data-theme', themeId);
+    localStorage.setItem(THEME_KEY, themeId);
+    updateActiveButtons(themeId);
   }
 
-  function updateActiveButtons(theme) {
+  function updateActiveButtons(themeId) {
     document.querySelectorAll('.tb-theme-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.theme === theme);
-      btn.setAttribute('aria-pressed', btn.dataset.theme === theme ? 'true' : 'false');
+      const active = btn.dataset.theme === themeId;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
   }
 
@@ -48,21 +68,22 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'tb-theme-btn';
-    btn.dataset.theme = theme;
-    btn.setAttribute('aria-label', theme + ' theme');
+    btn.dataset.theme = theme.id;
+    btn.setAttribute('aria-label', theme.name + ' theme');
     btn.setAttribute('aria-pressed', 'false');
 
     const dot = document.createElement('span');
-    dot.className = 'tb-theme-dot ' + theme;
+    dot.className = 'tb-theme-dot';
+    dot.style.backgroundColor = theme.swatch;
 
     if (variant === 'pills') {
       btn.appendChild(dot);
-      btn.appendChild(document.createTextNode(theme.charAt(0).toUpperCase() + theme.slice(1)));
+      btn.appendChild(document.createTextNode(theme.name));
     } else {
       btn.appendChild(dot);
     }
 
-    btn.addEventListener('click', () => applyTheme(theme));
+    btn.addEventListener('click', () => applyTheme(theme.id));
     return btn;
   }
 
@@ -79,26 +100,26 @@
 
   function getStoredLayout() {
     const raw = localStorage.getItem(LAYOUT_KEY);
-    return LAYOUTS.includes(raw) ? raw : DEFAULT_LAYOUT;
+    return LAYOUT_IDS.includes(raw) ? raw : DEFAULT_LAYOUT;
   }
 
-  function applyLayout(layout) {
-    if (!LAYOUTS.includes(layout)) return;
+  function applyLayout(layoutId) {
+    if (!LAYOUT_IDS.includes(layoutId)) return;
     const html = document.documentElement;
-    LAYOUTS.forEach(name => html.classList.remove('tb-layout-' + name));
-    html.classList.add('tb-layout-' + layout);
-    localStorage.setItem(LAYOUT_KEY, layout);
-    updateLayoutButtons(layout);
+    LAYOUT_IDS.forEach(id => html.classList.remove('tb-layout-' + id));
+    html.classList.add('tb-layout-' + layoutId);
+    localStorage.setItem(LAYOUT_KEY, layoutId);
+    updateLayoutButtons(layoutId);
   }
 
-  function updateLayoutButtons(layout) {
+  function updateLayoutButtons(layoutId) {
     document.querySelectorAll('.tb-layout-option').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.layout === layout);
+      btn.classList.toggle('active', btn.dataset.layout === layoutId);
     });
   }
 
-  function setLayout(layout) {
-    applyLayout(layout);
+  function setLayout(layoutId) {
+    applyLayout(layoutId);
   }
 
   function getSettings() {
@@ -222,10 +243,10 @@
 
     // Keep tabs in sync when localStorage changes elsewhere.
     window.addEventListener('storage', event => {
-      if (event.key === THEME_KEY && THEMES.includes(event.newValue)) {
+      if (event.key === THEME_KEY && THEME_IDS.includes(event.newValue)) {
         applyTheme(event.newValue);
       }
-      if (event.key === LAYOUT_KEY && LAYOUTS.includes(event.newValue)) {
+      if (event.key === LAYOUT_KEY && LAYOUT_IDS.includes(event.newValue)) {
         applyLayout(event.newValue);
       }
       if (event.key === SETTINGS_KEY) {
