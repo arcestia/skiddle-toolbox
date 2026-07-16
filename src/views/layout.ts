@@ -15,7 +15,7 @@ export interface PageContext {
 const layoutIds = layouts.map(l => l.id);
 
 const runtimeConfig = JSON.stringify({
-  themes: themes.map(t => ({ id: t.id, name: t.name, swatch: t.swatch })),
+  themes: themes.map(t => ({ id: t.id, name: t.name, swatch: t.swatch, pack: t.pack })),
   layouts: layouts.map(l => ({ id: l.id, name: l.name, description: l.description })),
   defaultTheme,
   defaultLayout,
