@@ -1,4 +1,5 @@
 import { layout } from './layout.js';
+import { footer } from './footer.js';
 
 export const markdownEditorView = (): string => layout({
   title: 'Markdown Editor · Skiddle Toolbox',
@@ -92,13 +93,7 @@ export const markdownEditorView = (): string => layout({
       </div>
     </div>
 
-    <footer class="tb-footer">
-      <span>© <span id="footer-year">2026</span> <a href="https://labs.skiddle.id/" target="_blank" rel="noopener">Skiddle Labs</a></span>
-      <span class="tb-footer-separator"></span>
-      <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener">GitHub</a>
-      <span class="tb-footer-separator"></span>
-      <span class="tb-crafted">Crafted with ❤️ and ☕</span>
-    </footer>
+    ${footer()}
 
     <style>
       .md-layout {
@@ -244,7 +239,7 @@ export const markdownEditorView = (): string => layout({
         padding: 2px 6px;
         border-radius: var(--radius-sm);
         font-size: 0.85em;
-        color: var(--ctp-lavender);
+        color: var(--accent-primary);
       }
 
       .md-preview-content pre {

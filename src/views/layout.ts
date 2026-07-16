@@ -1,6 +1,9 @@
 import { scriptTag, styleTag } from '../lib/assets.js';
 import { defaultTheme, themes } from '../lib/themes.js';
 import { defaultLayout, layouts, renderLayoutOptions } from '../lib/layouts.js';
+import { accents, defaultAccent } from '../lib/accents.js';
+import { defaultRadius, radii } from '../lib/radius.js';
+import { defaultDensity, densities } from '../lib/density.js';
 
 export interface PageContext {
   title: string;
@@ -13,12 +16,21 @@ export interface PageContext {
 }
 
 const layoutIds = layouts.map(l => l.id);
+const accentIds = accents.map(a => a.id);
+const radiusIds = radii.map(r => r.id);
+const densityIds = densities.map(d => d.id);
 
 const runtimeConfig = JSON.stringify({
   themes: themes.map(t => ({ id: t.id, name: t.name, swatch: t.swatch, pack: t.pack })),
   layouts: layouts.map(l => ({ id: l.id, name: l.name, description: l.description })),
+  accents: accents.map(a => ({ id: a.id, name: a.name, hue: a.hue })),
+  radii: radii.map(r => ({ id: r.id, name: r.name })),
+  densities: densities.map(d => ({ id: d.id, name: d.name, description: d.description })),
   defaultTheme,
   defaultLayout,
+  defaultAccent,
+  defaultRadius,
+  defaultDensity,
 });
 
 export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
@@ -37,9 +49,30 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     (function() {
       try {
         const layouts = ${JSON.stringify(layoutIds)};
-        const raw = localStorage.getItem('toolbox-layout');
-        const layout = layouts.includes(raw) ? raw : ${JSON.stringify(defaultLayout)};
+        const rawLayout = localStorage.getItem('toolbox-layout');
+        const layout = layouts.includes(rawLayout) ? rawLayout : ${JSON.stringify(defaultLayout)};
         document.documentElement.classList.add('tb-layout-' + layout);
+
+        const accents = ${JSON.stringify(accentIds)};
+        const rawAccent = localStorage.getItem('toolbox-accent');
+        const accent = accents.includes(rawAccent) ? rawAccent : ${JSON.stringify(defaultAccent)};
+        document.documentElement.setAttribute('data-accent', accent);
+
+        const radii = ${JSON.stringify(radiusIds)};
+        const rawRadius = localStorage.getItem('toolbox-radius');
+        const radius = radii.includes(rawRadius) ? rawRadius : ${JSON.stringify(defaultRadius)};
+        document.documentElement.setAttribute('data-radius', radius);
+
+        const densities = ${JSON.stringify(densityIds)};
+        let rawDensity = localStorage.getItem('toolbox-density');
+        if (!rawDensity) {
+          try {
+            const settings = JSON.parse(localStorage.getItem('toolbox-settings') || '{}');
+            if (settings.compact) rawDensity = 'compact';
+          } catch (e) {}
+        }
+        const density = densities.includes(rawDensity) ? rawDensity : ${JSON.stringify(defaultDensity)};
+        document.documentElement.setAttribute('data-density', density);
       } catch (e) {}
     })();
   </script>
@@ -89,14 +122,36 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
           </div>
         </label>
         <label class="tb-settings-row tb-settings-row--stack">
+          <span>Accent color</span>
+          <div class="tb-accent-options" id="tb-accent-options">
+            ${accents.map(a => `<button type="button" class="tb-accent-option" data-accent="${a.id}" onclick="window.toolbox.setAccent('${a.id}')" aria-label="${a.name} accent">
+              <span class="tb-accent-swatch" style="background:hsl(${a.hue} 85% 75%)" aria-hidden="true"></span>
+              <span>${a.name}</span>
+            </button>`).join('\n            ')}
+          </div>
+        </label>
+        <label class="tb-settings-row tb-settings-row--stack">
+          <span>Corner radius</span>
+          <div class="tb-radius-options" id="tb-radius-options">
+            ${radii.map(r => `<button type="button" class="tb-radius-option" data-radius="${r.id}" onclick="window.toolbox.setRadius('${r.id}')">
+              <strong>${r.name}</strong>
+            </button>`).join('\n            ')}
+          </div>
+        </label>
+        <label class="tb-settings-row tb-settings-row--stack">
           <span>Layout template</span>
           <div class="tb-layout-options" id="tb-layout-options">
             ${renderLayoutOptions()}
           </div>
         </label>
-        <label class="tb-settings-row">
-          <span>Compact mode</span>
-          <input type="checkbox" id="tb-setting-compact" onchange="window.toolbox.toggleCompact(this.checked)">
+        <label class="tb-settings-row tb-settings-row--stack">
+          <span>Density</span>
+          <div class="tb-density-options" id="tb-density-options">
+            ${densities.map(d => `<button type="button" class="tb-density-option" data-density="${d.id}" onclick="window.toolbox.setDensity('${d.id}')">
+              <strong>${d.name}</strong>
+              <span>${d.description}</span>
+            </button>`).join('\n            ')}
+          </div>
         </label>
       </div>
       <div class="tb-settings-section">

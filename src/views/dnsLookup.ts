@@ -1,4 +1,5 @@
 import { layout } from './layout.js';
+import { footer } from './footer.js';
 
 const TYPE_NAMES: Record<number, string> = {
   1: 'A',
@@ -72,13 +73,7 @@ export const dnsLookupView = (): string => layout({
       <div id="dns-results"></div>
     </div>
 
-    <footer class="tb-footer">
-      <span>© <span id="footer-year">2026</span> <a href="https://labs.skiddle.id/" target="_blank" rel="noopener">Skiddle Labs</a></span>
-      <span class="tb-footer-separator"></span>
-      <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener">GitHub</a>
-      <span class="tb-footer-separator"></span>
-      <span class="tb-crafted">Crafted with ❤️ and ☕</span>
-    </footer>
+    ${footer()}
 
     <style>
       .dns-form {
@@ -144,9 +139,9 @@ export const dnsLookupView = (): string => layout({
         border-radius: var(--radius-sm);
         font-size: 0.75rem;
         font-weight: 700;
-        background: color-mix(in srgb, var(--ctp-mauve) 12%, transparent);
-        color: var(--ctp-mauve);
-        border: 1px solid color-mix(in srgb, var(--ctp-mauve) 30%, var(--border-color));
+        background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
+        color: var(--accent-primary);
+        border: 1px solid color-mix(in srgb, var(--accent-primary) 30%, var(--border-color));
       }
     </style>
 

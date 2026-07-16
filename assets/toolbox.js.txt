@@ -21,6 +21,9 @@
   const THEME_KEY = 'toolbox-theme';
   const SETTINGS_KEY = 'toolbox-settings';
   const LAYOUT_KEY = 'toolbox-layout';
+  const ACCENT_KEY = 'toolbox-accent';
+  const RADIUS_KEY = 'toolbox-radius';
+  const DENSITY_KEY = 'toolbox-density';
   const RECENT_KEY = 'toolbox-recent';
 
   function loadConfig() {
@@ -31,18 +34,37 @@
     return {
       themes: [{ id: 'mocha', name: 'Mocha', swatch: '#1e1e2e' }],
       layouts: [{ id: 'default', name: 'Default', description: 'Default layout' }],
+      accents: [{ id: 'mauve', name: 'Mauve', hue: 267 }],
+      radii: [{ id: 'rounded', name: 'Rounded' }],
+      densities: [
+        { id: 'compact', name: 'Compact', description: 'Tighter spacing' },
+        { id: 'comfortable', name: 'Comfortable', description: 'Balanced spacing' },
+        { id: 'spacious', name: 'Spacious', description: 'More breathing room' },
+      ],
       defaultTheme: 'mocha',
       defaultLayout: 'default',
+      defaultAccent: 'mauve',
+      defaultRadius: 'rounded',
+      defaultDensity: 'comfortable',
     };
   }
 
   const config = loadConfig();
   const THEMES = config.themes || [];
   const LAYOUTS = config.layouts || [];
+  const ACCENTS = config.accents || [];
+  const RADII = config.radii || [];
+  const DENSITIES = config.densities || [];
   const THEME_IDS = THEMES.map(t => t.id);
   const LAYOUT_IDS = LAYOUTS.map(l => l.id);
+  const ACCENT_IDS = ACCENTS.map(a => a.id);
+  const RADIUS_IDS = RADII.map(r => r.id);
+  const DENSITY_IDS = DENSITIES.map(d => d.id);
   const DEFAULT_THEME = config.defaultTheme || THEME_IDS[0] || 'mocha';
   const DEFAULT_LAYOUT = config.defaultLayout || LAYOUT_IDS[0] || 'default';
+  const DEFAULT_ACCENT = config.defaultAccent || ACCENT_IDS[0] || 'mauve';
+  const DEFAULT_RADIUS = config.defaultRadius || RADIUS_IDS[0] || 'rounded';
+  const DEFAULT_DENSITY = config.defaultDensity || DENSITY_IDS[0] || 'comfortable';
 
   function getStoredTheme() {
     const raw = localStorage.getItem(THEME_KEY);
@@ -156,6 +178,76 @@
     applyLayout(layoutId);
   }
 
+  function getStoredAccent() {
+    const raw = localStorage.getItem(ACCENT_KEY);
+    return ACCENT_IDS.includes(raw) ? raw : DEFAULT_ACCENT;
+  }
+
+  function applyAccent(accentId) {
+    if (!ACCENT_IDS.includes(accentId)) return;
+    document.documentElement.setAttribute('data-accent', accentId);
+    localStorage.setItem(ACCENT_KEY, accentId);
+    updateAccentButtons(accentId);
+  }
+
+  function updateAccentButtons(accentId) {
+    document.querySelectorAll('.tb-accent-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.accent === accentId);
+    });
+  }
+
+  function setAccent(accentId) {
+    applyAccent(accentId);
+  }
+
+  function getStoredRadius() {
+    const raw = localStorage.getItem(RADIUS_KEY);
+    return RADIUS_IDS.includes(raw) ? raw : DEFAULT_RADIUS;
+  }
+
+  function applyRadius(radiusId) {
+    if (!RADIUS_IDS.includes(radiusId)) return;
+    document.documentElement.setAttribute('data-radius', radiusId);
+    localStorage.setItem(RADIUS_KEY, radiusId);
+    updateRadiusButtons(radiusId);
+  }
+
+  function updateRadiusButtons(radiusId) {
+    document.querySelectorAll('.tb-radius-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.radius === radiusId);
+    });
+  }
+
+  function setRadius(radiusId) {
+    applyRadius(radiusId);
+  }
+
+  function getStoredDensity() {
+    let raw = localStorage.getItem(DENSITY_KEY);
+    if (!raw) {
+      const settings = getSettings();
+      if (settings.compact) raw = 'compact';
+    }
+    return DENSITY_IDS.includes(raw) ? raw : DEFAULT_DENSITY;
+  }
+
+  function applyDensity(densityId) {
+    if (!DENSITY_IDS.includes(densityId)) return;
+    document.body.setAttribute('data-density', densityId);
+    localStorage.setItem(DENSITY_KEY, densityId);
+    updateDensityButtons(densityId);
+  }
+
+  function updateDensityButtons(densityId) {
+    document.querySelectorAll('.tb-density-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.density === densityId);
+    });
+  }
+
+  function setDensity(densityId) {
+    applyDensity(densityId);
+  }
+
   function getSettings() {
     try {
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -170,15 +262,12 @@
   }
 
   function applyCompactMode(enabled) {
-    document.body.classList.toggle('tb-compact', !!enabled);
+    applyDensity(enabled ? 'compact' : 'comfortable');
   }
 
   function loadSettings() {
-    const settings = getSettings();
-    applyCompactMode(settings.compact);
+    applyDensity(getStoredDensity());
     applyLayout(getStoredLayout());
-    const checkbox = document.getElementById('tb-setting-compact');
-    if (checkbox) checkbox.checked = !!settings.compact;
   }
 
   function openSettings() {
@@ -193,10 +282,7 @@
   }
 
   function toggleCompact(enabled) {
-    const settings = getSettings();
-    settings.compact = !!enabled;
-    setSettings(settings);
-    applyCompactMode(settings.compact);
+    setDensity(enabled ? 'compact' : 'comfortable');
   }
 
   function getRecentTools() {
@@ -269,6 +355,9 @@
     updateActiveButtons(theme);
     initThemeSelect();
     updateThemeSelect(theme);
+    applyAccent(getStoredAccent());
+    applyRadius(getStoredRadius());
+    applyDensity(getStoredDensity());
     loadSettings();
     initRecentTools();
 
@@ -284,6 +373,15 @@
       }
       if (event.key === LAYOUT_KEY && LAYOUT_IDS.includes(event.newValue)) {
         applyLayout(event.newValue);
+      }
+      if (event.key === ACCENT_KEY && ACCENT_IDS.includes(event.newValue)) {
+        applyAccent(event.newValue);
+      }
+      if (event.key === RADIUS_KEY && RADIUS_IDS.includes(event.newValue)) {
+        applyRadius(event.newValue);
+      }
+      if (event.key === DENSITY_KEY && DENSITY_IDS.includes(event.newValue)) {
+        applyDensity(event.newValue);
       }
       if (event.key === SETTINGS_KEY) {
         loadSettings();
@@ -303,6 +401,15 @@
       setLayout: setLayout,
       getLayout: getStoredLayout,
       layouts: LAYOUTS,
+      setAccent: setAccent,
+      getAccent: getStoredAccent,
+      accents: ACCENTS,
+      setRadius: setRadius,
+      getRadius: getStoredRadius,
+      radii: RADII,
+      setDensity: setDensity,
+      getDensity: getStoredDensity,
+      densities: DENSITIES,
       openSettings: openSettings,
       closeSettings: closeSettings,
       toggleCompact: toggleCompact,

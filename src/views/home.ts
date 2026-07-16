@@ -1,4 +1,5 @@
 import { layout } from './layout.js';
+import { footer } from './footer.js';
 
 const tools = [
   {
@@ -154,13 +155,7 @@ export const homeView = (): string => layout({
       <span>Try a different keyword or category.</span>
     </div>
 
-    <footer class="tb-footer">
-      <span>© <span id="footer-year">2026</span> <a href="https://labs.skiddle.id/" target="_blank" rel="noopener">Skiddle Labs</a></span>
-      <span class="tb-footer-separator"></span>
-      <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener">GitHub</a>
-      <span class="tb-footer-separator"></span>
-      <span class="tb-crafted">Crafted with ❤️ and ☕</span>
-    </footer>
+    ${footer()}
 
     <style>
       .tb-header-center {
@@ -189,7 +184,7 @@ export const homeView = (): string => layout({
         transform: translate(-50%, -50%);
         width: 520px;
         height: 320px;
-        background: radial-gradient(ellipse at center, color-mix(in srgb, var(--ctp-mauve) 22%, transparent) 0%, transparent 70%);
+        background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent-primary) 22%, transparent) 0%, transparent 70%);
         filter: blur(40px);
         pointer-events: none;
         z-index: -1;
@@ -332,7 +327,7 @@ export const homeView = (): string => layout({
         background: var(--gradient-accent);
         color: var(--ctp-crust);
         border-color: transparent;
-        box-shadow: 0 4px 14px color-mix(in srgb, var(--ctp-mauve) 35%, transparent);
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-primary) 35%, transparent);
       }
 
       .recent-tools-card {
@@ -418,7 +413,7 @@ export const homeView = (): string => layout({
 
       .tool-card:hover {
         transform: translateY(-6px);
-        border-color: color-mix(in srgb, var(--card-accent-color, var(--ctp-mauve)) 50%, var(--border-color));
+        border-color: color-mix(in srgb, var(--card-accent-color, var(--accent-primary)) 50%, var(--border-color));
         box-shadow: 0 20px 50px color-mix(in srgb, var(--ctp-crust) 60%, transparent);
       }
 
@@ -443,8 +438,8 @@ export const homeView = (): string => layout({
         --card-accent-color: var(--ctp-red);
       }
       .tool-card--mauve {
-        --card-accent: linear-gradient(135deg, var(--ctp-mauve), var(--ctp-pink));
-        --card-accent-color: var(--ctp-mauve);
+        --card-accent: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        --card-accent-color: var(--accent-primary);
       }
       .tool-card--green {
         --card-accent: linear-gradient(135deg, var(--ctp-green), var(--ctp-teal));

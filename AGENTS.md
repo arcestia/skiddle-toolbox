@@ -16,7 +16,7 @@ This document contains project-specific guidance for AI coding agents working on
 - **Runtime / Platform:** Cloudflare Workers.
 - **Framework:** Hono (`hono`).
 - **Language:** TypeScript (ES modules).
-- **Markup / Styling:** HTML generated via template literals, styled by the shared Catppuccin `assets/toolbox.css`.
+- **Markup / Styling:** HTML generated via template literals, styled by the shared design tokens in `assets/toolbox.css.txt`.
 - **Bundler:** Wrangler v3.
 - **Package Manager:** npm.
 
@@ -24,8 +24,26 @@ This document contains project-specific guidance for AI coding agents working on
 
 ```
 ├── assets/
-│   ├── toolbox.css            # Shared Catppuccin design system
-│   └── toolbox.js             # Shared theme switcher & cross-page sync
+│   ├── toolbox.css.txt        # Shared design system & component styles
+│   ├── toolbox.js.txt         # Shared theme, settings & UI sync
+│   ├── themes/                # Per-theme CSS overrides
+│   │   ├── latte.css.txt
+│   │   ├── frappe.css.txt
+│   │   ├── macchiato.css.txt
+│   │   ├── mocha.css.txt
+│   │   ├── tokyo-night.css.txt
+│   │   ├── nord.css.txt
+│   │   ├── dracula.css.txt
+│   │   ├── gruvbox.css.txt
+│   │   ├── one-dark.css.txt
+│   │   ├── github-dark.css.txt
+│   │   ├── github-light.css.txt
+│   │   ├── solarized-dark.css.txt
+│   │   └── solarized-light.css.txt
+│   └── layouts/               # Per-layout CSS overrides
+│       ├── default.css.txt
+│       ├── compact.css.txt
+│       └── wide.css.txt
 ├── src/
 │   ├── index.ts               # Hono app bootstrap + middleware
 │   ├── routes/
@@ -33,13 +51,19 @@ This document contains project-specific guidance for AI coding agents working on
 │   │   └── cors.ts            # CORS proxy route
 │   ├── views/
 │   │   ├── layout.ts          # Shared page shell
+│   │   ├── footer.ts          # Shared page footer
 │   │   ├── home.ts            # Landing page
 │   │   ├── cdnValidator.ts    # Image CDN Validator page
 │   │   ├── apiTester.ts       # API Tester page
 │   │   ├── textExtractor.ts   # Text Extractor page
 │   │   └── regexPlayground.ts # Regex Playground page
 │   ├── lib/
-│   │   └── assets.ts          # Imports toolbox.css/toolbox.js as raw strings
+│   │   ├── assets.ts          # Composes & inlines CSS/JS as raw strings
+│   │   ├── themes.ts          # Theme registry & CSS composer
+│   │   ├── layouts.ts         # Layout registry & options renderer
+│   │   ├── accents.ts         # Accent color registry
+│   │   ├── radius.ts          # Corner-radius preset registry
+│   │   └── density.ts         # Density preset registry
 │   └── types/
 │       └── assets.d.ts        # Type declarations for raw asset imports
 ├── package.json
@@ -65,7 +89,7 @@ This document contains project-specific guidance for AI coding agents working on
 
 ### Static Assets
 
-The shared CSS and JS live in `assets/` and are imported as raw text modules via Wrangler's `rules` config in `wrangler.toml`. They are inlined into every page response by `src/lib/assets.ts` and `src/views/layout.ts`.
+The shared CSS and JS live in `assets/` and are imported as raw text modules. `src/lib/assets.ts` composes the final inline stylesheet from the base CSS, theme registry, layout registry, accent registry, and radius registry, then inlines it into every page response via `src/views/layout.ts`.
 
 ## Build and Development Commands
 
@@ -110,11 +134,11 @@ rules = [
 - **Inline scripts:** Tool-specific browser JS may live inside the view as an inline `<script>` block.
 - **Shared components:** Use `layout()` for the page shell and `assets.ts` for CSS/JS inlining.
 - **CSS conventions:**
-  - Shared styles live in `assets/toolbox.css`.
+  - Shared styles live in `assets/toolbox.css.txt`.
   - Component classes are prefixed with `tb-`.
-  - Catppuccin token system with four switchable themes (Latte, Frappé, Macchiato, Mocha).
+  - Design tokens are split into themes (`assets/themes/*.css.txt`), layouts (`assets/layouts/*.css.txt`), accent hue, radius presets, and density presets.
   - Page-specific styles can live in a small inline `<style>` block inside the view.
-- **Theme & Settings:** `assets/toolbox.js` injects the theme switcher into any element with `data-tb-theme-bar`, persists the chosen theme in `localStorage` under `toolbox-theme`, and keeps it synced across tabs. It also provides a global settings modal (compact mode, clear recent tools) and tracks recently used tools in `localStorage` under `toolbox-recent`.
+- **Theme & Settings:** `assets/toolbox.js.txt` reads runtime configuration injected by `layout.ts` and drives theme, layout, accent color, corner radius, and density controls. Choices are persisted in `localStorage` (`toolbox-theme`, `toolbox-layout`, `toolbox-accent`, `toolbox-radius`, `toolbox-density`) and synced across tabs. It also provides a global settings modal and tracks recently used tools in `localStorage` under `toolbox-recent`.
 
 ## Current Tools
 
@@ -212,5 +236,6 @@ When making changes, verify manually:
 1. Create a new view function in `src/views/<tool-name>.ts` that returns an HTML string via `layout()`.
 2. Add the route in `src/routes/pages.ts` (e.g., `app.get('/my-tool', ...)`).
 3. Add a card to `src/views/home.ts`.
-4. Re-use the shared `tb-*` component classes and inline any page-specific styles in a `<style>` block inside the view. Use `.empty-state` for consistent empty/search-no-results UI.
-5. If server-side logic is needed, add it in `src/lib/` or directly in `src/routes/`.
+4. Include the shared footer with `footer()` from `src/views/footer.ts`.
+5. Re-use the shared `tb-*` component classes and inline any page-specific styles in a `<style>` block inside the view. Use `.empty-state` for consistent empty/search-no-results UI.
+6. If server-side logic is needed, add it in `src/lib/` or directly in `src/routes/`.
