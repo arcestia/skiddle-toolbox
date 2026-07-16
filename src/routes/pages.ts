@@ -6,6 +6,7 @@ import { apiTesterView } from '../views/apiTester.js';
 import { dnsLookupView } from '../views/dnsLookup.js';
 import { textExtractorView } from '../views/textExtractor.js';
 import { regexPlaygroundView } from '../views/regexPlayground.js';
+import { spreadsheetViewerView } from '../views/spreadsheetViewer.js';
 
 export const pagesRoute = new Hono();
 
@@ -31,4 +32,8 @@ pagesRoute.get('/text-extractor', (c) => {
 
 pagesRoute.get('/regex-playground', (c) => {
   return c.html(regexPlaygroundView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/spreadsheet-viewer', (c) => {
+  return c.html(spreadsheetViewerView(), 200, { 'Content-Type': htmlContentType });
 });

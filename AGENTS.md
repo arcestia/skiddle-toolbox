@@ -55,8 +55,10 @@ This document contains project-specific guidance for AI coding agents working on
   - `GET /` → `homeView()`
   - `GET /cdn-validator` → `cdnValidatorView()`
   - `GET /api-tester` → `apiTesterView()`
+  - `GET /dns-lookup` → `dnsLookupView()`
   - `GET /text-extractor` → `textExtractorView()`
   - `GET /regex-playground` → `regexPlaygroundView()`
+  - `GET /spreadsheet-viewer` → `spreadsheetViewerView()`
 - `src/routes/cors.ts` mounts under `/api`.
   - `ALL /api/cors?url=...` → forwards the request to the target URL with permissive CORS headers.
 
@@ -162,6 +164,17 @@ Behavior agents should preserve:
 - Detailed matches breakdown cards listing indices, lengths, and captured group labels/values.
 - Pre-defined loadable patterns (templates) and interactive cheatsheet sidebar.
 - Executes completely client-side in the browser.
+
+### Spreadsheet Viewer (`/spreadsheet-viewer`)
+
+Browser-local spreadsheet and table viewer.
+
+Behavior agents should preserve:
+- Supports CSV, TSV, Excel (.xlsx/.xls), ODS, JSON, and Markdown tables.
+- Runs entirely in the browser; binary files are parsed locally via SheetJS loaded from CDN.
+- Provides sortable columns, row filtering, pagination, and CSV export.
+- Supports multi-sheet Excel/ODS files via a sheet selector.
+- Falls back to the `/api/cors?url=<encodedUrl>` proxy when loading a spreadsheet by URL.
 
 
 

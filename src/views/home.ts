@@ -52,23 +52,15 @@ const tools = [
     active: true
   },
   {
-    icon: '🔀',
-    status: 'Planned',
-    category: 'Routing',
-    accent: 'peach',
-    title: 'Redirect Planner',
-    desc: 'Map request paths to destinations and compile redirection rules for serverless platforms.',
-    active: false
+    icon: '📊',
+    status: 'Active',
+    category: 'Data',
+    accent: 'green',
+    title: 'Spreadsheet Viewer',
+    desc: 'Open CSV, TSV, Excel, ODS, JSON, or Markdown tables locally. Sort, filter, paginate, and export to CSV.',
+    href: '/spreadsheet-viewer',
+    active: true
   },
-  {
-    icon: '🛡️',
-    status: 'Planned',
-    category: 'Security',
-    accent: 'red',
-    title: 'Security Headers Shield',
-    desc: 'Configure CSP, HSTS, X-Frame-Options and other security response headers through an edge middleware builder.',
-    active: false
-  }
 ];
 
 const toolCard = (tool: typeof tools[0], index: number) => `

@@ -1,12 +1,16 @@
 # Developer Toolbox — Cloudflare Workers + Hono
 
-A small developer utility suite served entirely from a single Cloudflare Worker using [Hono](https://hono.dev/).
+A small developer utility suite served entirely from a single Cloudflare Worker using [Hono](https://hono.dev/). All tools run in the browser; the Worker only serves HTML and proxies cross-origin requests when needed.
 
 ## Tools
 
-- **Image CDN Validator** (`/cdn-validator`) — bulk-check image URLs by provider.
-- **API Tester** (`/api-tester`) — browser-local HTTP client with optional CORS proxy.
-- **CORS Proxy** (`/api/cors?url=...`) — edge proxy used by the tools above.
+- **Image CDN Validator** (`/cdn-validator`) — bulk-check image URLs by provider, response code, and Content-Type.
+- **API Tester** (`/api-tester`) — browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy.
+- **DNS Lookup** (`/dns-lookup`) — query public DNS-over-HTTPS resolvers for A, AAAA, MX, TXT, CNAME, and other records.
+- **Text Extractor** (`/text-extractor`) — extract URLs, emails, domains, and IP addresses from logs, HTML, or markdown.
+- **Regex Playground** (`/regex-playground`) — write, test, and debug regular expressions with match visualization and group breakdowns.
+- **Spreadsheet Viewer** (`/spreadsheet-viewer`) — view CSV, TSV, Excel (.xlsx/.xls), ODS, JSON, and Markdown tables locally.
+- **CORS Proxy** (`/api/cors?url=...`) — edge proxy used by the tools above for cross-origin requests.
 
 ## Tech stack
 
@@ -23,7 +27,7 @@ A small developer utility suite served entirely from a single Cloudflare Worker 
 │   ├── toolbox.css            # Shared Catppuccin design system
 │   └── toolbox.js             # Shared theme switcher & sync
 ├── src/
-│   ├── index.ts               # Hono app bootstrap
+│   ├── index.ts               # Hono app bootstrap + middleware
 │   ├── routes/
 │   │   ├── pages.ts           # HTML page routes
 │   │   └── cors.ts            # CORS proxy route
@@ -31,7 +35,11 @@ A small developer utility suite served entirely from a single Cloudflare Worker 
 │   │   ├── layout.ts          # Shared page shell
 │   │   ├── home.ts            # Landing page
 │   │   ├── cdnValidator.ts    # Image CDN Validator page
-│   │   └── apiTester.ts       # API Tester page
+│   │   ├── apiTester.ts       # API Tester page
+│   │   ├── dnsLookup.ts       # DNS Lookup page
+│   │   ├── textExtractor.ts   # Text Extractor page
+│   │   ├── regexPlayground.ts # Regex Playground page
+│   │   └── spreadsheetViewer.ts # Spreadsheet Viewer page
 │   ├── lib/
 │   │   └── assets.ts          # Bundle CSS/JS as raw strings
 │   └── types/
@@ -52,6 +60,14 @@ npm run dev
 ```
 
 Open http://localhost:8788 in your browser.
+
+## Available scripts
+
+```bash
+npm run dev      # Start local development server
+npm run check    # Type-check without emitting
+npm run deploy   # Deploy to Cloudflare Workers
+```
 
 ## Deploy
 
