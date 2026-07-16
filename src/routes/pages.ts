@@ -8,6 +8,7 @@ import { textExtractorView } from '../views/textExtractor.js';
 import { regexPlaygroundView } from '../views/regexPlayground.js';
 import { spreadsheetViewerView } from '../views/spreadsheetViewer.js';
 import { markdownEditorView } from '../views/markdownEditor.js';
+import { creditsView } from '../views/credits.js';
 
 export const pagesRoute = new Hono();
 
@@ -41,4 +42,8 @@ pagesRoute.get('/spreadsheet-viewer', (c) => {
 
 pagesRoute.get('/markdown-editor', (c) => {
   return c.html(markdownEditorView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/credits', (c) => {
+  return c.html(creditsView(), 200, { 'Content-Type': htmlContentType });
 });
