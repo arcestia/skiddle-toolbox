@@ -83,6 +83,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <h3>Appearance</h3>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Theme</span>
+          <input type="text" id="tb-theme-search" class="tb-input" placeholder="Search themes..." autocomplete="off">
           <div class="tb-theme-select-row">
             <span class="tb-theme-swatch" id="tb-theme-swatch" aria-hidden="true"></span>
             <select id="tb-theme-select" class="tb-select" onchange="window.toolbox.setTheme(this.value)"></select>
