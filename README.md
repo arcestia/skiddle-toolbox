@@ -3,6 +3,7 @@
 A developer utility suite served from a single [Cloudflare Worker](https://workers.cloudflare.com/) using [Hono](https://hono.dev/). Every page is server-rendered HTML with all CSS and JavaScript inlined; all tool logic runs client-side in the browser. The Worker serves pages and proxies cross-origin requests for the tools that need them.
 
 **Repository:** https://github.com/arcestia/skiddle-toolbox
+**License:** [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](https://unlicense.org) — public domain, use it however you like
 
 ## Contents
 
@@ -16,6 +17,7 @@ A developer utility suite served from a single [Cloudflare Worker](https://worke
 - [Deployment](#deployment)
 - [Security considerations](#security-considerations)
 - [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
@@ -143,4 +145,10 @@ Requires a Cloudflare account and `wrangler login`.
 
 ## Contributing
 
-Behavior contracts for existing tools are documented in [AGENTS.md](AGENTS.md); architecture details (asset inlining, design-token registries, page shell) are covered in [CLAUDE.md](CLAUDE.md). Review both before making structural changes.
+This is a personal project I build and maintain for myself — I'm not accepting pull requests or feature requests. If you want to change something, fork it: the code is [Unlicensed](LICENSE), so it's yours as much as mine. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+If you're poking around a fork, behavior contracts for the tools and architecture notes (asset inlining, design-token registries, page shell) live in [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
+
+## License
+
+[The Unlicense](LICENSE) — released into the public domain. Copy, modify, sell, remix, whatever you want, for any purpose; no attribution required and no warranty given.
