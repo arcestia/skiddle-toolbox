@@ -159,7 +159,7 @@ export const homeView = (): string => layout({
       <span class="tb-footer-separator"></span>
       <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener">GitHub</a>
       <span class="tb-footer-separator"></span>
-      <span class="tb-crafted">Crafted with <span>♥</span> and Catppuccin</span>
+      <span class="tb-crafted">Crafted with ❤️ and ☕</span>
     </footer>
 
     <style>
