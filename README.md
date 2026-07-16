@@ -15,6 +15,7 @@ Repository: https://github.com/arcestia/skiddle-toolbox
 - **Regex Playground** (`/regex-playground`) — write, test, and debug regular expressions with match visualization and group breakdowns.
 - **Spreadsheet Viewer** (`/spreadsheet-viewer`) — view CSV, TSV, Excel (.xlsx/.xls), ODS, JSON, and Markdown tables locally.
 - **Markdown Editor** (`/markdown-editor`) — write Markdown with a live split-pane preview, formatting toolbar, and export.
+- **DDoS Simulator** (`/ddos-simulator`) — interactive, fully simulated visualization of DDoS attacks on a live world map, with mitigations and a defense game. No real traffic.
 - **CORS Proxy** (`/api/cors?url=...`) — edge proxy used by the tools above for cross-origin requests.
 
 ## Tech stack

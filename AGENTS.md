@@ -84,6 +84,7 @@ This document contains project-specific guidance for AI coding agents working on
   - `GET /regex-playground` → `regexPlaygroundView()`
   - `GET /spreadsheet-viewer` → `spreadsheetViewerView()`
   - `GET /markdown-editor` → `markdownEditorView()`
+  - `GET /ddos-simulator` → `ddosSimulatorView()`
 - `src/routes/cors.ts` mounts under `/api`.
   - `ALL /api/cors?url=...` → forwards the request to the target URL with permissive CORS headers.
 
@@ -210,6 +211,16 @@ Behavior agents should preserve:
 - Provides a split-pane editor and preview.
 - Includes a formatting toolbar for common Markdown syntax.
 - Supports loading `.md` files and exporting the source as `.md` or the preview as HTML.
+### DDoS Simulator (`/ddos-simulator`)
+
+Educational, fully client-side visualization of DDoS attacks on a dot-matrix world map.
+
+Behavior agents should preserve:
+- Sends **zero real network traffic**; all packets/arcs are canvas-drawn simulation. Never wire it to `fetch()` or the CORS proxy.
+- Two modes: Sandbox (free play) and Defense Game (escalating waves, max 2 active mitigations, score + best score persisted in `localStorage` under `toolbox-ddos-best`).
+- Attack types: UDP Flood, SYN Flood, HTTP Flood, DNS Amplification (two-hop arcs via a reflector), Slowloris (slow lingering connections); each has its own packet rate/size/weight and a per-defense effectiveness matrix.
+- The world map is an embedded 72×36 equirectangular span grid rendered to a static offscreen canvas layer; no external map assets.
+- Colors are read from the active theme's CSS variables and refreshed periodically so theme switching works live.
 
 
 

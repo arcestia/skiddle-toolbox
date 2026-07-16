@@ -10,6 +10,7 @@ import { spreadsheetViewerView } from '../views/spreadsheetViewer.js';
 import { markdownEditorView } from '../views/markdownEditor.js';
 import { creditsView } from '../views/credits.js';
 import { changelogView } from '../views/changelog.js';
+import { ddosSimulatorView } from '../views/ddosSimulator.js';
 
 export const pagesRoute = new Hono();
 
@@ -43,6 +44,10 @@ pagesRoute.get('/spreadsheet-viewer', (c) => {
 
 pagesRoute.get('/markdown-editor', (c) => {
   return c.html(markdownEditorView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/ddos-simulator', (c) => {
+  return c.html(ddosSimulatorView(), 200, { 'Content-Type': htmlContentType });
 });
 
 pagesRoute.get('/credits', (c) => {

@@ -72,6 +72,16 @@ const tools = [
     href: '/markdown-editor',
     active: true
   },
+  {
+    icon: '🌩️',
+    status: 'Active',
+    category: 'Fun',
+    accent: 'red',
+    title: 'DDoS Simulator',
+    desc: 'Watch a simulated DDoS attack unfold on a live cyber-war map. Launch botnets, toggle mitigations, and survive waves in Defense Game mode. 100% simulated.',
+    href: '/ddos-simulator',
+    active: true
+  },
 ];
 
 const categories = Array.from(new Set(tools.map(t => t.category)));
