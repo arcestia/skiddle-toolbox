@@ -326,6 +326,28 @@ body::after {
 
 .tb-theme-dot { border: 1.5px solid var(--ctp-overlay0); }
 
+/* ── Theme selector (settings dropdown) ── */
+.tb-theme-select-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.tb-theme-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ctp-overlay0);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px var(--ctp-crust);
+}
+
+.tb-theme-select-row .tb-select {
+  flex: 1;
+  min-width: 0;
+}
+
 /* ── Back link ── */
 .tb-back-link {
   color: var(--ctp-lavender);

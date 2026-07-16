@@ -1,0 +1,28 @@
+[data-theme="tokyo-night"] {
+  --ctp-crust: #15161e;
+  --ctp-mantle: #1a1b26;
+  --ctp-base: #24283b;
+  --ctp-surface0: #414868;
+  --ctp-surface1: #565f89;
+  --ctp-surface2: #737aa2;
+  --ctp-overlay0: #565f89;
+  --ctp-overlay1: #737aa2;
+  --ctp-overlay2: #a9b1d6;
+  --ctp-subtext0: #a9b1d6;
+  --ctp-subtext1: #c0caf5;
+  --ctp-text: #c0caf5;
+  --ctp-lavender: #bb9af7;
+  --ctp-blue: #7aa2f7;
+  --ctp-sapphire: #2ac3de;
+  --ctp-sky: #7dcfff;
+  --ctp-teal: #1abc9c;
+  --ctp-green: #9ece6a;
+  --ctp-yellow: #e0af68;
+  --ctp-peach: #ff9e64;
+  --ctp-maroon: #f7768e;
+  --ctp-red: #f7768e;
+  --ctp-mauve: #bb9af7;
+  --ctp-pink: #ff007c;
+  --ctp-flamingo: #ff9e64;
+  --ctp-rosewater: #e0af68;
+}

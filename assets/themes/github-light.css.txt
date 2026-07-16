@@ -1,0 +1,28 @@
+[data-theme="github-light"] {
+  --ctp-crust: #f6f8fa;
+  --ctp-mantle: #ffffff;
+  --ctp-base: #f6f8fa;
+  --ctp-surface0: #eaeef2;
+  --ctp-surface1: #d0d7de;
+  --ctp-surface2: #afb8c1;
+  --ctp-overlay0: #d0d7de;
+  --ctp-overlay1: #afb8c1;
+  --ctp-overlay2: #6e7781;
+  --ctp-subtext0: #6e7781;
+  --ctp-subtext1: #57606a;
+  --ctp-text: #24292f;
+  --ctp-lavender: #8250df;
+  --ctp-blue: #0969da;
+  --ctp-sapphire: #0550ae;
+  --ctp-sky: #0969da;
+  --ctp-teal: #1b7c83;
+  --ctp-green: #1a7f37;
+  --ctp-yellow: #9a6700;
+  --ctp-peach: #bc4c00;
+  --ctp-maroon: #cf222e;
+  --ctp-red: #cf222e;
+  --ctp-mauve: #8250df;
+  --ctp-pink: #bf3989;
+  --ctp-flamingo: #bc4c00;
+  --ctp-rosewater: #9a6700;
+}

@@ -1,0 +1,28 @@
+[data-theme="nord"] {
+  --ctp-crust: #242933;
+  --ctp-mantle: #2e3440;
+  --ctp-base: #3b4252;
+  --ctp-surface0: #434c5e;
+  --ctp-surface1: #4c566a;
+  --ctp-surface2: #5e81ac;
+  --ctp-overlay0: #4c566a;
+  --ctp-overlay1: #5e81ac;
+  --ctp-overlay2: #81a1c1;
+  --ctp-subtext0: #81a1c1;
+  --ctp-subtext1: #d8dee9;
+  --ctp-text: #eceff4;
+  --ctp-lavender: #b48ead;
+  --ctp-blue: #5e81ac;
+  --ctp-sapphire: #88c0d0;
+  --ctp-sky: #81a1c1;
+  --ctp-teal: #8fbcbb;
+  --ctp-green: #a3be8c;
+  --ctp-yellow: #ebcb8b;
+  --ctp-peach: #d08770;
+  --ctp-maroon: #bf616a;
+  --ctp-red: #bf616a;
+  --ctp-mauve: #b48ead;
+  --ctp-pink: #b48ead;
+  --ctp-flamingo: #d08770;
+  --ctp-rosewater: #ebcb8b;
+}

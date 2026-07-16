@@ -1,0 +1,28 @@
+[data-theme="solarized-light"] {
+  --ctp-crust: #eee8d5;
+  --ctp-mantle: #fdf6e3;
+  --ctp-base: #eee8d5;
+  --ctp-surface0: #93a1a1;
+  --ctp-surface1: #839496;
+  --ctp-surface2: #657b83;
+  --ctp-overlay0: #839496;
+  --ctp-overlay1: #657b83;
+  --ctp-overlay2: #586e75;
+  --ctp-subtext0: #586e75;
+  --ctp-subtext1: #475b62;
+  --ctp-text: #657b83;
+  --ctp-lavender: #d33682;
+  --ctp-blue: #268bd2;
+  --ctp-sapphire: #2aa198;
+  --ctp-sky: #268bd2;
+  --ctp-teal: #2aa198;
+  --ctp-green: #859900;
+  --ctp-yellow: #b58900;
+  --ctp-peach: #cb4b16;
+  --ctp-maroon: #dc322f;
+  --ctp-red: #dc322f;
+  --ctp-mauve: #d33682;
+  --ctp-pink: #d33682;
+  --ctp-flamingo: #cb4b16;
+  --ctp-rosewater: #b58900;
+}

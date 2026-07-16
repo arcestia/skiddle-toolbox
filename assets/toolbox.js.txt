@@ -54,6 +54,7 @@
     document.documentElement.setAttribute('data-theme', themeId);
     localStorage.setItem(THEME_KEY, themeId);
     updateActiveButtons(themeId);
+    updateThemeSelect(themeId);
   }
 
   function updateActiveButtons(themeId) {
@@ -96,6 +97,26 @@
       container.setAttribute('aria-label', 'Theme switcher');
       THEMES.forEach(theme => container.appendChild(themeButton(theme, variant)));
     });
+  }
+
+  function initThemeSelect() {
+    const select = document.getElementById('tb-theme-select');
+    if (!select) return;
+    select.innerHTML = '';
+    THEMES.forEach(theme => {
+      const option = document.createElement('option');
+      option.value = theme.id;
+      option.textContent = theme.name;
+      select.appendChild(option);
+    });
+  }
+
+  function updateThemeSelect(themeId) {
+    const select = document.getElementById('tb-theme-select');
+    const swatch = document.getElementById('tb-theme-swatch');
+    if (select) select.value = themeId;
+    const theme = THEMES.find(t => t.id === themeId);
+    if (swatch && theme) swatch.style.backgroundColor = theme.swatch;
   }
 
   function getStoredLayout() {
@@ -233,6 +254,8 @@
     document.documentElement.setAttribute('data-theme', theme);
     injectThemeBars();
     updateActiveButtons(theme);
+    initThemeSelect();
+    updateThemeSelect(theme);
     loadSettings();
     initRecentTools();
 

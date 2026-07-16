@@ -1,0 +1,28 @@
+[data-theme="gruvbox"] {
+  --ctp-crust: #1d2021;
+  --ctp-mantle: #282828;
+  --ctp-base: #3c3836;
+  --ctp-surface0: #504945;
+  --ctp-surface1: #665c54;
+  --ctp-surface2: #7c6f64;
+  --ctp-overlay0: #665c54;
+  --ctp-overlay1: #7c6f64;
+  --ctp-overlay2: #a89984;
+  --ctp-subtext0: #a89984;
+  --ctp-subtext1: #d5c4a1;
+  --ctp-text: #ebdbb2;
+  --ctp-lavender: #d3869b;
+  --ctp-blue: #458588;
+  --ctp-sapphire: #83a598;
+  --ctp-sky: #83a598;
+  --ctp-teal: #8ec07c;
+  --ctp-green: #b8bb26;
+  --ctp-yellow: #fabd2f;
+  --ctp-peach: #fe8019;
+  --ctp-maroon: #cc241d;
+  --ctp-red: #fb4934;
+  --ctp-mauve: #d3869b;
+  --ctp-pink: #d3869b;
+  --ctp-flamingo: #fe8019;
+  --ctp-rosewater: #fabd2f;
+}
