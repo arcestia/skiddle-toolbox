@@ -21,23 +21,36 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   ${styleTag()}
   ${scriptTag()}
+  <script>
+    (function() {
+      try {
+        const layouts = ['default', 'compact', 'wide'];
+        const raw = localStorage.getItem('toolbox-layout');
+        const layout = layouts.includes(raw) ? raw : 'default';
+        document.documentElement.classList.add('tb-layout-' + layout);
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <div class="tb-top-bar">
     <a href="/" class="tb-top-bar__brand" aria-label="Skiddle Toolbox home">
       <div class="tb-logo tb-logo-sm">TB</div>
-      <span class="tb-top-bar__title ${ctx.centered ? 'tb-top-bar__title--home' : ''}">${ctx.centered ? 'Skiddle Toolbox' : ctx.title.replace(' · Skiddle Toolbox', '')}</span>
+      <span class="tb-top-bar__title">
+        ${ctx.centered ? 'Skiddle Toolbox' : `<span class="tb-top-bar__breadcrumb"><span class="tb-top-bar__breadcrumb-home">Skiddle Toolbox</span><span class="tb-top-bar__breadcrumb-sep" aria-hidden="true">/</span><span class="tb-top-bar__breadcrumb-current">${ctx.title.replace(' · Skiddle Toolbox', '')}</span></span>`}
+      </span>
     </a>
     <div class="tb-top-bar__actions">
-      <div data-tb-theme-bar="${ctx.themeVariant ?? (ctx.centered ? 'pills' : 'dots')}"></div>
-      <button type="button" class="tb-top-bar__settings" onclick="window.toolbox.openSettings()" aria-label="Open settings">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-      </button>
-      ${ctx.backHref ? `
-      <a href="${ctx.backHref}" class="tb-back-link tb-back-link--icon" aria-label="Back">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-      </a>
-      ` : ''}
+      <div class="tb-top-bar__actions-group">
+        ${ctx.backHref ? `
+        <a href="${ctx.backHref}" class="tb-top-bar__action" aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+        ` : ''}
+        <button type="button" class="tb-top-bar__action" onclick="window.toolbox.openSettings()" aria-label="Open settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -56,6 +69,27 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     <div class="tb-settings-modal__body">
       <div class="tb-settings-section">
         <h3>Appearance</h3>
+        <label class="tb-settings-row tb-settings-row--stack">
+          <span>Theme</span>
+          <div data-tb-theme-bar="pills"></div>
+        </label>
+        <label class="tb-settings-row tb-settings-row--stack">
+          <span>Layout template</span>
+          <div class="tb-layout-options" id="tb-layout-options">
+            <button type="button" class="tb-layout-option" data-layout="default" onclick="window.toolbox.setLayout('default')">
+              <strong>Default</strong>
+              <span>Balanced spacing and card size</span>
+            </button>
+            <button type="button" class="tb-layout-option" data-layout="compact" onclick="window.toolbox.setLayout('compact')">
+              <strong>Compact</strong>
+              <span>Smaller hero and tighter spacing</span>
+            </button>
+            <button type="button" class="tb-layout-option" data-layout="wide" onclick="window.toolbox.setLayout('wide')">
+              <strong>Wide</strong>
+              <span>Full-width container for large screens</span>
+            </button>
+          </div>
+        </label>
         <label class="tb-settings-row">
           <span>Compact mode</span>
           <input type="checkbox" id="tb-setting-compact" onchange="window.toolbox.toggleCompact(this.checked)">

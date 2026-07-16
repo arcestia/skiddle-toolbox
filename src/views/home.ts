@@ -123,10 +123,6 @@ export const homeView = (): string => layout({
           <span class="home-stat__value">${categories.length}</span>
           <span class="home-stat__label">Categories</span>
         </div>
-        <div class="home-stat">
-          <span class="home-stat__value">0</span>
-          <span class="home-stat__label">Server-side data</span>
-        </div>
       </div>
     </section>
 

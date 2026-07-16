@@ -18,9 +18,12 @@
 
   const THEME_KEY = 'toolbox-theme';
   const SETTINGS_KEY = 'toolbox-settings';
+  const LAYOUT_KEY = 'toolbox-layout';
   const RECENT_KEY = 'toolbox-recent';
   const THEMES = ['latte', 'frappe', 'macchiato', 'mocha'];
+  const LAYOUTS = ['default', 'compact', 'wide'];
   const DEFAULT_THEME = 'mocha';
+  const DEFAULT_LAYOUT = 'default';
 
   function getStoredTheme() {
     const raw = localStorage.getItem(THEME_KEY);
@@ -74,6 +77,30 @@
     });
   }
 
+  function getStoredLayout() {
+    const raw = localStorage.getItem(LAYOUT_KEY);
+    return LAYOUTS.includes(raw) ? raw : DEFAULT_LAYOUT;
+  }
+
+  function applyLayout(layout) {
+    if (!LAYOUTS.includes(layout)) return;
+    const html = document.documentElement;
+    LAYOUTS.forEach(name => html.classList.remove('tb-layout-' + name));
+    html.classList.add('tb-layout-' + layout);
+    localStorage.setItem(LAYOUT_KEY, layout);
+    updateLayoutButtons(layout);
+  }
+
+  function updateLayoutButtons(layout) {
+    document.querySelectorAll('.tb-layout-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.layout === layout);
+    });
+  }
+
+  function setLayout(layout) {
+    applyLayout(layout);
+  }
+
   function getSettings() {
     try {
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -94,6 +121,7 @@
   function loadSettings() {
     const settings = getSettings();
     applyCompactMode(settings.compact);
+    applyLayout(getStoredLayout());
     const checkbox = document.getElementById('tb-setting-compact');
     if (checkbox) checkbox.checked = !!settings.compact;
   }
@@ -197,6 +225,9 @@
       if (event.key === THEME_KEY && THEMES.includes(event.newValue)) {
         applyTheme(event.newValue);
       }
+      if (event.key === LAYOUT_KEY && LAYOUTS.includes(event.newValue)) {
+        applyLayout(event.newValue);
+      }
       if (event.key === SETTINGS_KEY) {
         loadSettings();
       }
@@ -212,6 +243,9 @@
       setTheme: applyTheme,
       getTheme: getStoredTheme,
       themes: THEMES,
+      setLayout: setLayout,
+      getLayout: getStoredLayout,
+      layouts: LAYOUTS,
       openSettings: openSettings,
       closeSettings: closeSettings,
       toggleCompact: toggleCompact,
