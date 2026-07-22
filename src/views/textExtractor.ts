@@ -24,11 +24,11 @@ export const textExtractorView = (): string => layout({
       <div class="url-options">
         <div class="url-mode-group">
           <span class="url-options-label">Extract</span>
-          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="all">All</button>
-          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn active" data-mode="urls">URLs</button>
-          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="emails">Emails</button>
-          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="domains">Domains</button>
-          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="ips">IPs</button>
+          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="all" aria-pressed="false">All</button>
+          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn active" data-mode="urls" aria-pressed="true">URLs</button>
+          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="emails" aria-pressed="false">Emails</button>
+          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="domains" aria-pressed="false">Domains</button>
+          <button type="button" class="tb-btn tb-btn-secondary url-mode-btn" data-mode="ips" aria-pressed="false">IPs</button>
         </div>
 
         <label class="tb-checkbox">
@@ -55,7 +55,7 @@ export const textExtractorView = (): string => layout({
         </button>
       </div>
 
-      <div id="url-summary" class="tb-summary"></div>
+      <div id="url-summary" class="tb-summary" aria-live="polite" aria-atomic="true"></div>
       <div id="url-results"></div>
     </div>
 
@@ -395,9 +395,9 @@ export const textExtractorView = (): string => layout({
           }
           try {
             await navigator.clipboard.writeText(text);
-            alert('Copied ' + extractedItems.length + ' item' + (extractedItems.length === 1 ? '' : 's') + ' to clipboard.');
+            window.toolbox.toast(extractedItems.length + ' item' + (extractedItems.length === 1 ? '' : 's') + ' copied to clipboard', 'success');
           } catch (err) {
-            alert('Could not copy: ' + (err.message || err));
+            window.toolbox.toast('Could not copy: ' + (err.message || err), 'error');
           }
         };
 
@@ -410,7 +410,7 @@ export const textExtractorView = (): string => layout({
             btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
             setTimeout(function () { btn.innerHTML = original; }, 1200);
           } catch (err) {
-            alert('Could not copy: ' + (err.message || err));
+            window.toolbox.toast('Could not copy: ' + (err.message || err), 'error');
           }
         };
 
@@ -422,10 +422,19 @@ export const textExtractorView = (): string => layout({
           extractedGroups = {};
         };
 
+        // Keyboard shortcuts
+        if (window.toolbox) {
+          window.toolbox.registerShortcut('ctrl+enter', 'Run extraction', runExtractor, 'Text Extractor');
+        }
+
         document.querySelectorAll('.url-mode-btn').forEach(function (btn) {
           btn.addEventListener('click', function () {
-            document.querySelectorAll('.url-mode-btn').forEach(function (b) { b.classList.remove('active'); });
+            document.querySelectorAll('.url-mode-btn').forEach(function (b) {
+              b.classList.remove('active');
+              b.setAttribute('aria-pressed', 'false');
+            });
             btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
             currentMode = btn.dataset.mode;
           });
         });

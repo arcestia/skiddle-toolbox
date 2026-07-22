@@ -81,9 +81,9 @@
 
   function updateActiveButtons(themeId) {
     document.querySelectorAll('.tb-theme-btn').forEach(btn => {
-      const active = btn.dataset.theme === themeId;
-      btn.classList.toggle('active', active);
-      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      const isActive = btn.dataset.theme === themeId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -170,7 +170,9 @@
 
   function updateLayoutButtons(layoutId) {
     document.querySelectorAll('.tb-layout-option').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.layout === layoutId);
+      const isActive = btn.dataset.layout === layoutId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -192,7 +194,9 @@
 
   function updateAccentButtons(accentId) {
     document.querySelectorAll('.tb-accent-option').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.accent === accentId);
+      const isActive = btn.dataset.accent === accentId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -214,7 +218,9 @@
 
   function updateRadiusButtons(radiusId) {
     document.querySelectorAll('.tb-radius-option').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.radius === radiusId);
+      const isActive = btn.dataset.radius === radiusId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -240,7 +246,9 @@
 
   function updateDensityButtons(densityId) {
     document.querySelectorAll('.tb-density-option').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.density === densityId);
+      const isActive = btn.dataset.density === densityId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -279,6 +287,196 @@
   function closeSettings() {
     document.getElementById('tb-settings-overlay').classList.add('tb-hidden');
     document.getElementById('tb-settings-modal').classList.add('tb-hidden');
+  }
+
+  // ── Keyboard shortcuts ──────────────────────────────────────
+  // Global shortcuts (always active)
+  const _globalShortcuts = [
+    {
+      key: '?',
+      group: 'Global',
+      label: 'Keyboard shortcuts',
+      action: openShortcutsModal,
+    },
+    {
+      key: 'ctrl+,',
+      group: 'Global',
+      label: 'Open settings',
+      action: openSettings,
+    },
+    {
+      key: 'ctrl+.',
+      group: 'Global',
+      label: 'Open shortcuts help',
+      action: openShortcutsModal,
+    },
+    {
+      key: 'escape',
+      group: 'Global',
+      label: 'Close modal / dismiss toast',
+      action: function () {
+        // Close settings first, then shortcuts modal
+        if (!document.getElementById('tb-settings-modal')?.classList.contains('tb-hidden')) {
+          closeSettings();
+          return;
+        }
+        if (!document.getElementById('tb-shortcuts-modal')?.classList.contains('tb-hidden')) {
+          closeShortcutsModal();
+          return;
+        }
+      },
+    },
+  ];
+
+  // Tool-specific shortcuts registered via registerShortcut()
+  const _toolShortcuts = [];
+
+  function openShortcutsModal() {
+    const overlay = document.getElementById('tb-shortcuts-overlay');
+    const modal = document.getElementById('tb-shortcuts-modal');
+    if (!overlay || !modal) return;
+    overlay.classList.remove('tb-hidden');
+    modal.classList.remove('tb-hidden');
+    // Rebuild the list with current tool shortcuts
+    buildShortcutsList();
+  }
+
+  function closeShortcutsModal() {
+    document.getElementById('tb-shortcuts-overlay')?.classList.add('tb-hidden');
+    document.getElementById('tb-shortcuts-modal')?.classList.add('tb-hidden');
+  }
+
+  function buildShortcutsList() {
+    const list = document.getElementById('tb-shortcuts-list');
+    if (!list) return;
+
+    // Group all shortcuts
+    const groups = {};
+    _globalShortcuts.forEach(s => {
+      if (!groups[s.group]) groups[s.group] = [];
+      groups[s.group].push(s);
+    });
+    _toolShortcuts.forEach(s => {
+      if (!groups[s.group]) groups[s.group] = [];
+      groups[s.group].push(s);
+    });
+
+    const groupOrder = ['Global', 'Text Extractor', 'CDN Validator', 'API Tester', 'DNS Lookup', 'Regex Playground', 'Spreadsheet Viewer', 'Markdown Editor'];
+    const sortedGroups = Object.keys(groups).sort((a, b) => {
+      const ai = groupOrder.indexOf(a);
+      const bi = groupOrder.indexOf(b);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+
+    let html = '';
+    sortedGroups.forEach(group => {
+      html += '<div class="tb-shortcuts-group">';
+      html += '<h4 class="tb-shortcuts-group-title">' + group + '</h4>';
+      groups[group].forEach(s => {
+        html += '<div class="tb-shortcuts-row">';
+        html += '<div class="tb-shortcuts-keys">';
+        s.key.split(',').forEach(k => {
+          k.trim().split('+').forEach(part => {
+            html += '<kbd>' + part + '</kbd>';
+          });
+          html += '<span>+</span>';
+        });
+        // Remove trailing +
+        html = html.replace(/<span><\/span>$/, '');
+        html += '</div>';
+        html += '<span class="tb-shortcuts-label">' + escapeHtml(s.label) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  /**
+   * Register a tool-specific shortcut.
+   * @param {string} key - e.g. 'ctrl+enter', 'ctrl+shift+b'
+   * @param {string} label - human-readable description shown in the help modal
+   * @param {Function} action - called when the shortcut fires
+   * @param {string} [group='General'] - grouping label in the help modal
+   */
+  function registerShortcut(key, label, action, group) {
+    const shortcut = { key, label, action, group: group || 'General' };
+    _toolShortcuts.push(shortcut);
+    return shortcut; // returns so tools can unregister if needed
+  }
+
+  function normalizeKey(event) {
+    const parts = [];
+    if (event.ctrlKey) parts.push('ctrl');
+    if (event.shiftKey) parts.push('shift');
+    if (event.altKey) parts.push('alt');
+    if (event.metaKey) parts.push('meta');
+    const key = event.key.toLowerCase();
+    // Normalize special keys
+    const keyMap = {
+      ' ': 'space',
+      'enter': 'enter',
+      'escape': 'escape',
+      'tab': 'tab',
+      'backspace': 'backspace',
+      'delete': 'delete',
+      'arrowup': 'arrowup',
+      'arrowdown': 'arrowdown',
+      'arrowleft': 'arrowleft',
+      'arrowright': 'arrowright',
+      ',': ',',
+      '.': '.',
+      '/': '/',
+      '?': '?',
+    };
+    parts.push(keyMap[key] || key);
+    return parts.join('+');
+  }
+
+  function handleKeyboardShortcuts(event) {
+    // Don't fire shortcuts when typing in inputs/textareas (except Escape)
+    const tag = document.activeElement?.tagName;
+    const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    const key = normalizeKey(event);
+
+    // Always allow Escape
+    if (key === 'escape') {
+      const settingsModal = document.getElementById('tb-settings-modal');
+      const shortcutsModal = document.getElementById('tb-shortcuts-modal');
+      if (!settingsModal?.classList.contains('tb-hidden')) {
+        closeSettings();
+        event.preventDefault();
+        return;
+      }
+      if (!shortcutsModal?.classList.contains('tb-hidden')) {
+        closeShortcutsModal();
+        event.preventDefault();
+        return;
+      }
+      return;
+    }
+
+    // Skip other shortcuts when typing
+    if (isTyping) return;
+
+    // Check global shortcuts
+    for (const s of _globalShortcuts) {
+      if (s.key === key) {
+        event.preventDefault();
+        s.action(event);
+        return;
+      }
+    }
+
+    // Check tool shortcuts
+    for (const s of _toolShortcuts) {
+      if (s.key === key) {
+        event.preventDefault();
+        s.action(event);
+        return;
+      }
+    }
   }
 
   function toggleCompact(enabled) {
@@ -388,13 +586,91 @@
       }
     });
 
-    // Close settings on Escape.
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeSettings();
+    // Keyboard shortcuts — global + tool-specific.
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+
+  const TOAST_ICONS = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
+    warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+  };
+
+  function getOrCreateToastContainer() {
+    let container = document.getElementById('tb-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'tb-toast-container';
+      container.className = 'tb-toast-container';
+      container.setAttribute('aria-live', 'polite');
+      container.setAttribute('aria-atomic', 'false');
+      // Insert before the settings overlay so toasts appear above it
+      const overlay = document.getElementById('tb-settings-overlay');
+      if (overlay && overlay.parentNode) {
+        overlay.parentNode.insertBefore(container, overlay);
+      } else {
+        document.body.appendChild(container);
+      }
+    }
+    return container;
+  }
+
+  function showToast(message, type = 'info', duration = 3500) {
+    const container = getOrCreateToastContainer();
+
+    const toast = document.createElement('div');
+    toast.className = 'tb-toast tb-toast--' + type;
+    toast.setAttribute('role', 'alert');
+
+    const icon = TOAST_ICONS[type] || TOAST_ICONS.info;
+    toast.innerHTML =
+      '<span class="tb-toast__icon" aria-hidden="true">' + icon + '</span>' +
+      '<span class="tb-toast__message">' + escapeHtml(String(message)) + '</span>' +
+      '<button type="button" class="tb-toast__close" aria-label="Dismiss" onclick="this.closest(\'.tb-toast\').remove()">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+      '</button>';
+
+    container.appendChild(toast);
+
+    // Trigger entrance animation on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => toast.classList.add('tb-toast--visible'));
     });
+
+    let timeoutId;
+    let dismissed = false;
+
+    function dismiss() {
+      if (dismissed) return;
+      dismissed = true;
+      clearTimeout(timeoutId);
+      toast.classList.remove('tb-toast--visible');
+      toast.classList.add('tb-toast--exiting');
+      toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+    }
+
+    // Auto-dismiss
+    if (duration > 0) {
+      timeoutId = setTimeout(dismiss, duration);
+    }
+
+    return dismiss; // Returns a function to manually dismiss early
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
     // Expose a tiny public API.
     window.toolbox = {
+      toast: showToast,
+      registerShortcut: registerShortcut,
+      openShortcuts: openShortcutsModal,
+      closeShortcuts: closeShortcutsModal,
       setTheme: applyTheme,
       getTheme: getStoredTheme,
       themes: THEMES,

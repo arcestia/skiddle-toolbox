@@ -39,10 +39,10 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
           Verify URLs
         </button>
-        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('all')">All</button>
-        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('ok')">OK</button>
-        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('bad')">Broken</button>
-        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('warn')">Warnings</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('all')" aria-pressed="true">All</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('ok')" aria-pressed="false">OK</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('bad')" aria-pressed="false">Broken</button>
+        <button class="tb-btn tb-btn-secondary" onclick="filterCdnResults('warn')" aria-pressed="false">Warnings</button>
         <button class="tb-btn tb-btn-secondary tb-btn-danger" onclick="copyBrokenCdnUrls()" style="margin-left: auto;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           Copy Broken
@@ -53,7 +53,7 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
         <div id="cdn-progress" class="tb-progress-fill"></div>
       </div>
 
-      <div id="cdn-summary" class="tb-summary"></div>
+      <div id="cdn-summary" class="tb-summary" aria-live="polite" aria-atomic="true"></div>
       <div id="cdn-results" class="results-grid"></div>
     </div>
 
@@ -323,7 +323,7 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
                 <span class="result-status status-\${r.cls}">\${r.status}</span>
                 \${r.ctype ? \`<span style="font-size:0.7rem; color:var(--text-secondary); background:var(--ctp-surface0); padding:2px 7px; border-radius:var(--radius-sm); font-family:var(--font-mono);">\${r.ctype}</span>\` : ''}
               </div>
-              <div class="result-url" title="\${r.url}" onclick="navigator.clipboard.writeText('\${r.url}'); alert('URL Copied');" style="cursor:pointer;">\${r.url}</div>
+              <div class="result-url" title="\${r.url}" onclick="navigator.clipboard.writeText('\${r.url}'); window.toolbox.toast('URL copied to clipboard', 'success');" style="cursor:pointer;">\${r.url}</div>
               \${r.reason ? \`<div class="result-meta" style="color:var(--color-\${r.cls})">\${r.reason}</div>\` : ''}
             </div>
           \`;
@@ -339,16 +339,27 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
             card.classList.add('tb-hidden');
           }
         });
+        document.querySelectorAll('.tb-card .tb-btn-secondary[aria-pressed]').forEach(btn => {
+          if (btn.getAttribute('aria-pressed') !== undefined) {
+            const mode = btn.getAttribute('onclick')?.match(/filterCdnResults\('([^']+)'\)/)?.[1];
+            btn.setAttribute('aria-pressed', mode === filter ? 'true' : 'false');
+          }
+        });
       }
 
       function copyBrokenCdnUrls() {
         if (brokenCdnUrls.length === 0) {
-          alert("No broken URLs to copy!");
+          window.toolbox.toast("No broken URLs to copy!", "warning");
           return;
         }
         navigator.clipboard.writeText(brokenCdnUrls.join("\\n")).then(() => {
-          alert(\`Copied \${brokenCdnUrls.length} broken URLs to clipboard\`);
+          window.toolbox.toast(\`Copied \${brokenCdnUrls.length} broken URLs to clipboard\`, 'success');
         });
+      }
+
+      // Keyboard shortcuts
+      if (window.toolbox) {
+        window.toolbox.registerShortcut('ctrl+enter', 'Start validation', startCdnValidator, 'CDN Validator');
       }
     </script>
   `

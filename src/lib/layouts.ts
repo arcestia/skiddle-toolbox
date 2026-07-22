@@ -39,7 +39,7 @@ export function renderLayoutCss(): string {
 export function renderLayoutOptions(): string {
   return layouts
     .map(
-      l => `<button type="button" class="tb-layout-option" data-layout="${l.id}" onclick="window.toolbox.setLayout('${l.id}')">
+      l => `<button type="button" class="tb-layout-option" data-layout="${l.id}" onclick="window.toolbox.setLayout('${l.id}')" aria-pressed="false">
               <strong>${l.name}</strong>
               <span>${l.description}</span>
             </button>`

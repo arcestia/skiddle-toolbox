@@ -141,10 +141,14 @@ export const homeView = (): string => layout({
       <div class="home-search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" id="home-search-input" class="tb-input" placeholder="Search tools by name or keyword..." oninput="filterHomeTools()">
+        <button type="button" class="tb-btn tb-btn-secondary home-shortcuts-btn" onclick="window.toolbox.openShortcuts()" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8.01"></line><line x1="10" y1="8" x2="10" y2="8.01"></line><line x1="14" y1="8" x2="14" y2="8.01"></line><line x1="18" y1="8" x2="18" y2="8.01"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          Shortcuts
+        </button>
       </div>
-      <div class="home-categories" id="home-categories">
-        <button type="button" class="category-chip active" data-category="all" onclick="filterHomeCategory('all')">All</button>
-        ${categories.map(c => `<button type="button" class="category-chip" data-category="${c}" onclick="filterHomeCategory('${c}')">${c}</button>`).join('\n        ')}
+      <div class="home-categories" id="home-categories" role="group" aria-label="Filter by category">
+        <button type="button" class="category-chip active" data-category="all" onclick="filterHomeCategory('all')" aria-pressed="true">All</button>
+        ${categories.map(c => `<button type="button" class="category-chip" data-category="${c}" onclick="filterHomeCategory('${c}')" aria-pressed="false">${c}</button>`).join('\n        ')}
       </div>
     </section>
 
@@ -294,9 +298,10 @@ export const homeView = (): string => layout({
         position: relative;
         display: flex;
         align-items: center;
+        gap: 10px;
       }
 
-      .home-search svg {
+      .home-search > svg {
         position: absolute;
         left: 14px;
         color: var(--text-muted);
@@ -306,6 +311,13 @@ export const homeView = (): string => layout({
       .home-search .tb-input {
         padding-left: 42px;
         background: color-mix(in srgb, var(--ctp-mantle) 50%, transparent);
+        flex: 1;
+      }
+
+      .home-shortcuts-btn {
+        flex-shrink: 0;
+        padding: 10px 14px;
+        white-space: nowrap;
       }
 
       .home-categories {
@@ -535,7 +547,9 @@ export const homeView = (): string => layout({
         window.filterHomeCategory = function (category) {
           activeCategory = category;
           document.querySelectorAll('.category-chip').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.category === category);
+            const isActive = btn.dataset.category === category;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', String(isActive));
           });
           filterHomeTools();
         };

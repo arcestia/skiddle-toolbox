@@ -65,7 +65,7 @@ export const spreadsheetViewerView = (): string => layout({
               </div>
             </div>
             <div class="ssv-toolbar-right">
-              <span id="ssv-row-count" class="tb-badge tb-badge-pending">0 rows</span>
+              <span id="ssv-row-count" class="tb-badge tb-badge-pending" role="status" aria-live="polite" aria-label="Row count">0 rows</span>
               <button class="tb-btn tb-btn-secondary" onclick="downloadCsv()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 Export CSV
@@ -635,6 +635,7 @@ export const spreadsheetViewerView = (): string => layout({
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
+          window.toolbox.toast('Spreadsheet exported as CSV', 'success');
         };
 
         async function loadFromSource(text, filename) {

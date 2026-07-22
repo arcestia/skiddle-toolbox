@@ -429,6 +429,7 @@ export const markdownEditorView = (): string => layout({
           reader.onload = function (e) {
             editor.value = e.target.result;
             updateMarkdownPreview();
+            window.toolbox.toast('File loaded: ' + file.name, 'info');
           };
           reader.readAsText(file);
           input.value = '';
@@ -444,6 +445,7 @@ export const markdownEditorView = (): string => layout({
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
+          window.toolbox.toast('Markdown file downloaded', 'success');
         };
 
         window.copyHtml = async function () {
@@ -453,9 +455,10 @@ export const markdownEditorView = (): string => layout({
             const btn = document.querySelector('.md-preview-header .tb-btn');
             const orig = btn.innerHTML;
             btn.innerText = 'Copied!';
+            window.toolbox.toast('HTML copied to clipboard', 'success');
             setTimeout(() => { btn.innerHTML = orig; }, 1200);
           } catch (err) {
-            alert('Could not copy HTML: ' + (err.message || err));
+            window.toolbox.toast('Could not copy HTML: ' + (err.message || err), 'error');
           }
         };
 

@@ -30,12 +30,12 @@ export const regexPlaygroundView = (): string => layout({
             </div>
             
             <div class="rgx-flag-toggles">
-              <button type="button" class="rgx-flag-btn" data-flag="g" onclick="toggleFlag('g')" title="Global (match all)">g</button>
-              <button type="button" class="rgx-flag-btn" data-flag="i" onclick="toggleFlag('i')" title="Case-insensitive">i</button>
-              <button type="button" class="rgx-flag-btn" data-flag="m" onclick="toggleFlag('m')" title="Multiline">m</button>
-              <button type="button" class="rgx-flag-btn" data-flag="s" onclick="toggleFlag('s')" title="Single line (dot matches newline)">s</button>
-              <button type="button" class="rgx-flag-btn" data-flag="u" onclick="toggleFlag('u')" title="Unicode support">u</button>
-              <button type="button" class="rgx-flag-btn" data-flag="y" onclick="toggleFlag('y')" title="Sticky search">y</button>
+              <button type="button" class="rgx-flag-btn" data-flag="g" onclick="toggleFlag('g')" title="Global (match all)" aria-pressed="false">g</button>
+              <button type="button" class="rgx-flag-btn" data-flag="i" onclick="toggleFlag('i')" title="Case-insensitive" aria-pressed="false">i</button>
+              <button type="button" class="rgx-flag-btn" data-flag="m" onclick="toggleFlag('m')" title="Multiline" aria-pressed="false">m</button>
+              <button type="button" class="rgx-flag-btn" data-flag="s" onclick="toggleFlag('s')" title="Single line (dot matches newline)" aria-pressed="false">s</button>
+              <button type="button" class="rgx-flag-btn" data-flag="u" onclick="toggleFlag('u')" title="Unicode support" aria-pressed="false">u</button>
+              <button type="button" class="rgx-flag-btn" data-flag="y" onclick="toggleFlag('y')" title="Sticky search" aria-pressed="false">y</button>
             </div>
             <div id="rgx-error" class="rgx-error-msg tb-hidden"></div>
           </div>
@@ -54,7 +54,7 @@ export const regexPlaygroundView = (): string => layout({
 
           <!-- Results Summary & Copy Buttons -->
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-            <div id="rgx-summary" class="tb-summary" style="margin-bottom:0;"></div>
+            <div id="rgx-summary" class="tb-summary" style="margin-bottom:0;" aria-live="polite" aria-atomic="true"></div>
             <button id="rgx-copy-matches-btn" class="tb-btn tb-btn-secondary tb-hidden" onclick="copyAllMatches()" style="padding:8px 14px; font-size:0.82rem; gap:6px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               Copy Matches
@@ -69,9 +69,9 @@ export const regexPlaygroundView = (): string => layout({
         <div class="tb-card" style="margin-top: 24px;">
           <h3 class="rgx-sidebar-title" style="margin-bottom: 12px; border-bottom: none; padding-bottom: 0;">Code Snippets</h3>
           <div class="rgx-snippet-tabs">
-            <button class="rgx-tab-btn active" data-tab="js" onclick="switchSnippetTab('js')">JavaScript</button>
-            <button class="rgx-tab-btn" data-tab="python" onclick="switchSnippetTab('python')">Python</button>
-            <button class="rgx-tab-btn" data-tab="php" onclick="switchSnippetTab('php')">PHP</button>
+            <button class="rgx-tab-btn active" data-tab="js" onclick="switchSnippetTab('js')" role="tab" aria-selected="true" aria-controls="rgx-snippet-code">JavaScript</button>
+            <button class="rgx-tab-btn" data-tab="python" onclick="switchSnippetTab('python')" role="tab" aria-selected="false" aria-controls="rgx-snippet-code">Python</button>
+            <button class="rgx-tab-btn" data-tab="php" onclick="switchSnippetTab('php')" role="tab" aria-selected="false" aria-controls="rgx-snippet-code">PHP</button>
           </div>
           <div class="rgx-snippet-container">
             <pre><code id="rgx-snippet-code" class="tb-mono"></code></pre>
@@ -627,11 +627,9 @@ export const regexPlaygroundView = (): string => layout({
           const flags = document.getElementById('rgx-flags').value;
           document.querySelectorAll('.rgx-flag-btn').forEach(btn => {
             const flag = btn.dataset.flag;
-            if (flags.includes(flag)) {
-              btn.classList.add('active');
-            } else {
-              btn.classList.remove('active');
-            }
+            const isActive = flags.includes(flag);
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', String(isActive));
           });
         }
 
@@ -648,11 +646,9 @@ export const regexPlaygroundView = (): string => layout({
         window.switchSnippetTab = function (tab) {
           activeSnippetTab = tab;
           document.querySelectorAll('.rgx-tab-btn').forEach(btn => {
-            if (btn.dataset.tab === tab) {
-              btn.classList.add('active');
-            } else {
-              btn.classList.remove('active');
-            }
+            const isActive = btn.dataset.tab === tab;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', String(isActive));
           });
           updateCodeSnippet();
         };
@@ -665,9 +661,10 @@ export const regexPlaygroundView = (): string => layout({
             const btn = document.querySelector('.rgx-copy-snippet-btn');
             const orig = btn.innerHTML;
             btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            window.toolbox.toast('Code snippet copied to clipboard', 'success');
             setTimeout(() => { btn.innerHTML = orig; }, 1200);
           } catch (e) {
-            alert('Failed to copy: ' + e.message);
+            window.toolbox.toast('Failed to copy: ' + e.message, 'error');
           }
         };
 
@@ -679,9 +676,10 @@ export const regexPlaygroundView = (): string => layout({
             const btn = document.getElementById('rgx-copy-matches-btn');
             const orig = btn.innerHTML;
             btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+            window.toolbox.toast('Copied ' + currentMatches.length + ' match' + (currentMatches.length === 1 ? '' : 'es') + ' to clipboard', 'success');
             setTimeout(() => { btn.innerHTML = orig; }, 1200);
           } catch (err) {
-            alert('Could not copy matches: ' + (err.message || err));
+            window.toolbox.toast('Could not copy matches: ' + (err.message || err), 'error');
           }
         };
 
@@ -918,6 +916,11 @@ export const regexPlaygroundView = (): string => layout({
             runRegexPlayground();
           });
         });
+
+        // Keyboard shortcuts
+        if (window.toolbox) {
+          window.toolbox.registerShortcut('ctrl+enter', 'Run regex', runRegexPlayground, 'Regex Playground');
+        }
       })();
     </script>
   `

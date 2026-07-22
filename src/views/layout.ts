@@ -78,6 +78,8 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   </script>
 </head>
 <body>
+  <a class="tb-skip-link" href="#tb-main-content">Skip to main content</a>
+
   <div class="tb-top-bar">
     <a href="/" class="tb-top-bar__brand" aria-label="Skiddle Toolbox home">
       <div class="tb-logo tb-logo-sm">TB</div>
@@ -99,8 +101,25 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     </div>
   </div>
 
-  <div class="tb-container ${ctx.centered ? 'tb-container--centered' : ''}">
+  <div id="tb-main-content" class="tb-container ${ctx.centered ? 'tb-container--centered' : ''}">
     ${ctx.body}
+  </div>
+
+  <div id="tb-shortcuts-overlay" class="tb-overlay tb-hidden" onclick="if(event.target===this) window.toolbox.closeShortcuts()"></div>
+  <div id="tb-shortcuts-modal" class="tb-settings-modal tb-shortcuts-modal tb-hidden" role="dialog" aria-modal="true" aria-labelledby="tb-shortcuts-title">
+    <div class="tb-settings-modal__header">
+      <h2 id="tb-shortcuts-title">Keyboard Shortcuts</h2>
+      <button type="button" class="tb-settings-modal__close" onclick="window.toolbox.closeShortcuts()" aria-label="Close shortcuts">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="tb-shortcuts-modal__body" id="tb-shortcuts-list">
+      <!-- Populated dynamically by toolbox.js -->
+    </div>
+    <div class="tb-shortcuts-footer">
+      <span class="tb-shortcuts-hint">Press <kbd>?</kbd> anywhere to open this dialog</span>
+      <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener" class="tb-back-link" style="font-size:0.75rem;padding:5px 10px;">View on GitHub</a>
+    </div>
   </div>
 
   <div id="tb-settings-overlay" class="tb-overlay tb-hidden" onclick="if(event.target===this) window.toolbox.closeSettings()"></div>
@@ -124,7 +143,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Accent color</span>
           <div class="tb-accent-options" id="tb-accent-options">
-            ${accents.map(a => `<button type="button" class="tb-accent-option" data-accent="${a.id}" onclick="window.toolbox.setAccent('${a.id}')" aria-label="${a.name} accent">
+            ${accents.map(a => `<button type="button" class="tb-accent-option" data-accent="${a.id}" onclick="window.toolbox.setAccent('${a.id}')" aria-label="${a.name} accent" aria-pressed="false">
               <span class="tb-accent-swatch" style="background:hsl(${a.hue} 85% 75%)" aria-hidden="true"></span>
               <span>${a.name}</span>
             </button>`).join('\n            ')}
@@ -133,7 +152,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Corner radius</span>
           <div class="tb-radius-options" id="tb-radius-options">
-            ${radii.map(r => `<button type="button" class="tb-radius-option" data-radius="${r.id}" onclick="window.toolbox.setRadius('${r.id}')">
+            ${radii.map(r => `<button type="button" class="tb-radius-option" data-radius="${r.id}" onclick="window.toolbox.setRadius('${r.id}')" aria-pressed="false">
               <strong>${r.name}</strong>
             </button>`).join('\n            ')}
           </div>
@@ -147,7 +166,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
         <label class="tb-settings-row tb-settings-row--stack">
           <span>Density</span>
           <div class="tb-density-options" id="tb-density-options">
-            ${densities.map(d => `<button type="button" class="tb-density-option" data-density="${d.id}" onclick="window.toolbox.setDensity('${d.id}')">
+            ${densities.map(d => `<button type="button" class="tb-density-option" data-density="${d.id}" onclick="window.toolbox.setDensity('${d.id}')" aria-pressed="false">
               <strong>${d.name}</strong>
               <span>${d.description}</span>
             </button>`).join('\n            ')}

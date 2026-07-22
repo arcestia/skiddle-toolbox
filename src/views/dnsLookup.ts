@@ -69,7 +69,7 @@ export const dnsLookupView = (): string => layout({
         </div>
       </div>
 
-      <div id="dns-summary" class="tb-summary"></div>
+      <div id="dns-summary" class="tb-summary" aria-live="polite" aria-atomic="true"></div>
       <div id="dns-results"></div>
     </div>
 
@@ -226,6 +226,11 @@ export const dnsLookupView = (): string => layout({
         document.getElementById('dns-domain').addEventListener('keypress', function (e) {
           if (e.key === 'Enter') runDnsLookup();
         });
+
+        // Keyboard shortcuts
+        if (window.toolbox) {
+          window.toolbox.registerShortcut('ctrl+enter', 'Run DNS lookup', runDnsLookup, 'DNS Lookup');
+        }
       })();
     </script>
   `

@@ -84,11 +84,11 @@ export const apiTesterView = (): string => layout({
           <div class="api-section-title">Response</div>
           <div id="api-response-empty" class="response-empty">Send a request to see the response here.</div>
 
-          <div id="api-response-content" class="tb-hidden">
+          <div id="api-response-content" class="tb-hidden" aria-live="polite" aria-label="API response">
             <div id="api-cors-warning" class="cors-warning tb-hidden"></div>
 
             <div class="response-meta">
-              <div id="api-status" class="response-status">200</div>
+              <div id="api-status" class="response-status" role="status" aria-label="HTTP status code" aria-live="polite"></div>
               <div class="response-detail">
                 <span id="api-status-text">OK</span>
                 <span>·</span>
@@ -454,7 +454,7 @@ export const apiTesterView = (): string => layout({
       function copyResponseBody() {
         const textarea = document.getElementById('api-response-body');
         navigator.clipboard.writeText(textarea.value).then(() => {
-          alert('Response body copied to clipboard');
+          window.toolbox.toast('Response body copied to clipboard', 'success');
         });
       }
 
@@ -475,7 +475,7 @@ export const apiTesterView = (): string => layout({
 
         let url = urlInput.value.trim();
         if (!url) {
-          alert('Please enter a URL');
+          window.toolbox.toast('Please enter a URL', 'warning');
           return;
         }
 
@@ -558,6 +558,11 @@ export const apiTesterView = (): string => layout({
       }
 
       toggleBodyField();
+
+      // Keyboard shortcuts
+      if (window.toolbox) {
+        window.toolbox.registerShortcut('ctrl+enter', 'Send request', sendApiRequest, 'API Tester');
+      }
     </script>
   `
 });
