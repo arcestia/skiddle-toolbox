@@ -28,6 +28,7 @@ function renderEntry(entry: ChangelogEntry): string {
 
 export const changelogView = (): string => layout({
   title: 'Changelog · Skiddle Toolbox',
+  description: 'Release notes and version history for Skiddle Toolbox.',
   body: `
     <div class="tb-page-header">
       <div class="tb-tool-icon">📋</div>

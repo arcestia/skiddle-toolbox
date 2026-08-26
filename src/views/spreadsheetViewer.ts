@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const spreadsheetViewerView = (): string => layout({
   title: 'Spreadsheet Viewer · Skiddle Toolbox',
+  description: 'View CSV, TSV, Excel, ODS, JSON, and Markdown tables locally with sorting, filtering, and pagination.',
   subtitle: 'View CSV, Excel, ODS, JSON, and Markdown tables in the browser',
   backHref: '/',
   themeVariant: 'dots',

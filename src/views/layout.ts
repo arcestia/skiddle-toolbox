@@ -7,6 +7,7 @@ import { defaultDensity, densities } from '../lib/density.js';
 
 export interface PageContext {
   title: string;
+  description?: string;
   subtitle?: string;
   centered?: boolean;
   compactHeader?: boolean;
@@ -39,6 +40,16 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${ctx.title}</title>
+  ${(() => {
+    const desc = ctx.description || 'Skiddle Toolbox — a developer utility suite on Cloudflare Workers + Hono.';
+    return `<meta name="description" content="${desc}">
+  <meta property="og:title" content="${ctx.title}">
+  <meta property="og:description" content="${desc}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${ctx.title}">
+  <meta name="twitter:description" content="${desc}">`;
+  })()}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">

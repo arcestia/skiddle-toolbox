@@ -113,6 +113,7 @@ const toolCard = (tool: typeof tools[0], index: number) => `
 
 export const homeView = (): string => layout({
   title: 'Skiddle Toolbox · Cloudflare Workers Hub',
+  description: 'A developer utility suite with 10+ tools for API testing, DNS lookup, regex, spreadsheets, and more — all running on Cloudflare Workers.',
   centered: true,
   compactHeader: true,
   themeVariant: 'pills',

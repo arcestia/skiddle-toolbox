@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const textExtractorView = (): string => layout({
   title: 'Text Extractor · Skiddle Toolbox',
+  description: 'Extract URLs, emails, domains, and IP addresses from logs, HTML, or Markdown with deduplication and sorting.',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

@@ -17,6 +17,7 @@ const TYPE_NAMES: Record<number, string> = {
 
 export const dnsLookupView = (): string => layout({
   title: 'DNS Lookup · Skiddle Toolbox',
+  description: 'DNS-over-HTTPS queries against Cloudflare, Google, or Quad9 resolvers for common record types.',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

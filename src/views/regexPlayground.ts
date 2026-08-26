@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const regexPlaygroundView = (): string => layout({
   title: 'Regex Playground · Skiddle Toolbox',
+  description: 'Write, validate, and debug regular expressions in real-time with syntax highlighting and match group breakdowns.',
   subtitle: 'Interactive Regular Expression Visualizer',
   backHref: '/',
   themeVariant: 'dots',

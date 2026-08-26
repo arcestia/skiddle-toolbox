@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const cdnValidatorView = (): string => layout({
   title: 'Image CDN Validator · Skiddle Toolbox',
+  description: 'Bulk-check image URLs by provider, response code, and Content-Type with concurrent validation and edge CORS proxying.',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',
@@ -152,6 +153,10 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
     <script>
       const validExt = /\\.(jpg|jpeg|png|gif|webp|jfif|bmp|svg|avif)$/i;
       let brokenCdnUrls = [];
+
+      function escapeCdnUrl(url) {
+        return url.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
 
       function parseCdnUrls() {
         const textarea = document.getElementById('cdn-input');
@@ -312,8 +317,9 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
           const showPreview = r.cls === "ok" || r.cls === "warn";
           const brokenSvg = \`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="\${getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim()}" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>\`;
 
+          const safeUrl = escapeCdnUrl(r.url);
           const imgHtml = showPreview
-            ? \`<img src="\${r.url}" alt="Preview" onerror="this.style.opacity='0.4'; this.src='data:image/svg+xml;utf8,\${encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%23f38ba8" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>\`)}'">\`
+            ? \`<img src="\${safeUrl}" alt="Preview" onerror="this.style.opacity='0.4'; this.src='data:image/svg+xml;utf8,\${encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%23f38ba8" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>\`)}'">\`
             : \`<div class="broken-placeholder">\${brokenSvg}</div>\`;
 
           card.innerHTML = \`
@@ -323,7 +329,7 @@ https://invalid-domain-fails-to-load.com/test.png"></textarea>
                 <span class="result-status status-\${r.cls}">\${r.status}</span>
                 \${r.ctype ? \`<span style="font-size:0.7rem; color:var(--text-secondary); background:var(--ctp-surface0); padding:2px 7px; border-radius:var(--radius-sm); font-family:var(--font-mono);">\${r.ctype}</span>\` : ''}
               </div>
-              <div class="result-url" title="\${r.url}" onclick="navigator.clipboard.writeText('\${r.url}'); window.toolbox.toast('URL copied to clipboard', 'success');" style="cursor:pointer;">\${r.url}</div>
+              <div class="result-url" title="\${safeUrl}" onclick="navigator.clipboard.writeText('\${safeUrl}'); window.toolbox.toast('URL copied to clipboard', 'success');" style="cursor:pointer;">\${safeUrl}</div>
               \${r.reason ? \`<div class="result-meta" style="color:var(--color-\${r.cls})">\${r.reason}</div>\` : ''}
             </div>
           \`;

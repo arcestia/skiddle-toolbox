@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const markdownEditorView = (): string => layout({
   title: 'Markdown Editor · Skiddle Toolbox',
+  description: 'Split-pane Markdown editor with live preview, formatting toolbar, and one-click .md and HTML export.',
   subtitle: 'Write, preview, and download Markdown with a live split-pane editor',
   backHref: '/',
   themeVariant: 'dots',

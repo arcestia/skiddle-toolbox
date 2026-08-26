@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const ddosSimulatorView = (): string => layout({
   title: 'DDoS Simulator · Skiddle Toolbox',
+  description: 'Educational incremental game simulating botnet and DDoS mechanics — fully client-side, no real network traffic.',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',

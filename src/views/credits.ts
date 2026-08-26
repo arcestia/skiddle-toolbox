@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const creditsView = (): string => layout({
   title: 'Credits · Skiddle Toolbox',
+  description: 'Open source libraries, themes, and tools that power Skiddle Toolbox.',
   body: `
     <div class="tb-page-header">
       <div class="tb-tool-icon">🙏</div>

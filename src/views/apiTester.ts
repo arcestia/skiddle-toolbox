@@ -3,6 +3,7 @@ import { footer } from './footer.js';
 
 export const apiTesterView = (): string => layout({
   title: 'API Tester · Skiddle Toolbox',
+  description: 'Browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy for cross-origin debugging.',
   subtitle: 'Browser-local HTTP client',
   backHref: '/',
   themeVariant: 'dots',
