@@ -315,7 +315,7 @@ export const spreadsheetViewerView = (): string => layout({
       }
     </style>
 
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.18.5/package/dist/xlsx.full.min.js"></script>
     <script>
       (function () {
         const ROWS_PER_PAGE = 100;
