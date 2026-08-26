@@ -561,7 +561,9 @@ export const homeView = (): string => layout({
             if (Array.isArray(recent) && recent.length > 0) {
               document.getElementById('recent-tools-card').style.display = '';
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error('Recent tools parse error:', e);
+          }
         }
 
         showRecentIfAny();

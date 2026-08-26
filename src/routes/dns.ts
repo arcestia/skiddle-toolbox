@@ -48,5 +48,3 @@ dnsRoute.get('/dns', async (c) => {
     return c.json({ error: message }, 502);
   }
 });
-
-export default dnsRoute;
