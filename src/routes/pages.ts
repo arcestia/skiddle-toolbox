@@ -57,3 +57,48 @@ pagesRoute.get('/credits', (c) => {
 pagesRoute.get('/changelog', (c) => {
   return c.html(changelogView(), 200, { 'Content-Type': htmlContentType });
 });
+
+const STATIC_PAGES = [
+  { path: '/', priority: '1.0', changefreq: 'weekly' },
+  { path: '/cdn-validator', priority: '0.8', changefreq: 'monthly' },
+  { path: '/api-tester', priority: '0.8', changefreq: 'monthly' },
+  { path: '/dns-lookup', priority: '0.8', changefreq: 'monthly' },
+  { path: '/text-extractor', priority: '0.8', changefreq: 'monthly' },
+  { path: '/regex-playground', priority: '0.8', changefreq: 'monthly' },
+  { path: '/spreadsheet-viewer', priority: '0.8', changefreq: 'monthly' },
+  { path: '/markdown-editor', priority: '0.8', changefreq: 'monthly' },
+  { path: '/ddos-simulator', priority: '0.7', changefreq: 'monthly' },
+  { path: '/credits', priority: '0.5', changefreq: 'yearly' },
+  { path: '/changelog', priority: '0.5', changefreq: 'weekly' },
+];
+
+pagesRoute.get('/sitemap.xml', (c) => {
+  const env = c.env as { SITE_URL?: string };
+  const base = (env.SITE_URL ?? 'https://skiddle-toolbox.pages.dev').replace(/\/$/, '');
+  const today = new Date().toISOString().split('T')[0];
+  const urls = STATIC_PAGES.map(
+    p => `  <url>
+    <loc>${base}${p.path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+  </url>`
+  ).join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+  return c.body(xml, 200, { 'Content-Type': 'application/xml' });
+});
+
+pagesRoute.get('/robots.txt', (c) => {
+  const env = c.env as { SITE_URL?: string };
+  const base = (env.SITE_URL ?? 'https://skiddle-toolbox.pages.dev').replace(/\/$/, '');
+  const body = `User-agent: *
+Allow: /
+
+Sitemap: ${base}/sitemap.xml`;
+  return c.body(body, 200, { 'Content-Type': 'text/plain' });
+});

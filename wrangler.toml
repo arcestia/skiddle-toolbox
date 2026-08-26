@@ -1,3 +1,6 @@
 name = "skiddle-toolbox"
 main = "src/index.ts"
 compatibility_date = "2025-08-01"
+
+[vars]
+SITE_URL = "https://skiddle-toolbox.pages.dev"
