@@ -10,41 +10,41 @@ export const jsonFormatterView = (): string => layout({
       <div class="tb-tool-icon">📋</div>
       <div class="tb-page-header__text">
         <h1>JSON Formatter</h1>
-        <p>Format, validate, and minify JSON with syntax highlighting.</p>
+        <p>Format, validate, and minify JSON with syntax highlighting and tree view.</p>
       </div>
     </div>
 
     <div class="tb-card">
       <div class="jf-toolbar">
         <div class="jf-toolbar-group">
-          <button type="button" class="tb-btn tb-btn-primary" onclick="jfFormat()">Format</button>
-          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfMinify()">Minify</button>
+          <button type="button" class="tb-btn tb-btn-primary" onclick="jfFormat()" aria-label="Format JSON">Format</button>
+          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfMinify()" aria-label="Minify JSON">Minify</button>
         </div>
         <div class="jf-toolbar-group">
-          <label class="tb-label" style="font-size:0.8rem;margin:0;">Indent:</label>
-          <select id="jf-indent" class="tb-select" style="width:auto;min-width:80px;">
+          <label for="jf-indent" class="tb-label" style="font-size:0.8rem;margin:0;">Indent:</label>
+          <select id="jf-indent" class="tb-select" style="width:auto;min-width:80px;" onchange="jfAutoFormat()">
             <option value="2" selected>2 spaces</option>
             <option value="4">4 spaces</option>
-            <option value="tab">Tab</option>
+            <option value="1">Tab</option>
           </select>
         </div>
         <div class="jf-toolbar-group">
-          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfCopy()">Copy</button>
-          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfClear()">Clear</button>
+          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfCopy()" aria-label="Copy JSON">Copy</button>
+          <button type="button" class="tb-btn tb-btn-secondary" onclick="jfClear()" aria-label="Clear editor">Clear</button>
         </div>
       </div>
 
       <div class="jf-editor-wrap">
-        <textarea id="jf-input" class="tb-textarea jf-textarea" placeholder='Paste JSON here, e.g. {"name": "world"}' spellcheck="false" oninput="jfValidate()"></textarea>
+        <textarea id="jf-input" class="tb-textarea jf-textarea" placeholder='{"key": "value"}' spellcheck="false" oninput="jfValidate()" aria-label="JSON input"></textarea>
       </div>
 
-      <div id="jf-status" class="jf-status"></div>
-      <div id="jf-stats" class="jf-stats"></div>
+      <div id="jf-status" class="jf-status" role="status" aria-live="polite"></div>
+      <div id="jf-stats" class="jf-stats" aria-live="polite"></div>
     </div>
 
     <div class="tb-card">
       <h2 class="section-title" style="margin-bottom:12px;">Tree View</h2>
-      <div id="jf-tree" class="jf-tree">
+      <div id="jf-tree" class="jf-tree" aria-label="JSON tree view">
         <div class="empty-state">
           <p>Paste JSON above to see the tree view</p>
         </div>
@@ -82,79 +82,85 @@ export const jsonFormatterView = (): string => layout({
 
     <script>
     (function() {
+      window.jfAutoFormat = function() {
+        var el = document.getElementById('jf-input');
+        var raw = el.value.trim();
+        if (!raw) return;
+        try { JSON.parse(raw); jfFormat(); } catch (e) {}
+      };
+
       window.jfFormat = function() {
-        const el = document.getElementById('jf-input');
+        var el = document.getElementById('jf-input');
+        var indentVal = document.getElementById('jf-indent').value;
+        var space = indentVal === '1' ? '\t' : Number(indentVal);
         try {
-          const indent = document.getElementById('jf-indent').value;
-          const space = indent === 'tab' ? '\\t' : Number(indent);
-          const obj = JSON.parse(el.value);
+          var obj = JSON.parse(el.value);
           el.value = JSON.stringify(obj, null, space);
           jfValidate();
         } catch (e) {
-          showStatus('Error: ' + e.message, false);
+          jfShowStatus('Error: ' + e.message, false);
         }
       };
 
       window.jfMinify = function() {
-        const el = document.getElementById('jf-input');
+        var el = document.getElementById('jf-input');
         try {
-          const obj = JSON.parse(el.value);
+          var obj = JSON.parse(el.value);
           el.value = JSON.stringify(obj);
           jfValidate();
         } catch (e) {
-          showStatus('Error: ' + e.message, false);
+          jfShowStatus('Error: ' + e.message, false);
         }
       };
 
       window.jfValidate = function() {
-        const el = document.getElementById('jf-input');
-        const raw = el.value.trim();
+        var el = document.getElementById('jf-input');
+        var raw = el.value.trim();
         if (!raw) {
-          showStatus('', true);
+          jfShowStatus('', true);
           document.getElementById('jf-stats').textContent = '';
           document.getElementById('jf-tree').innerHTML = '<div class="empty-state"><p>Paste JSON above to see the tree view</p></div>';
           return;
         }
         try {
-          const obj = JSON.parse(raw);
-          showStatus('✓ Valid JSON', true);
-          const stats = jsonStats(obj);
-          document.getElementById('jf-stats').textContent = stats;
-          renderTree(obj);
+          var obj = JSON.parse(raw);
+          jfShowStatus('\u2713 Valid JSON', true);
+          document.getElementById('jf-stats').textContent = jfStats(obj);
+          jfRenderTree(obj);
         } catch (e) {
-          showStatus('✗ ' + e.message, false);
+          jfShowStatus('\u2717 ' + e.message, false);
           document.getElementById('jf-stats').textContent = '';
           document.getElementById('jf-tree').innerHTML = '';
         }
       };
 
-      function showStatus(msg, valid) {
-        const el = document.getElementById('jf-status');
+      function jfShowStatus(msg, valid) {
+        var el = document.getElementById('jf-status');
         el.textContent = msg;
         el.className = 'jf-status' + (msg ? (valid ? ' jf-status--valid' : ' jf-status--error') : '');
       }
 
-      function jsonStats(obj) {
-        let keys = 0, arrays = 0, objects = 0, values = 0;
+      function jfStats(obj) {
+        var keys = 0, arrays = 0, objects = 0, values = 0;
         (function walk(v) {
           if (Array.isArray(v)) { arrays++; v.forEach(walk); }
-          else if (v && typeof v === 'object') { objects++; const k = Object.keys(v); keys += k.length; k.forEach(k => walk(v[k])); }
+          else if (v && typeof v === 'object') { objects++; var k = Object.keys(v); keys += k.length; k.forEach(function(key) { walk(v[key]); }); }
           else values++;
         })(obj);
-        return keys + ' keys · ' + objects + ' objects · ' + arrays + ' arrays · ' + values + ' values';
+        return keys + ' keys \u00b7 ' + objects + ' objects \u00b7 ' + arrays + ' arrays \u00b7 ' + values + ' values';
       }
 
-      function renderTree(obj) {
-        const container = document.getElementById('jf-tree');
+      function jfRenderTree(obj) {
+        var container = document.getElementById('jf-tree');
         container.innerHTML = '';
-        const ul = document.createElement('ul');
-        buildNode(ul, null, obj);
+        var ul = document.createElement('ul');
+        jfBuildNode(ul, null, obj);
         container.appendChild(ul);
       }
 
-      function buildNode(parent, key, val) {
-        const li = document.createElement('li');
-        const keySpan = key !== null ? '<span class="jf-tree-key">' + escHtml(String(key)) + '</span>: ' : '';
+      function jfBuildNode(parent, key, val) {
+        var li = document.createElement('li');
+        var keySpan = key !== null ? '<span class="jf-tree-key">' + jfEsc(String(key)) + '</span>: ' : '';
 
         if (val === null) {
           li.innerHTML = keySpan + '<span class="jf-tree-null">null</span>';
@@ -163,34 +169,52 @@ export const jsonFormatterView = (): string => layout({
         } else if (typeof val === 'number') {
           li.innerHTML = keySpan + '<span class="jf-tree-num">' + val + '</span>';
         } else if (typeof val === 'string') {
-          const display = val.length > 120 ? escHtml(val.slice(0, 120)) + '…' : escHtml(val);
+          var display = val.length > 120 ? jfEsc(val.slice(0, 120)) + '\u2026' : jfEsc(val);
           li.innerHTML = keySpan + '<span class="jf-tree-str">"' + display + '"</span>';
         } else if (Array.isArray(val)) {
-          const toggle = document.createElement('span');
+          var toggle = document.createElement('span');
           toggle.className = 'jf-tree-toggle';
-          toggle.textContent = '▾';
+          toggle.setAttribute('role', 'button');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.textContent = '\u25be';
           li.appendChild(toggle);
           li.insertAdjacentHTML('beforeend', keySpan + 'Array[' + val.length + ']');
-          const sub = document.createElement('ul');
-          val.forEach(function(v, i) { buildNode(sub, i, v); });
+          var sub = document.createElement('ul');
+          val.forEach(function(v, i) { jfBuildNode(sub, i, v); });
           li.appendChild(sub);
-          toggle.onclick = function() { sub.hidden = !sub.hidden; toggle.textContent = sub.hidden ? '▸' : '▾'; };
+          toggle.onclick = function() {
+            var expanded = sub.hidden;
+            sub.hidden = !expanded;
+            toggle.textContent = expanded ? '\u25b8' : '\u25be';
+            toggle.setAttribute('aria-expanded', String(expanded));
+          };
         } else {
-          const keys = Object.keys(val);
-          const toggle = document.createElement('span');
+          var keys = Object.keys(val);
+          var toggle = document.createElement('span');
           toggle.className = 'jf-tree-toggle';
-          toggle.textContent = '▾';
+          toggle.setAttribute('role', 'button');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.textContent = '\u25be';
           li.appendChild(toggle);
           li.insertAdjacentHTML('beforeend', keySpan + 'Object{' + keys.length + '}');
-          const sub = document.createElement('ul');
-          keys.forEach(function(k) { buildNode(sub, k, val[k]); });
+          var sub = document.createElement('ul');
+          keys.forEach(function(k) { jfBuildNode(sub, k, val[k]); });
           li.appendChild(sub);
-          toggle.onclick = function() { sub.hidden = !sub.hidden; toggle.textContent = sub.hidden ? '▸' : '▾'; };
+          toggle.onclick = function() {
+            var expanded = sub.hidden;
+            sub.hidden = !expanded;
+            toggle.textContent = expanded ? '\u25b8' : '\u25be';
+            toggle.setAttribute('aria-expanded', String(expanded));
+          };
         }
         parent.appendChild(li);
       }
 
-      function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+      function jfEsc(s) {
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
 
       window.jfCopy = function() {
         var text = document.getElementById('jf-input').value;
