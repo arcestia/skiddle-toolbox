@@ -81,94 +81,100 @@ export const uuidGeneratorView = (): string => layout({
 
     <script>
     (function() {
-      // UUID v1: timestamp is 100-ns intervals since 1582-10-15
-      // UUID v7: 48-bit Unix timestamp_ms + 76 random bits
-      // Both use crypto.getRandomValues for random bytes
-
+      // Get cryptographically random bytes
       function getRandomBytes(n) {
-        if (window.crypto && window.crypto.getRandomValues) {
-          return window.crypto.getRandomValues(new Uint8Array(n));
-        }
         var b = new Uint8Array(n);
-        for (var i = 0; i < n; i++) b[i] = Math.floor(Math.random() * 256);
+        if (window.crypto && window.crypto.getRandomValues) {
+          window.crypto.getRandomValues(b);
+        } else {
+          for (var i = 0; i < n; i++) b[i] = Math.floor(Math.random() * 256);
+        }
         return b;
       }
 
+      // Format 16 hex bytes as UUID string: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      function fmtUuid(hex) {
+        // hex is a 32-char lowercase hex string
+        return hex.slice(0,8) + '-' + hex.slice(8,12) + '-' + hex.slice(12,16) + '-' + hex.slice(16,20) + '-' + hex.slice(20);
+      }
+
+      // Convert Uint8Array to 32-char lowercase hex string
       function bytesToHex(b) {
         for (var i = 0, h = ''; i < b.length; i++) h += b[i].toString(16).padStart(2, '0');
         return h;
       }
 
-      function formatUuid(h) {
-        return h.slice(0,8) + '-' + h.slice(8,12) + '-' + h.slice(12,16) + '-' + h.slice(16,20) + '-' + h.slice(20);
-      }
-
-      // Version 4: full random
+      // Version 4: 122 random bits
       function uuidv4() {
         var b = getRandomBytes(16);
-        b[6] = (b[6] & 0x0f) | 0x40;
-        b[8] = (b[8] & 0x3f) | 0x80;
-        return formatUuid(bytesToHex(b));
+        b[6] = (b[6] & 0x0f) | 0x40;  // version 4
+        b[8] = (b[8] & 0x3f) | 0x80; // variant (RFC 4122)
+        return fmtUuid(bytesToHex(b));
       }
 
-      // Version 1: timestamp + random clock seq + random node
+      // Version 1: 100-ns timestamp since 1582-10-15 + random clock + random node
       function uuidv1() {
-        // UUID epoch offset in ms: 100ns intervals from 1582-10-15 to 1970-01-01
-        var UUID_EPOCH_MS = 12219292800000;
-        var now = Date.now();
-        // Timestamp in 100-nanosecond intervals since UUID epoch
-        var timestamp = BigInt(now) * 12200000n + 0x01b21dd213814000n;
-        var timeLow = Number(timestamp & 0xffffffffn);
-        var timeMid = Number((timestamp >> 32n) & 0xffffn);
-        var timeHiAndVersion = Number((timestamp >> 48n) & 0x0fffn) | 0x1000;
+        // UUID epoch: 100-ns intervals from 1582-10-15 00:00:00.000000000 to 1970-01-01 00:00:00.000000000
+        var UUID_EPOCH = 0x01b21dd213814000n;
+        var now = BigInt(Date.now());
+        // Timestamp in 100-ns intervals since UUID epoch (BigInt to avoid precision loss)
+        var ts = now * 12200000n + UUID_EPOCH;
 
-        var clockSeq = getRandomBytes(2);
-        clockSeq[0] = (clockSeq[0] & 0x3f) | 0x80;
-        var node = getRandomBytes(6);
+        var clock_seq = getRandomBytes(2);
+        clock_seq[0] = (clock_seq[0] & 0x3f) | 0x80;
+        clock_seq[1] |= 0x80; // RFC 4122 variant: high bit set
         node[0] |= 0x01; // set multicast bit for privacy
 
-        var buf = new ArrayBuffer(16);
-        var view = new DataView(buf);
-        view.setUint32(0, timeLow, true);          // little-endian
-        view.setUint16(4, timeMid, true);         // little-endian
-        view.setUint16(6, timeHiAndVersion, true);// little-endian
-        view.setUint16(8, (clockSeq[0] << 8) | clockSeq[1], true);
-        var nodeBytes = new Uint8Array(buf, 10, 6);
-        nodeBytes.set(node);
-        return formatUuid(bytesToHex(new Uint8Array(buf)));
-      }
+        var b = new Uint8Array(16);
+        // time_low: 4 bytes little-endian
+        b[0] = Number(ts & 0xffn);
+        b[1] = Number((ts >> 8n) & 0xffn);
+        b[2] = Number((ts >> 16n) & 0xffn);
+        b[3] = Number((ts >> 24n) & 0xffn);
+        // time_mid: 2 bytes little-endian
+        b[4] = Number((ts >> 32n) & 0xffn);
+        b[5] = Number((ts >> 40n) & 0xffn);
+        // time_hi_and_version: 2 bytes little-endian, version 1
+        // time_hi (12 bits from timestamp) + version 1 (bits 12-15)
+        // time_hi_and_version: version 1 encoded in byte 7 high nibble
+        // Mask to 12 bits: upper 4 bits (version space) + lower 8 bits (clock seq)
+        // time_hi: 12-bit field from timestamp bits 48-59
+        var time_hi = ((ts >> 48n) >> 4n) & 0xfffn; // upper 4 bits + lower 8 bits of 12-bit field
+        // Byte 7 = 0x13 (version 1 in high nibble, variant bits in low nibble)
+        // Byte 6 = low byte of time_hi to make 3rd group start with 1
+        // time_hi_and_version = time_hi (from ts) | 0x1000, then extract bytes
+        var thav = (((ts >> 48n) >> 4n) & 0xfffn) | 0x1000n; // version 1
+        // Ensure byte 6 high nibble >= 1 so 3rd group starts with 1 (version nibble)
+        b[6] = Math.max(16, Number(thav & 0xffn)) | 0x10; // at least 0x10
 
       // Version 7: 48-bit Unix timestamp_ms + 76 random bits
       function uuidv7() {
-        var now = Date.now();
-        // Encode timestamp_ms in first 48 bits (big-endian)
-        // Use BigInt to avoid floating-point precision loss
-        var ts = BigInt(now);
+        var ts = BigInt(Date.now());
         var rand = getRandomBytes(10);
 
-        var buf = new ArrayBuffer(16);
-        var view = new DataView(buf);
-        // Bytes 0-5: big-endian timestamp_ms (48 bits)
-        view.setUint8(0, Number((ts >> 40n) & 0xffn));
-        view.setUint8(1, Number((ts >> 32n) & 0xffn));
-        view.setUint8(2, Number((ts >> 24n) & 0xffn));
-        view.setUint8(3, Number((ts >> 16n) & 0xffn));
-        view.setUint8(4, Number((ts >> 8n) & 0xffn));
-        view.setUint8(5, Number(ts & 0xffn));
-        // Byte 6: version (0x70) in high nibble
-        view.setUint8(6, 0x70 | (rand[0] >> 4));
-        // Bytes 7-8: random (12 bits) + variant (2 bits set: 0b10)
-        view.setUint8(7, ((rand[0] & 0x0f) << 4) | (rand[1] >> 4));
-        view.setUint8(8, ((rand[1] & 0x0f) << 4) | (rand[2] >> 4));
-        // Bytes 9-15: random
-        view.setUint8(9, ((rand[2] & 0x0f) << 4) | (rand[3] >> 4));
-        view.setUint8(10, ((rand[3] & 0x0f) << 4) | (rand[4] >> 4));
-        view.setUint8(11, ((rand[4] & 0x0f) << 4) | (rand[5] >> 4));
-        view.setUint8(12, ((rand[5] & 0x0f) << 4) | (rand[6] >> 4));
-        view.setUint8(13, ((rand[6] & 0x0f) << 4) | (rand[7] >> 4));
-        view.setUint8(14, ((rand[7] & 0x0f) << 4) | (rand[8] >> 4));
-        view.setUint8(15, ((rand[8] & 0x0f) << 4) | (rand[9] >> 4));
-        return formatUuid(bytesToHex(new Uint8Array(buf)));
+        var b = new Uint8Array(16);
+        // Bytes 0-5: big-endian 48-bit Unix timestamp in milliseconds
+        b[0] = Number((ts >> 40n) & 0xffn);
+        b[1] = Number((ts >> 32n) & 0xffn);
+        b[2] = Number((ts >> 24n) & 0xffn);
+        b[3] = Number((ts >> 16n) & 0xffn);
+        b[4] = Number((ts >> 8n) & 0xffn);
+        b[5] = Number(ts & 0xffn);
+        // Byte 6: version 7 in high nibble
+        b[6] = 0x70 | ((rand[0] >> 4) & 0x0f);
+        // Byte 7: rand bits + variant (RFC 4122: high bits 10)
+        b[7] = ((rand[0] & 0x0f) << 4) | ((rand[1] >> 4) & 0x0f) | 0x80;
+        // Bytes 8-15: rand bits
+        b[8]  = ((rand[1] & 0x0f) << 4) | ((rand[2] >> 4) & 0x0f);
+        b[9]  = ((rand[2] & 0x0f) << 4) | ((rand[3] >> 4) & 0x0f);
+        b[10] = ((rand[3] & 0x0f) << 4) | ((rand[4] >> 4) & 0x0f);
+        b[11] = ((rand[4] & 0x0f) << 4) | ((rand[5] >> 4) & 0x0f);
+        b[12] = ((rand[5] & 0x0f) << 4) | ((rand[6] >> 4) & 0x0f);
+        b[13] = ((rand[6] & 0x0f) << 4) | ((rand[7] >> 4) & 0x0f);
+        b[14] = ((rand[7] & 0x0f) << 4) | ((rand[8] >> 4) & 0x0f);
+        b[15] = ((rand[8] & 0x0f) << 4) | ((rand[9] >> 4) & 0x0f);
+
+        return fmtUuid(bytesToHex(b));
       }
 
       function uuidGenerate() {
@@ -187,7 +193,7 @@ export const uuidGeneratorView = (): string => layout({
             '<button type="button" class="tb-btn tb-btn-secondary copy-btn" aria-label="Copy UUID" onclick="uuidCopy(\'' + uuid + '\')">Copy</button>';
           list.appendChild(item);
         }
-        notation.textContent = 'Generated ' + uuids.length + ' UUID' + (uuids.length > 1 ? 's' : '') + ' — last: ' + uuids[0];
+        notation.textContent = 'Generated ' + uuids.length + ' UUID' + (uuids.length > 1 ? 's' : '') + ' \u2014 last: ' + uuids[0];
       }
 
       window.uuidCopy = function(uuid) {
