@@ -1,15 +1,16 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const cdnValidatorView = (): string => layout({
-  title: 'Image CDN Validator · Skiddle Toolbox',
+  title: 'Image CDN Validator Â· Skiddle Toolbox',
   description: 'Bulk-check image URLs by provider, response code, and Content-Type with concurrent validation and edge CORS proxying.',
+  canonicalPath: '/cdn-validator',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-teal">
-      <div class="tb-tool-icon">🖼️</div>
+      <div class="tb-tool-icon">ðŸ–¼ï¸</div>
       <div class="tb-page-header__text">
         <h1>Image CDN Validator</h1>
         <p>Bulk-check image URLs by provider, response code, and Content-Type.</p>

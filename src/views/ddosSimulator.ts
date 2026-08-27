@@ -1,25 +1,26 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const ddosSimulatorView = (): string => layout({
-  title: 'DDoS Simulator · Skiddle Toolbox',
-  description: 'Educational incremental game simulating botnet and DDoS mechanics — fully client-side, no real network traffic.',
+  title: 'DDoS Simulator Â· Skiddle Toolbox',
+  description: 'Educational incremental game simulating botnet and DDoS mechanics â€” fully client-side, no real network traffic.',
+  canonicalPath: '/ddos-simulator',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="ddos-stack">
     <div class="tb-page-header accent-red">
-      <div class="tb-tool-icon">🌩️</div>
+      <div class="tb-tool-icon">ðŸŒ©ï¸</div>
       <div class="tb-page-header__text">
         <h1>DDoS Simulator</h1>
-        <p>Farm a botnet from scratch, pwn increasingly defended targets, and stay one step ahead of the trace — all on a live cyber-war map.</p>
+        <p>Farm a botnet from scratch, pwn increasingly defended targets, and stay one step ahead of the trace â€” all on a live cyber-war map.</p>
       </div>
     </div>
 
     <div class="tb-card ddos-disclaimer">
       <span class="tb-tag tb-tag--green">100% Simulated</span>
-      <p>This is an <strong>educational game</strong>. Every bot, packet, and attack arc is generated locally in your browser — <strong>no real network traffic ever leaves this page.</strong></p>
+      <p>This is an <strong>educational game</strong>. Every bot, packet, and attack arc is generated locally in your browser â€” <strong>no real network traffic ever leaves this page.</strong></p>
     </div>
 
     <div class="tb-card">
@@ -27,9 +28,9 @@ export const ddosSimulatorView = (): string => layout({
         <div class="ddos-control">
           <label class="tb-label">Mode</label>
           <div class="ddos-mode-switch">
-            <button type="button" id="sim-mode-campaign" class="ddos-mode-btn active">🧟 Campaign</button>
-            <button type="button" id="sim-mode-sandbox" class="ddos-mode-btn">🧪 Sandbox</button>
-            <button type="button" id="sim-mode-defense" class="ddos-mode-btn">🎮 Defense</button>
+            <button type="button" id="sim-mode-campaign" class="ddos-mode-btn active">ðŸ§Ÿ Campaign</button>
+            <button type="button" id="sim-mode-sandbox" class="ddos-mode-btn">ðŸ§ª Sandbox</button>
+            <button type="button" id="sim-mode-defense" class="ddos-mode-btn">ðŸŽ® Defense</button>
           </div>
           <span class="ddos-hint" id="sim-mode-hint">Farm bots, pwn targets, spend credits. Trace is the enemy.</span>
         </div>
@@ -47,7 +48,7 @@ export const ddosSimulatorView = (): string => layout({
           <label class="tb-label" for="sim-target">Target server</label>
           <select id="sim-target" class="tb-select" disabled>
             <option value="na">US East</option>
-            <option value="sa">São Paulo</option>
+            <option value="sa">SÃ£o Paulo</option>
             <option value="eu">Frankfurt</option>
             <option value="af">Cape Town</option>
             <option value="as">Tokyo</option>
@@ -56,17 +57,17 @@ export const ddosSimulatorView = (): string => layout({
           <span class="ddos-hint" id="sim-target-hint">Set by campaign level.</span>
         </div>
         <div class="ddos-control" id="sim-bots-ctrl">
-          <label class="tb-label" for="sim-bots">Botnet size — <span id="sim-bots-val">120</span> bots</label>
+          <label class="tb-label" for="sim-bots">Botnet size â€” <span id="sim-bots-val">120</span> bots</label>
           <input type="range" id="sim-bots" min="10" max="500" step="10" value="120" disabled>
           <span class="ddos-hint" id="sim-bots-hint">Farm bots on the map instead!</span>
         </div>
         <div class="ddos-control">
-          <label class="tb-label" for="sim-intensity">Attack intensity — <span id="sim-intensity-val">5</span>/10</label>
+          <label class="tb-label" for="sim-intensity">Attack intensity â€” <span id="sim-intensity-val">5</span>/10</label>
           <input type="range" id="sim-intensity" min="1" max="10" step="1" value="5">
           <span class="ddos-hint" id="sim-intensity-hint">Higher intensity = faster trace.</span>
         </div>
         <div class="ddos-control ddos-control--launch">
-          <button type="button" id="sim-launch" class="tb-btn">🚀 Launch Attack</button>
+          <button type="button" id="sim-launch" class="tb-btn">ðŸš€ Launch Attack</button>
         </div>
       </div>
     </div>
@@ -74,9 +75,9 @@ export const ddosSimulatorView = (): string => layout({
     <div id="sim-campaign-panel">
       <div class="tb-card">
         <div class="ddos-section-head">
-          <h2 class="ddos-section-title">🎯 Current Target</h2>
+          <h2 class="ddos-section-title">ðŸŽ¯ Current Target</h2>
           <div class="ddos-tag-row">
-            <span class="tb-tag tb-tag--mauve tb-hidden" id="ct-prestige">🌟 P1</span>
+            <span class="tb-tag tb-tag--mauve tb-hidden" id="ct-prestige">ðŸŒŸ P1</span>
             <span class="tb-tag tb-tag--red" id="ct-level">Level 1</span>
           </div>
         </div>
@@ -86,22 +87,22 @@ export const ddosSimulatorView = (): string => layout({
             <span>Capacity <b id="ct-cap">800</b> load</span>
             <span>Mitigation <b id="ct-block">0%</b></span>
             <span>Weakness <b id="ct-weak">UDP Flood</b></span>
-            <span>Payout <b id="ct-payout">💰 150</b></span>
+            <span>Payout <b id="ct-payout">ðŸ’° 150</b></span>
           </div>
         </div>
         <div class="ddos-prestige tb-hidden" id="ct-prestige-row">
-          <button type="button" id="sim-prestige" class="tb-btn">🌟 Prestige</button>
+          <button type="button" id="sim-prestige" class="tb-btn">ðŸŒŸ Prestige</button>
           <span class="ddos-hint" id="sim-prestige-hint"></span>
         </div>
       </div>
 
       <div class="tb-card">
         <div class="ddos-section-head">
-          <h2 class="ddos-section-title">🧟 Your Botnet</h2>
+          <h2 class="ddos-section-title">ðŸ§Ÿ Your Botnet</h2>
           <div class="ddos-save-actions">
-            <button type="button" id="sim-save-progress" class="tb-btn tb-btn-secondary ddos-save-btn">💾 Save progress</button>
-            <button type="button" id="sim-export-save" class="tb-btn tb-btn-secondary ddos-save-btn">📤 Export</button>
-            <button type="button" id="sim-import-save" class="tb-btn tb-btn-secondary ddos-save-btn">📥 Import</button>
+            <button type="button" id="sim-save-progress" class="tb-btn tb-btn-secondary ddos-save-btn">ðŸ’¾ Save progress</button>
+            <button type="button" id="sim-export-save" class="tb-btn tb-btn-secondary ddos-save-btn">ðŸ“¤ Export</button>
+            <button type="button" id="sim-import-save" class="tb-btn tb-btn-secondary ddos-save-btn">ðŸ“¥ Import</button>
             <button type="button" id="sim-reset-save" class="tb-btn tb-btn-secondary ddos-reset-btn">Reset save</button>
           </div>
         </div>
@@ -114,7 +115,7 @@ export const ddosSimulatorView = (): string => layout({
           <div class="ddos-botnet-stat">
             <span class="ddos-stat__label">Credits</span>
             <span class="ddos-stat__value ddos-credits" id="cb-credits">0</span>
-            <span class="ddos-stat__unit" id="cb-credits-unit">💰 spend below</span>
+            <span class="ddos-stat__unit" id="cb-credits-unit">ðŸ’° spend below</span>
           </div>
           <div class="ddos-botnet-stat">
             <span class="ddos-stat__label">Auto-scan</span>
@@ -122,58 +123,58 @@ export const ddosSimulatorView = (): string => layout({
             <span class="ddos-stat__unit">infections/s</span>
           </div>
           <div class="ddos-botnet-stat ddos-botnet-stat--trace">
-            <span class="ddos-stat__label">🥷 Trace Level</span>
+            <span class="ddos-stat__label">ðŸ¥· Trace Level</span>
             <div class="ddos-tracebar"><div id="cb-trace-fill" class="ddos-tracebar__fill is-ok" style="width:0%"></div></div>
-            <span class="ddos-stat__unit" id="cb-trace-label">0% — invisible</span>
+            <span class="ddos-stat__unit" id="cb-trace-label">0% â€” invisible</span>
           </div>
         </div>
         <div class="ddos-farm-row">
-          <p class="ddos-hint ddos-farm-hint">💡 <strong>Click land on the map</strong> to infect devices manually — or use the button, same infection. Auto-scan and Worm Spread farm for you over time. Progress auto-saves every 5s — or hit <strong>💾 Save progress</strong> anytime.</p>
-          <button type="button" id="sim-infect" class="tb-btn tb-btn-secondary ddos-infect-btn">🧟 Infect devices <span id="sim-infect-n">+1</span></button>
+          <p class="ddos-hint ddos-farm-hint">ðŸ’¡ <strong>Click land on the map</strong> to infect devices manually â€” or use the button, same infection. Auto-scan and Worm Spread farm for you over time. Progress auto-saves every 5s â€” or hit <strong>ðŸ’¾ Save progress</strong> anytime.</p>
+          <button type="button" id="sim-infect" class="tb-btn tb-btn-secondary ddos-infect-btn">ðŸ§Ÿ Infect devices <span id="sim-infect-n">+1</span></button>
         </div>
         <div class="ddos-io tb-hidden" id="sim-io-panel">
-          <textarea id="sim-io-text" class="tb-textarea ddos-io-text" rows="3" spellcheck="false" placeholder="Paste a save string here and hit ✅ Apply import — or press 📤 Export to fill this box with your current save."></textarea>
+          <textarea id="sim-io-text" class="tb-textarea ddos-io-text" rows="3" spellcheck="false" placeholder="Paste a save string here and hit âœ… Apply import â€” or press ðŸ“¤ Export to fill this box with your current save."></textarea>
           <div class="ddos-io-actions">
-            <button type="button" id="sim-io-copy" class="tb-btn tb-btn-secondary ddos-save-btn">📋 Copy</button>
-            <button type="button" id="sim-io-apply" class="tb-btn tb-btn-secondary ddos-save-btn">✅ Apply import</button>
-            <button type="button" id="sim-io-close" class="tb-btn tb-btn-secondary ddos-save-btn">✕ Close</button>
+            <button type="button" id="sim-io-copy" class="tb-btn tb-btn-secondary ddos-save-btn">ðŸ“‹ Copy</button>
+            <button type="button" id="sim-io-apply" class="tb-btn tb-btn-secondary ddos-save-btn">âœ… Apply import</button>
+            <button type="button" id="sim-io-close" class="tb-btn tb-btn-secondary ddos-save-btn">âœ• Close</button>
           </div>
         </div>
         <div class="ddos-lifetime">
-          <span class="ddos-lifetime-title">📈 Lifetime</span>
+          <span class="ddos-lifetime-title">ðŸ“ˆ Lifetime</span>
           <div class="ddos-lifetime-grid">
-            <div class="ddos-lifetime-stat"><span>🧟 Bots farmed</span><b id="lt-farmed">0</b></div>
-            <div class="ddos-lifetime-stat"><span>💰 Credits earned</span><b id="lt-earned">0</b></div>
-            <div class="ddos-lifetime-stat"><span>🚨 Busts</span><b id="lt-busts">0</b></div>
-            <div class="ddos-lifetime-stat"><span>🏆 Targets pwned</span><b id="lt-pwned">0</b></div>
-            <div class="ddos-lifetime-stat"><span>⏱️ Playtime</span><b id="lt-time">0m</b></div>
+            <div class="ddos-lifetime-stat"><span>ðŸ§Ÿ Bots farmed</span><b id="lt-farmed">0</b></div>
+            <div class="ddos-lifetime-stat"><span>ðŸ’° Credits earned</span><b id="lt-earned">0</b></div>
+            <div class="ddos-lifetime-stat"><span>ðŸš¨ Busts</span><b id="lt-busts">0</b></div>
+            <div class="ddos-lifetime-stat"><span>ðŸ† Targets pwned</span><b id="lt-pwned">0</b></div>
+            <div class="ddos-lifetime-stat"><span>â±ï¸ Playtime</span><b id="lt-time">0m</b></div>
           </div>
         </div>
         <div class="ddos-shop-grid">
           <button type="button" class="ddos-shop-item" id="shop-kit">
-            <span class="ddos-shop-top">🧠 <strong>Exploit Kit</strong> <span class="ddos-shop-lv" id="shop-lv-kit">Lv.0</span></span>
+            <span class="ddos-shop-top">ðŸ§  <strong>Exploit Kit</strong> <span class="ddos-shop-lv" id="shop-lv-kit">Lv.0</span></span>
             <span class="ddos-shop-desc">+1 bot per map click, +0.5 auto-scan/s</span>
-            <span class="ddos-shop-cost" id="shop-cost-kit">💰 100</span>
+            <span class="ddos-shop-cost" id="shop-cost-kit">ðŸ’° 100</span>
           </button>
           <button type="button" class="ddos-shop-item" id="shop-worm">
-            <span class="ddos-shop-top">🪱 <strong>Worm Spread</strong> <span class="ddos-shop-lv" id="shop-lv-worm">Lv.0</span></span>
+            <span class="ddos-shop-top">ðŸª± <strong>Worm Spread</strong> <span class="ddos-shop-lv" id="shop-lv-worm">Lv.0</span></span>
             <span class="ddos-shop-desc">Bots self-replicate +0.5%/s per level</span>
-            <span class="ddos-shop-cost" id="shop-cost-worm">💰 250</span>
+            <span class="ddos-shop-cost" id="shop-cost-worm">ðŸ’° 250</span>
           </button>
           <button type="button" class="ddos-shop-item" id="shop-clock">
-            <span class="ddos-shop-top">⚡ <strong>Bot Overclock</strong> <span class="ddos-shop-lv" id="shop-lv-clock">Lv.0</span></span>
+            <span class="ddos-shop-top">âš¡ <strong>Bot Overclock</strong> <span class="ddos-shop-lv" id="shop-lv-clock">Lv.0</span></span>
             <span class="ddos-shop-desc">+25% packet rate per bot</span>
-            <span class="ddos-shop-cost" id="shop-cost-clock">💰 200</span>
+            <span class="ddos-shop-cost" id="shop-cost-clock">ðŸ’° 200</span>
           </button>
           <button type="button" class="ddos-shop-item" id="shop-proxy">
-            <span class="ddos-shop-top">🥷 <strong>Proxy Chains</strong> <span class="ddos-shop-lv" id="shop-lv-proxy">Lv.0</span></span>
-            <span class="ddos-shop-desc">Trace gain −20% per level</span>
-            <span class="ddos-shop-cost" id="shop-cost-proxy">💰 150</span>
+            <span class="ddos-shop-top">ðŸ¥· <strong>Proxy Chains</strong> <span class="ddos-shop-lv" id="shop-lv-proxy">Lv.0</span></span>
+            <span class="ddos-shop-desc">Trace gain âˆ’20% per level</span>
+            <span class="ddos-shop-cost" id="shop-cost-proxy">ðŸ’° 150</span>
           </button>
           <button type="button" class="ddos-shop-item" id="shop-c2">
-            <span class="ddos-shop-top">🖥️ <strong>C2 Servers</strong> <span class="ddos-shop-lv" id="shop-lv-c2">Lv.0</span></span>
+            <span class="ddos-shop-top">ðŸ–¥ï¸ <strong>C2 Servers</strong> <span class="ddos-shop-lv" id="shop-lv-c2">Lv.0</span></span>
             <span class="ddos-shop-desc">Botnet capacity +500 per level</span>
-            <span class="ddos-shop-cost" id="shop-cost-c2">💰 300</span>
+            <span class="ddos-shop-cost" id="shop-cost-c2">ðŸ’° 300</span>
           </button>
         </div>
       </div>
@@ -185,12 +186,12 @@ export const ddosSimulatorView = (): string => layout({
         <div id="sim-banner" class="ddos-banner tb-hidden"></div>
         <div id="sim-overlay" class="ddos-overlay tb-hidden">
           <div class="ddos-overlay-box">
-            <div class="ddos-overlay-icon">💥</div>
+            <div class="ddos-overlay-icon">ðŸ’¥</div>
             <h2>Server Offline</h2>
             <p>The target was overwhelmed and stopped responding. Legitimate users are now staring at timeout errors.</p>
             <div class="ddos-overlay-score">Score: <strong id="sim-overlay-score">0</strong></div>
             <div class="ddos-overlay-best">Best: <span id="sim-overlay-best">0</span></div>
-            <button type="button" id="sim-overlay-restart" class="tb-btn">🔄 Play Again</button>
+            <button type="button" id="sim-overlay-restart" class="tb-btn">ðŸ”„ Play Again</button>
           </div>
         </div>
       </div>
@@ -233,33 +234,33 @@ export const ddosSimulatorView = (): string => layout({
       <div class="tb-card ddos-stat">
         <span class="ddos-stat__label" id="st-wave-label">Campaign</span>
         <span class="ddos-stat__value" id="st-wave">Level 1</span>
-        <span class="ddos-stat__unit" id="st-score">💰 0</span>
+        <span class="ddos-stat__unit" id="st-score">ðŸ’° 0</span>
       </div>
     </div>
 
     <div class="tb-card tb-hidden" id="sim-defenses-card">
       <div class="ddos-section-head">
-        <h2 class="ddos-section-title">🛡️ Mitigations</h2>
+        <h2 class="ddos-section-title">ðŸ›¡ï¸ Mitigations</h2>
         <span class="ddos-hint">Sandbox: combine freely. Defense Game: max 2 active.</span>
       </div>
       <div class="ddos-def-grid">
         <button type="button" class="ddos-def-chip" id="def-ratelimit">
-          <span class="ddos-def-chip__top"><span class="ddos-def-icon">⏱️</span><strong>Rate Limiting</strong></span>
+          <span class="ddos-def-chip__top"><span class="ddos-def-icon">â±ï¸</span><strong>Rate Limiting</strong></span>
           <span class="ddos-def-desc">Caps requests per source. Great against floods that reuse the same bots.</span>
           <span class="ddos-def-eff">blocks <b id="def-eff-ratelimit">25%</b> of this attack</span>
         </button>
         <button type="button" class="ddos-def-chip" id="def-anycast">
-          <span class="ddos-def-chip__top"><span class="ddos-def-icon">🌍</span><strong>Anycast Scrubbing</strong></span>
+          <span class="ddos-def-chip__top"><span class="ddos-def-icon">ðŸŒ</span><strong>Anycast Scrubbing</strong></span>
           <span class="ddos-def-desc">Spreads traffic across a global scrubbing network and absorbs volume at the edge.</span>
           <span class="ddos-def-eff">blocks <b id="def-eff-anycast">60%</b> of this attack</span>
         </button>
         <button type="button" class="ddos-def-chip" id="def-waf">
-          <span class="ddos-def-chip__top"><span class="ddos-def-icon">🧱</span><strong>WAF Rules</strong></span>
+          <span class="ddos-def-chip__top"><span class="ddos-def-icon">ðŸ§±</span><strong>WAF Rules</strong></span>
           <span class="ddos-def-desc">Inspects application-layer requests and drops malicious patterns.</span>
           <span class="ddos-def-eff">blocks <b id="def-eff-waf">5%</b> of this attack</span>
         </button>
         <button type="button" class="ddos-def-chip" id="def-geoblock">
-          <span class="ddos-def-chip__top"><span class="ddos-def-icon">🚧</span><strong>Geo-Block</strong></span>
+          <span class="ddos-def-chip__top"><span class="ddos-def-icon">ðŸš§</span><strong>Geo-Block</strong></span>
           <span class="ddos-def-desc">Drops traffic from regions you do not serve. Blunt but cheap.</span>
           <span class="ddos-def-eff">blocks <b id="def-eff-geoblock">30%</b> of this attack</span>
         </button>
@@ -268,34 +269,34 @@ export const ddosSimulatorView = (): string => layout({
 
     <div class="ddos-duo">
       <div class="tb-card">
-        <h2 class="ddos-section-title">🎯 Attack Intel</h2>
+        <h2 class="ddos-section-title">ðŸŽ¯ Attack Intel</h2>
         <div class="ddos-intel-head">
           <strong id="atk-name">UDP Flood</strong>
-          <span class="tb-tag tb-tag--red" id="atk-layer">Volumetric · L3/L4</span>
+          <span class="tb-tag tb-tag--red" id="atk-layer">Volumetric Â· L3/L4</span>
         </div>
         <p id="atk-desc"></p>
       </div>
       <div class="tb-card">
-        <h2 class="ddos-section-title">📡 Event Log</h2>
+        <h2 class="ddos-section-title">ðŸ“¡ Event Log</h2>
         <div id="sim-log" class="ddos-log"></div>
       </div>
     </div>
 
     <div class="ddos-edu">
       <div class="tb-card ddos-edu-card">
-        <h3>🧟 1 · Farm the botnet</h3>
+        <h3>ðŸ§Ÿ 1 Â· Farm the botnet</h3>
         <p>Every zombie starts somewhere: click land on the map to infect devices, let auto-scan find vulnerable hosts, and research Worm Spread so the botnet replicates itself. Your botnet even keeps farming while you're away (up to 4 hours).</p>
       </div>
       <div class="tb-card ddos-edu-card">
-        <h3>🌊 2 · Flood the target</h3>
-        <p>Each target has a capacity and its own mitigations — but also a weakness. Pick the attack type it is weak against, overwhelm it for 3 seconds, and collect the payout. Pwn all 7 targets to unlock 🌟 Prestige and start over stronger.</p>
+        <h3>ðŸŒŠ 2 Â· Flood the target</h3>
+        <p>Each target has a capacity and its own mitigations â€” but also a weakness. Pick the attack type it is weak against, overwhelm it for 3 seconds, and collect the payout. Pwn all 7 targets to unlock ðŸŒŸ Prestige and start over stronger.</p>
       </div>
       <div class="tb-card ddos-edu-card">
-        <h3>🥷 3 · Manage your trace</h3>
+        <h3>ðŸ¥· 3 Â· Manage your trace</h3>
         <p>Big, loud attacks raise your trace level. Hit 100% and the authorities seize 40% of your botnet. Throttle intensity or invest in Proxy Chains to stay dark.</p>
       </div>
       <div class="tb-card ddos-edu-card">
-        <h3>🛡️ 4 · Or play defense</h3>
+        <h3>ðŸ›¡ï¸ 4 Â· Or play defense</h3>
         <p>Flip to Defense mode to experience the other side: combine rate limiting, anycast scrubbing, WAF rules, and geo-blocking to survive escalating waves.</p>
       </div>
     </div>
@@ -574,16 +575,16 @@ export const ddosSimulatorView = (): string => layout({
 
         /* ---------- Attack & defense model ---------- */
         var ATTACKS = {
-          udp: { name: 'UDP Flood', layer: 'Volumetric · L3/L4', color: 'red', tag: 'red', pps: 8, bytes: 512, weight: 0.45, speed: 1.5,
-            desc: 'Floods the target with junk UDP datagrams — no handshake, no replies, just raw bandwidth exhaustion. The server wastes resources answering packets that were never real conversations.' },
-          syn: { name: 'SYN Flood', layer: 'Protocol · L4', color: 'peach', tag: 'peach', pps: 12, bytes: 64, weight: 0.35, speed: 1.7,
+          udp: { name: 'UDP Flood', layer: 'Volumetric Â· L3/L4', color: 'red', tag: 'red', pps: 8, bytes: 512, weight: 0.45, speed: 1.5,
+            desc: 'Floods the target with junk UDP datagrams â€” no handshake, no replies, just raw bandwidth exhaustion. The server wastes resources answering packets that were never real conversations.' },
+          syn: { name: 'SYN Flood', layer: 'Protocol Â· L4', color: 'peach', tag: 'peach', pps: 12, bytes: 64, weight: 0.35, speed: 1.7,
             desc: 'Starts thousands of TCP handshakes and never finishes them. Half-open connections pile up in the backlog queue until legitimate clients can no longer connect.' },
-          http: { name: 'HTTP Flood', layer: 'Application · L7', color: 'mauve', tag: 'mauve', pps: 5, bytes: 800, weight: 0.8, speed: 1,
-            desc: 'Bots request pages like real users — the most expensive attack to filter, because every single request looks legitimate until you compare patterns at scale.' },
-          dnsamp: { name: 'DNS Amplification', layer: 'Volumetric · Reflection', color: 'yellow', tag: 'blue', pps: 3, bytes: 3400, weight: 2.2, speed: 1.2, amp: true,
-            desc: 'Tiny spoofed DNS queries are sent to open resolvers, which reply with responses many times larger — aimed at the victim. Watch the two-hop arcs: bot → reflector → target.' },
-          slowloris: { name: 'Slowloris', layer: 'Application · L7 · Slow', color: 'sky', tag: 'teal', pps: 0.6, bytes: 120, weight: 9, speed: 0.4, slow: true,
-            desc: 'Low and slow. Opens many connections and dribbles partial HTTP headers forever, never completing. Very few packets — but each one holds a server worker hostage.' }
+          http: { name: 'HTTP Flood', layer: 'Application Â· L7', color: 'mauve', tag: 'mauve', pps: 5, bytes: 800, weight: 0.8, speed: 1,
+            desc: 'Bots request pages like real users â€” the most expensive attack to filter, because every single request looks legitimate until you compare patterns at scale.' },
+          dnsamp: { name: 'DNS Amplification', layer: 'Volumetric Â· Reflection', color: 'yellow', tag: 'blue', pps: 3, bytes: 3400, weight: 2.2, speed: 1.2, amp: true,
+            desc: 'Tiny spoofed DNS queries are sent to open resolvers, which reply with responses many times larger â€” aimed at the victim. Watch the two-hop arcs: bot â†’ reflector â†’ target.' },
+          slowloris: { name: 'Slowloris', layer: 'Application Â· L7 Â· Slow', color: 'sky', tag: 'teal', pps: 0.6, bytes: 120, weight: 9, speed: 0.4, slow: true,
+            desc: 'Low and slow. Opens many connections and dribbles partial HTTP headers forever, never completing. Very few packets â€” but each one holds a server worker hostage.' }
         };
         var DEFENSES = {
           ratelimit: { name: 'Rate Limiting', block: { udp: 0.25, syn: 0.5, http: 0.7, dnsamp: 0.2, slowloris: 0.65 } },
@@ -593,7 +594,7 @@ export const ddosSimulatorView = (): string => layout({
         };
         var TARGETS = {
           na: { c: 22, r: 10, name: 'US East' },
-          sa: { c: 24, r: 21, name: 'São Paulo' },
+          sa: { c: 24, r: 21, name: 'SÃ£o Paulo' },
           eu: { c: 38, r: 7, name: 'Frankfurt' },
           af: { c: 40, r: 23, name: 'Cape Town' },
           as: { c: 63, r: 10, name: 'Tokyo' },
@@ -768,10 +769,10 @@ export const ddosSimulatorView = (): string => layout({
           renderShop();
           renderStats();
           updateLaunchLabel();
-          var msg = 'Save imported — ' + fmt(Math.floor(state.campaign.bots)) + ' bots, 💰' + fmt(Math.floor(state.campaign.credits)) + ', Level ' + state.campaign.level + '.';
+          var msg = 'Save imported â€” ' + fmt(Math.floor(state.campaign.bots)) + ' bots, ðŸ’°' + fmt(Math.floor(state.campaign.credits)) + ', Level ' + state.campaign.level + '.';
           if (offline && offline.bots > 0) msg += ' (+' + fmt(offline.bots) + ' bots farmed while away)';
           log(msg);
-          banner('📥 Save imported!');
+          banner('ðŸ“¥ Save imported!');
           return null;
         }
 
@@ -1068,7 +1069,7 @@ export const ddosSimulatorView = (): string => layout({
           c.stats.pwned += 1;
           c.offline = 0;
           state.health = 100;
-          banner('🏆 ' + t.name + ' PWNED — +💰' + fmt(gain));
+          banner('ðŸ† ' + t.name + ' PWNED â€” +ðŸ’°' + fmt(gain));
           log('Target offline for ' + TAKEDOWN_SECONDS + 's. Payout received: ' + fmt(gain) + ' credits.');
           if (c.level < CAMPAIGN_TARGETS.length) {
             c.level += 1;
@@ -1078,10 +1079,10 @@ export const ddosSimulatorView = (): string => layout({
             log('New target acquired: ' + nt.name + ' (Level ' + c.level + ').');
           } else if (!c.finalPwned) {
             c.finalPwned = true;
-            banner('🌟 PRESTIGE UNLOCKED');
-            log('Every target pwned! 🌟 Prestige is now available — reset to Level 1 with permanent bonuses.');
+            banner('ðŸŒŸ PRESTIGE UNLOCKED');
+            log('Every target pwned! ðŸŒŸ Prestige is now available â€” reset to Level 1 with permanent bonuses.');
           } else {
-            log('Final target pwned again — the internet is yours.');
+            log('Final target pwned again â€” the internet is yours.');
           }
           saveCampaign();
           renderCampaign();
@@ -1091,7 +1092,7 @@ export const ddosSimulatorView = (): string => layout({
         function doPrestige() {
           var c = state.campaign;
           if (!c.finalPwned) return;
-          if (!window.confirm('Prestige and restart the campaign at Level 1? Bots, credits, trace, and upgrades reset — you keep lifetime stats and gain permanent bonuses.')) return;
+          if (!window.confirm('Prestige and restart the campaign at Level 1? Bots, credits, trace, and upgrades reset â€” you keep lifetime stats and gain permanent bonuses.')) return;
           c.prestige += 1;
           c.bots = startingBots();
           c.credits = 0;
@@ -1111,7 +1112,7 @@ export const ddosSimulatorView = (): string => layout({
           renderStats();
           updateLaunchLabel();
           saveCampaign();
-          banner('🌟 PRESTIGE ' + c.prestige + ' — richer, faster, louder');
+          banner('ðŸŒŸ PRESTIGE ' + c.prestige + ' â€” richer, faster, louder');
           log('Prestige ' + c.prestige + '! Permanent bonuses: +' + c.prestige * 25 + '% credits, ' + fmt(startingBots()) + ' starting bots. Level 1 awaits.');
         }
 
@@ -1123,7 +1124,7 @@ export const ddosSimulatorView = (): string => layout({
           c.stats.busts += 1;
           state.running = false;
           syncFarmVisuals();
-          banner('🚨 BUSTED — ' + fmt(lost) + ' bots seized!');
+          banner('ðŸš¨ BUSTED â€” ' + fmt(lost) + ' bots seized!');
           log('Authorities traced the C2 network. ' + fmt(lost) + ' bots lost. Lay low while trace decays.');
           updateLaunchLabel();
           saveCampaign();
@@ -1189,7 +1190,7 @@ export const ddosSimulatorView = (): string => layout({
           state.phase = 'prep';
           state.waveTimer = 5;
           state.running = false;
-          banner('Wave 1 incoming: ' + ATTACKS[state.nextType].name + ' — try ' + bestDefenseFor(state.nextType));
+          banner('Wave 1 incoming: ' + ATTACKS[state.nextType].name + ' â€” try ' + bestDefenseFor(state.nextType));
           log('Defense game started. Keep the server alive!');
           updateLaunchLabel();
         }
@@ -1205,7 +1206,7 @@ export const ddosSimulatorView = (): string => layout({
           state.phase = 'wave';
           state.waveTimer = 30;
           state.running = true;
-          banner('WAVE ' + state.wave + ' — ' + ATTACKS[state.attack].name);
+          banner('WAVE ' + state.wave + ' â€” ' + ATTACKS[state.attack].name);
           log('Wave ' + state.wave + ': ' + ATTACKS[state.attack].name + ' with ' + state.bots + ' bots.');
           updateAttackInfo();
           updateDefPanel();
@@ -1216,7 +1217,7 @@ export const ddosSimulatorView = (): string => layout({
           state.phase = 'prep';
           state.waveTimer = 6;
           state.running = false;
-          banner('Next: ' + ATTACKS[state.nextType].name + ' — adjust mitigations!');
+          banner('Next: ' + ATTACKS[state.nextType].name + ' â€” adjust mitigations!');
           log('Wave ' + state.wave + ' repelled. Nice work.');
         }
 
@@ -1230,7 +1231,7 @@ export const ddosSimulatorView = (): string => layout({
             try { localStorage.setItem('toolbox-ddos-best', String(state.best)); } catch (e) {}
           }
           document.getElementById('sim-overlay-score').textContent = String(state.score);
-          document.getElementById('sim-overlay-best').textContent = String(state.best) + (isBest ? ' — new best!' : '');
+          document.getElementById('sim-overlay-best').textContent = String(state.best) + (isBest ? ' â€” new best!' : '');
           document.getElementById('sim-overlay').classList.remove('tb-hidden');
           log('Server offline after ' + state.wave + ' wave(s). Final score: ' + state.score + '.');
           updateLaunchLabel();
@@ -1406,11 +1407,11 @@ export const ddosSimulatorView = (): string => layout({
           if (state.mode === 'campaign') {
             document.getElementById('st-wave-label').textContent = 'Campaign';
             document.getElementById('st-wave').textContent = 'Level ' + state.campaign.level;
-            document.getElementById('st-score').textContent = '💰 ' + fmt(Math.floor(state.campaign.credits));
+            document.getElementById('st-score').textContent = 'ðŸ’° ' + fmt(Math.floor(state.campaign.credits));
           } else if (state.mode === 'defense') {
             document.getElementById('st-wave-label').textContent = 'Defense Game';
             document.getElementById('st-wave').textContent = state.wave > 0 ? 'Wave ' + state.wave : 'Get ready';
-            document.getElementById('st-score').textContent = 'score ' + fmt(state.score) + ' · best ' + fmt(state.best);
+            document.getElementById('st-score').textContent = 'score ' + fmt(state.score) + ' Â· best ' + fmt(state.best);
           } else {
             document.getElementById('st-wave-label').textContent = 'Mode';
             document.getElementById('st-wave').textContent = 'Sandbox';
@@ -1426,7 +1427,7 @@ export const ddosSimulatorView = (): string => layout({
           document.getElementById('ct-cap').textContent = fmt(t.cap);
           document.getElementById('ct-block').textContent = Math.round(t.block * 100) + '%';
           document.getElementById('ct-weak').textContent = ATTACKS[t.weak].name;
-          document.getElementById('ct-payout').textContent = '💰 ' + fmt(t.payout);
+          document.getElementById('ct-payout').textContent = 'ðŸ’° ' + fmt(t.payout);
           document.getElementById('cb-bots').textContent = fmt(Math.floor(c.bots));
           document.getElementById('cb-cap').textContent = fmt(botCap());
           document.getElementById('cb-credits').textContent = fmt(Math.floor(c.credits));
@@ -1435,19 +1436,19 @@ export const ddosSimulatorView = (): string => layout({
           var tf = document.getElementById('cb-trace-fill');
           tf.style.width = tr + '%';
           tf.className = 'ddos-tracebar__fill ' + (tr < 40 ? 'is-ok' : tr < 75 ? 'is-warn' : 'is-crit');
-          document.getElementById('cb-trace-label').textContent = tr + '% — ' + (tr < 40 ? 'invisible' : tr < 75 ? 'noticed' : 'hunted');
+          document.getElementById('cb-trace-label').textContent = tr + '% â€” ' + (tr < 40 ? 'invisible' : tr < 75 ? 'noticed' : 'hunted');
           var pTag = document.getElementById('ct-prestige');
           pTag.classList.toggle('tb-hidden', c.prestige < 1);
-          if (c.prestige > 0) pTag.textContent = '🌟 P' + c.prestige;
+          if (c.prestige > 0) pTag.textContent = 'ðŸŒŸ P' + c.prestige;
           document.getElementById('ct-prestige-row').classList.toggle('tb-hidden', !c.finalPwned);
           if (c.finalPwned) {
             document.getElementById('sim-prestige-hint').textContent = c.prestige === 0
               ? 'Reset to Level 1 and restart with permanent bonuses: +25% credits and +50 starting bots per prestige. Lifetime stats are kept.'
-              : 'Reset to Level 1 again. Current bonuses: +' + c.prestige * 25 + '% credits and ' + fmt(50 * c.prestige) + ' starting bots — next prestige raises both.';
+              : 'Reset to Level 1 again. Current bonuses: +' + c.prestige * 25 + '% credits and ' + fmt(50 * c.prestige) + ' starting bots â€” next prestige raises both.';
           }
           document.getElementById('cb-credits-unit').textContent = c.prestige > 0
-            ? '🌟 +' + c.prestige * 25 + '% from prestige'
-            : '💰 spend below';
+            ? 'ðŸŒŸ +' + c.prestige * 25 + '% from prestige'
+            : 'ðŸ’° spend below';
           document.getElementById('sim-infect-n').textContent = '+' + (1 + c.up.kit);
           document.getElementById('sim-infect').disabled = Math.floor(c.bots) >= botCap();
           renderLifetime();
@@ -1469,7 +1470,7 @@ export const ddosSimulatorView = (): string => layout({
             document.getElementById('shop-lv-' + k).textContent = 'Lv.' + lv;
             var costEl = document.getElementById('shop-cost-' + k);
             if (lv >= UPGRADE_MAX) costEl.textContent = 'MAX';
-            else costEl.textContent = '💰 ' + fmt(upCost(k));
+            else costEl.textContent = 'ðŸ’° ' + fmt(upCost(k));
           });
           renderShopAfford();
         }
@@ -1484,9 +1485,9 @@ export const ddosSimulatorView = (): string => layout({
         function updateLaunchLabel() {
           var btn = document.getElementById('sim-launch');
           if (state.mode === 'defense') {
-            btn.innerHTML = state.phase !== 'idle' ? '⏹ Abort Game' : '🎮 Start Defense Game';
+            btn.innerHTML = state.phase !== 'idle' ? 'â¹ Abort Game' : 'ðŸŽ® Start Defense Game';
           } else {
-            btn.innerHTML = state.running ? '⏹ Stop Attack' : '🚀 Launch Attack';
+            btn.innerHTML = state.running ? 'â¹ Stop Attack' : 'ðŸš€ Launch Attack';
           }
         }
 
@@ -1546,7 +1547,7 @@ export const ddosSimulatorView = (): string => layout({
           });
           var hints = {
             campaign: 'Farm bots, pwn targets, spend credits. Trace is the enemy.',
-            sandbox: 'Free play — pick an attack and watch the map burn.',
+            sandbox: 'Free play â€” pick an attack and watch the map burn.',
             defense: 'Survive escalating waves. Max ' + DEF_CAP + ' mitigations active at once!'
           };
           document.getElementById('sim-mode-hint').textContent = hints[mode];
@@ -1571,9 +1572,9 @@ export const ddosSimulatorView = (): string => layout({
           if (mode === 'campaign') {
             syncFarmVisuals();
             renderCampaign();
-            log('Campaign mode — click land on the map to start farming your botnet.');
+            log('Campaign mode â€” click land on the map to start farming your botnet.');
           } else if (mode === 'defense') {
-            log('Defense Game mode — press Start when ready.');
+            log('Defense Game mode â€” press Start when ready.');
           } else {
             log('Sandbox mode.');
           }
@@ -1655,13 +1656,13 @@ export const ddosSimulatorView = (): string => layout({
         saveBtn.addEventListener('click', function () {
           saveAcc = 0;
           saveCampaign();
-          log('Progress saved — botnet, credits, and upgrades stored in this browser.');
+          log('Progress saved â€” botnet, credits, and upgrades stored in this browser.');
           saveBtn.classList.add('is-saved');
-          saveBtn.textContent = '✓ Saved';
+          saveBtn.textContent = 'âœ“ Saved';
           if (saveBtnTimer) clearTimeout(saveBtnTimer);
           saveBtnTimer = setTimeout(function () {
             saveBtn.classList.remove('is-saved');
-            saveBtn.textContent = '💾 Save progress';
+            saveBtn.textContent = 'ðŸ’¾ Save progress';
           }, 1400);
         });
         window.addEventListener('beforeunload', saveCampaign);
@@ -1677,7 +1678,7 @@ export const ddosSimulatorView = (): string => layout({
           ioText.value = data;
           ioText.select();
           copyText(data, function (ok) {
-            log(ok ? 'Save exported — copied to clipboard. Keep it somewhere safe.' : 'Save exported — copy it from the box below.');
+            log(ok ? 'Save exported â€” copied to clipboard. Keep it somewhere safe.' : 'Save exported â€” copy it from the box below.');
           });
         });
         document.getElementById('sim-import-save').addEventListener('click', function () {
@@ -1688,10 +1689,10 @@ export const ddosSimulatorView = (): string => layout({
           log('Paste a save string into the box and hit Apply import.');
         });
         document.getElementById('sim-io-copy').addEventListener('click', function () {
-          if (!ioText.value) { log('Nothing to copy — export first.'); return; }
+          if (!ioText.value) { log('Nothing to copy â€” export first.'); return; }
           ioText.select();
           copyText(ioText.value, function (ok) {
-            log(ok ? 'Copied to clipboard.' : 'Copy failed — select and copy the text manually.');
+            log(ok ? 'Copied to clipboard.' : 'Copy failed â€” select and copy the text manually.');
           });
         });
         document.getElementById('sim-io-apply').addEventListener('click', function () {
@@ -1715,8 +1716,8 @@ export const ddosSimulatorView = (): string => layout({
               state.running = false;
               log('Attack halted. Trace decaying.');
             } else if (Math.floor(state.campaign.bots) < 1) {
-              log('Farm some bots first — click land on the map!');
-              banner('🧟 Click land on the map to infect your first devices');
+              log('Farm some bots first â€” click land on the map!');
+              banner('ðŸ§Ÿ Click land on the map to infect your first devices');
             } else {
               state.running = true;
               var t = CAMPAIGN_TARGETS[state.campaign.level - 1];
@@ -1772,8 +1773,8 @@ export const ddosSimulatorView = (): string => layout({
           var awayBits = [];
           if (offline.bots > 0) awayBits.push('+' + fmt(offline.bots) + ' bots farmed');
           if (offline.traceDropped >= 1) awayBits.push('trace cooled to ' + Math.round(state.campaign.trace) + '%');
-          log('Welcome back — away ' + durStr(offline.seconds) + ': ' + awayBits.join(', ') + '.');
-          if (offline.bots > 0) banner('😴 While you were away: +' + fmt(offline.bots) + ' bots');
+          log('Welcome back â€” away ' + durStr(offline.seconds) + ': ' + awayBits.join(', ') + '.');
+          if (offline.bots > 0) banner('ðŸ˜´ While you were away: +' + fmt(offline.bots) + ' bots');
         } else {
           log('Welcome back. Botnet and credits restored from save.');
         }

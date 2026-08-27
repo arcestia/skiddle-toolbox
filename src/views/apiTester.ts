@@ -1,15 +1,16 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const apiTesterView = (): string => layout({
-  title: 'API Tester · Skiddle Toolbox',
+  title: 'API Tester Â· Skiddle Toolbox',
   description: 'Browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy for cross-origin debugging.',
+  canonicalPath: '/api-tester',
   subtitle: 'Browser-local HTTP client',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-blue">
-      <div class="tb-tool-icon">🌐</div>
+      <div class="tb-tool-icon">ðŸŒ</div>
       <div class="tb-page-header__text">
         <h1>API Tester</h1>
         <p>Browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy.</p>
@@ -45,7 +46,7 @@ export const apiTesterView = (): string => layout({
               <div class="header-row">
                 <input type="text" placeholder="Header" value="Accept">
                 <input type="text" placeholder="Value" value="application/json">
-                <button type="button" onclick="removeHeaderRow(this)" aria-label="Remove header">×</button>
+                <button type="button" onclick="removeHeaderRow(this)" aria-label="Remove header">Ã—</button>
               </div>
             </div>
           </div>
@@ -92,9 +93,9 @@ export const apiTesterView = (): string => layout({
               <div id="api-status" class="response-status" role="status" aria-label="HTTP status code" aria-live="polite"></div>
               <div class="response-detail">
                 <span id="api-status-text">OK</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span id="api-duration">0 ms</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span id="api-size">0 B</span>
               </div>
             </div>
@@ -369,7 +370,7 @@ export const apiTesterView = (): string => layout({
         row.innerHTML = \`
           <input type="text" placeholder="Header" value="\${escapeHtml(key)}">
           <input type="text" placeholder="Value" value="\${escapeHtml(value)}">
-          <button type="button" onclick="removeHeaderRow(this)" aria-label="Remove header">×</button>
+          <button type="button" onclick="removeHeaderRow(this)" aria-label="Remove header">Ã—</button>
         \`;
         container.appendChild(row);
       }

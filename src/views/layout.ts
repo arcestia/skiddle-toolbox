@@ -1,4 +1,4 @@
-import { scriptTag, styleTag } from '../lib/assets.js';
+﻿import { scriptTag, styleTag } from '../lib/assets.js';
 import { defaultTheme, themes } from '../lib/themes.js';
 import { defaultLayout, layouts, renderLayoutOptions } from '../lib/layouts.js';
 import { accents, defaultAccent } from '../lib/accents.js';
@@ -13,6 +13,7 @@ export interface PageContext {
   compactHeader?: boolean;
   backHref?: string;
   themeVariant?: 'dots' | 'pills';
+  canonicalPath?: string;
   body: string;
 }
 
@@ -41,7 +42,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${ctx.title}</title>
   ${(() => {
-    const desc = ctx.description || 'Skiddle Toolbox — a developer utility suite on Cloudflare Workers + Hono.';
+    const desc = ctx.description || 'Skiddle Toolbox â€” a developer utility suite on Cloudflare Workers + Hono.';
     return `<meta name="description" content="${desc}">
   <meta property="og:title" content="${ctx.title}">
   <meta property="og:description" content="${desc}">
@@ -56,6 +57,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   ${styleTag()}
   <script id="tb-config" type="application/json">${runtimeConfig}</script>
   ${scriptTag()}
+  ${ctx.canonicalPath ? `<link rel="canonical" href="https://skiddle-toolbox.pages.dev${ctx.canonicalPath}">` : ''}
   <script>
     (function() {
       try {
@@ -95,7 +97,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     <a href="/" class="tb-top-bar__brand" aria-label="Skiddle Toolbox home">
       <div class="tb-logo tb-logo-sm">TB</div>
       <span class="tb-top-bar__title">
-        ${ctx.centered ? 'Skiddle Toolbox' : `<span class="tb-top-bar__breadcrumb"><span class="tb-top-bar__breadcrumb-home">Skiddle Toolbox</span><span class="tb-top-bar__breadcrumb-sep" aria-hidden="true">/</span><span class="tb-top-bar__breadcrumb-current">${ctx.title.replace(' · Skiddle Toolbox', '')}</span></span>`}
+        ${ctx.centered ? 'Skiddle Toolbox' : `<span class="tb-top-bar__breadcrumb"><span class="tb-top-bar__breadcrumb-home">Skiddle Toolbox</span><span class="tb-top-bar__breadcrumb-sep" aria-hidden="true">/</span><span class="tb-top-bar__breadcrumb-current">${ctx.title.replace(' Â· Skiddle Toolbox', '')}</span></span>`}
       </span>
     </a>
     <div class="tb-top-bar__actions">
@@ -190,7 +192,7 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
       </div>
       <div class="tb-settings-section">
         <h3>About</h3>
-        <p class="tb-settings-about">Skiddle Toolbox — a developer utility suite on Cloudflare Workers + Hono.</p>
+        <p class="tb-settings-about">Skiddle Toolbox â€” a developer utility suite on Cloudflare Workers + Hono.</p>
         <a href="https://github.com/arcestia/skiddle-toolbox" target="_blank" rel="noopener" class="tb-back-link">View on GitHub</a>
       </div>
     </div>

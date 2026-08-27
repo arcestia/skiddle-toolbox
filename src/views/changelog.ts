@@ -1,4 +1,4 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 import { changelogEntries, type ChangelogEntry } from '../lib/changelog.js';
 
@@ -27,11 +27,12 @@ function renderEntry(entry: ChangelogEntry): string {
 }
 
 export const changelogView = (): string => layout({
-  title: 'Changelog · Skiddle Toolbox',
+  title: 'Changelog Â· Skiddle Toolbox',
   description: 'Release notes and version history for Skiddle Toolbox.',
+  canonicalPath: '/changelog',
   body: `
     <div class="tb-page-header">
-      <div class="tb-tool-icon">📋</div>
+      <div class="tb-tool-icon">ðŸ“‹</div>
       <div class="tb-page-header__text">
         <h1>Changelog</h1>
         <p>A running history of what's new, changed, and fixed in Skiddle Toolbox.</p>

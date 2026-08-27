@@ -1,15 +1,16 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const markdownEditorView = (): string => layout({
-  title: 'Markdown Editor · Skiddle Toolbox',
+  title: 'Markdown Editor Â· Skiddle Toolbox',
   description: 'Split-pane Markdown editor with live preview, formatting toolbar, and one-click .md and HTML export.',
+  canonicalPath: '/markdown-editor',
   subtitle: 'Write, preview, and download Markdown with a live split-pane editor',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-blue">
-      <div class="tb-tool-icon">📝</div>
+      <div class="tb-tool-icon">ðŸ“</div>
       <div class="tb-page-header__text">
         <h1>Markdown Editor</h1>
         <p>Compose Markdown on the left and see the rendered preview update live on the right. Includes a formatting toolbar and one-click export.</p>
@@ -25,14 +26,14 @@ export const markdownEditorView = (): string => layout({
             <button type="button" class="md-tool-btn" onclick="insertPrefix('# ')">H1</button>
             <button type="button" class="md-tool-btn" onclick="insertPrefix('## ')">H2</button>
             <button type="button" class="md-tool-btn" onclick="insertPrefix('### ')">H3</button>
-            <button type="button" class="md-tool-btn" onclick="wrapSelection('[','](url)')" title="Link">🔗</button>
-            <button type="button" class="md-tool-btn" onclick="wrapSelection('![', '](url)')" title="Image">🖼️</button>
-            <button type="button" class="md-tool-btn" onclick="insertPrefix('- ')" title="Bullet list">• List</button>
+            <button type="button" class="md-tool-btn" onclick="wrapSelection('[','](url)')" title="Link">ðŸ”—</button>
+            <button type="button" class="md-tool-btn" onclick="wrapSelection('![', '](url)')" title="Image">ðŸ–¼ï¸</button>
+            <button type="button" class="md-tool-btn" onclick="insertPrefix('- ')" title="Bullet list">â€¢ List</button>
             <button type="button" class="md-tool-btn" onclick="insertPrefix('1. ')" title="Numbered list">1. List</button>
             <button type="button" class="md-tool-btn" onclick="insertInlineCode()" title="Inline code">&lt;/&gt;</button>
             <button type="button" class="md-tool-btn" onclick="insertCodeBlock()" title="Code block">{ }</button>
             <button type="button" class="md-tool-btn" onclick="insertPrefix('&gt; ')" title="Quote">" Quote</button>
-            <button type="button" class="md-tool-btn" onclick="insertRule()" title="Horizontal rule">—</button>
+            <button type="button" class="md-tool-btn" onclick="insertRule()" title="Horizontal rule">â€”</button>
           </div>
           <div class="md-toolbar-group md-toolbar-group--right">
             <button type="button" class="tb-btn tb-btn-secondary" onclick="loadMarkdownFile()">

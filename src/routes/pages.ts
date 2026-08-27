@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+﻿import { Hono } from 'hono';
 import { htmlContentType } from '../lib/assets.js';
 import { homeView } from '../views/home.js';
 import { cdnValidatorView } from '../views/cdnValidator.js';
@@ -11,8 +11,19 @@ import { markdownEditorView } from '../views/markdownEditor.js';
 import { creditsView } from '../views/credits.js';
 import { changelogView } from '../views/changelog.js';
 import { ddosSimulatorView } from '../views/ddosSimulator.js';
+import { base64View } from '../views/base64.js';
+import { jsonFormatterView } from '../views/jsonFormatter.js';
+import { uuidGeneratorView } from '../views/uuidGenerator.js';
 
 export const pagesRoute = new Hono();
+
+// Cache HTML pages at the edge for 1 hour; browsers always revalidate
+pagesRoute.use('*', async (c, next) => {
+  await next();
+  if (!c.res.headers.has('Cache-Control')) {
+    c.header('Cache-Control', 'public, s-maxage=3600, max-age=0');
+  }
+});
 
 pagesRoute.get('/', (c) => {
   return c.html(homeView(), 200, { 'Content-Type': htmlContentType });
@@ -58,6 +69,18 @@ pagesRoute.get('/changelog', (c) => {
   return c.html(changelogView(), 200, { 'Content-Type': htmlContentType });
 });
 
+pagesRoute.get('/base64', (c) => {
+  return c.html(base64View(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/json-formatter', (c) => {
+  return c.html(jsonFormatterView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/uuid-generator', (c) => {
+  return c.html(uuidGeneratorView(), 200, { 'Content-Type': htmlContentType });
+});
+
 const STATIC_PAGES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/cdn-validator', priority: '0.8', changefreq: 'monthly' },
@@ -70,6 +93,9 @@ const STATIC_PAGES = [
   { path: '/ddos-simulator', priority: '0.7', changefreq: 'monthly' },
   { path: '/credits', priority: '0.5', changefreq: 'yearly' },
   { path: '/changelog', priority: '0.5', changefreq: 'weekly' },
+  { path: '/base64', priority: '0.8', changefreq: 'monthly' },
+  { path: '/json-formatter', priority: '0.8', changefreq: 'monthly' },
+  { path: '/uuid-generator', priority: '0.8', changefreq: 'monthly' },
 ];
 
 pagesRoute.get('/sitemap.xml', (c) => {
@@ -77,28 +103,17 @@ pagesRoute.get('/sitemap.xml', (c) => {
   const base = (env.SITE_URL ?? 'https://skiddle-toolbox.pages.dev').replace(/\/$/, '');
   const today = new Date().toISOString().split('T')[0];
   const urls = STATIC_PAGES.map(
-    p => `  <url>
-    <loc>${base}${p.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
-  </url>`
+    p => '  <url>\n    <loc>' + base + p.path + '</loc>\n    <lastmod>' + today + '</lastmod>\n    <changefreq>' + p.changefreq + '</changefreq>\n    <priority>' + p.priority + '</priority>\n  </url>'
   ).join('\n');
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`;
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>';
 
-  return c.body(xml, 200, { 'Content-Type': 'application/xml' });
+  return c.body(xml, 200, { 'Content-Type': 'application/xml', 'Cache-Control': 'public, s-maxage=86400, max-age=3600' });
 });
 
 pagesRoute.get('/robots.txt', (c) => {
   const env = c.env as { SITE_URL?: string };
   const base = (env.SITE_URL ?? 'https://skiddle-toolbox.pages.dev').replace(/\/$/, '');
-  const body = `User-agent: *
-Allow: /
-
-Sitemap: ${base}/sitemap.xml`;
-  return c.body(body, 200, { 'Content-Type': 'text/plain' });
+  const body = 'User-agent: *\nAllow: /\n\nSitemap: ' + base + '/sitemap.xml';
+  return c.body(body, 200, { 'Content-Type': 'text/plain', 'Cache-Control': 'public, s-maxage=86400, max-age=3600' });
 });

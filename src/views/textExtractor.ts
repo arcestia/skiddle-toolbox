@@ -1,18 +1,19 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const textExtractorView = (): string => layout({
-  title: 'Text Extractor · Skiddle Toolbox',
+  title: 'Text Extractor Â· Skiddle Toolbox',
   description: 'Extract URLs, emails, domains, and IP addresses from logs, HTML, or Markdown with deduplication and sorting.',
+  canonicalPath: '/text-extractor',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-green">
-      <div class="tb-tool-icon">🔗</div>
+      <div class="tb-tool-icon">ðŸ”—</div>
       <div class="tb-page-header__text">
         <h1>Text Extractor</h1>
-        <p>Paste anything — logs, HTML, markdown — and extract URLs, emails, domains, or IP addresses.</p>
+        <p>Paste anything â€” logs, HTML, markdown â€” and extract URLs, emails, domains, or IP addresses.</p>
       </div>
     </div>
 

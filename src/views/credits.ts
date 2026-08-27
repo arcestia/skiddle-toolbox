@@ -1,12 +1,13 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const creditsView = (): string => layout({
-  title: 'Credits · Skiddle Toolbox',
+  title: 'Credits Â· Skiddle Toolbox',
   description: 'Open source libraries, themes, and tools that power Skiddle Toolbox.',
+  canonicalPath: '/credits',
   body: `
     <div class="tb-page-header">
-      <div class="tb-tool-icon">🙏</div>
+      <div class="tb-tool-icon">ðŸ™</div>
       <div class="tb-page-header__text">
         <h1>Credits</h1>
         <p>Standing on the shoulders of open source libraries, tools, and communities.</p>

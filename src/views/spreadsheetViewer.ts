@@ -1,15 +1,16 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const spreadsheetViewerView = (): string => layout({
-  title: 'Spreadsheet Viewer · Skiddle Toolbox',
+  title: 'Spreadsheet Viewer Â· Skiddle Toolbox',
   description: 'View CSV, TSV, Excel, ODS, JSON, and Markdown tables locally with sorting, filtering, and pagination.',
+  canonicalPath: '/spreadsheet-viewer',
   subtitle: 'View CSV, Excel, ODS, JSON, and Markdown tables in the browser',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-green">
-      <div class="tb-tool-icon">📊</div>
+      <div class="tb-tool-icon">ðŸ“Š</div>
       <div class="tb-page-header__text">
         <h1>Spreadsheet Viewer</h1>
         <p>Open CSV, TSV, Excel (.xlsx), ODS, JSON, or Markdown tables locally. Sort columns, filter rows, and export back to CSV.</p>
@@ -555,7 +556,7 @@ export const spreadsheetViewerView = (): string => layout({
           let html = '<thead><tr>';
           currentData.headers.forEach((h, i) => {
             const sortedClass = i === sortColumn ? 'sorted' : '';
-            const icon = i === sortColumn ? (sortDirection === 'asc' ? '▲' : '▼') : '⇅';
+            const icon = i === sortColumn ? (sortDirection === 'asc' ? 'â–²' : 'â–¼') : 'â‡…';
             html += '<th class="' + sortedClass + '" onclick="sortByColumn(' + i + ')">' + escapeHtml(String(h)) + '<span class="ssv-sort-icon">' + icon + '</span></th>';
           });
           html += '</tr></thead><tbody>';

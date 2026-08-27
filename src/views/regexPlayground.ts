@@ -1,15 +1,16 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 export const regexPlaygroundView = (): string => layout({
-  title: 'Regex Playground · Skiddle Toolbox',
+  title: 'Regex Playground Â· Skiddle Toolbox',
   description: 'Write, validate, and debug regular expressions in real-time with syntax highlighting and match group breakdowns.',
+  canonicalPath: '/regex-playground',
   subtitle: 'Interactive Regular Expression Visualizer',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-mauve">
-      <div class="tb-tool-icon">🧩</div>
+      <div class="tb-tool-icon">ðŸ§©</div>
       <div class="tb-page-header__text">
         <h1>Regex Playground</h1>
         <p>Write, validate, and debug regular expressions in real-time with syntax highlighting and match group breakdowns.</p>
@@ -887,7 +888,7 @@ export const regexPlaygroundView = (): string => layout({
             cardsHtml += '<div class="rgx-match-card">' +
               '<div class="rgx-match-header">' +
                 '<span class="rgx-match-title">Match #' + (idx + 1) + '</span>' +
-                '<span class="rgx-match-meta">Index: ' + startIdx + '–' + endIdx + ' (' + matchVal.length + ' chars)</span>' +
+                '<span class="rgx-match-meta">Index: ' + startIdx + 'â€“' + endIdx + ' (' + matchVal.length + ' chars)</span>' +
               '</div>' +
               '<div class="rgx-match-val">' + escapeHtml(matchVal) + '</div>' +
               groupsHtml +

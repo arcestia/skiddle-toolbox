@@ -1,4 +1,4 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 const TYPE_NAMES: Record<number, string> = {
@@ -16,14 +16,15 @@ const TYPE_NAMES: Record<number, string> = {
 };
 
 export const dnsLookupView = (): string => layout({
-  title: 'DNS Lookup · Skiddle Toolbox',
+  title: 'DNS Lookup Â· Skiddle Toolbox',
   description: 'DNS-over-HTTPS queries against Cloudflare, Google, or Quad9 resolvers for common record types.',
+  canonicalPath: '/dns-lookup',
   subtitle: 'Cloudflare Workers Edge Utility',
   backHref: '/',
   themeVariant: 'dots',
   body: `
     <div class="tb-page-header accent-mauve">
-      <div class="tb-tool-icon">🔍</div>
+      <div class="tb-tool-icon">ðŸ”</div>
       <div class="tb-page-header__text">
         <h1>DNS Lookup</h1>
         <p>Query public DNS-over-HTTPS resolvers for A, AAAA, MX, TXT, CNAME, and other record types.</p>
@@ -160,7 +161,7 @@ export const dnsLookupView = (): string => layout({
         function formatRecord(type, data) {
           if (type === 15 && data && typeof data === 'string' && data.includes(' ')) {
             const parts = data.split(' ');
-            return '<span style="color:var(--text-muted)">Priority ' + parts[0] + '</span> · ' + parts.slice(1).join(' ');
+            return '<span style="color:var(--text-muted)">Priority ' + parts[0] + '</span> Â· ' + parts.slice(1).join(' ');
           }
           return data;
         }
@@ -178,8 +179,8 @@ export const dnsLookupView = (): string => layout({
             return;
           }
 
-          summaryDiv.innerHTML = '<span class="tb-badge tb-badge-pending">Querying…</span>';
-          resultsDiv.innerHTML = '<div class="tb-state-message">Resolving ' + type + ' records for ' + domain + '…</div>';
+          summaryDiv.innerHTML = '<span class="tb-badge tb-badge-pending">Queryingâ€¦</span>';
+          resultsDiv.innerHTML = '<div class="tb-state-message">Resolving ' + type + ' records for ' + domain + 'â€¦</div>';
 
           try {
             const res = await fetch('/api/dns?domain=' + encodeURIComponent(domain) + '&type=' + encodeURIComponent(type) + '&provider=' + encodeURIComponent(provider));

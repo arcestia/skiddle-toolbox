@@ -1,9 +1,9 @@
-import { layout } from './layout.js';
+﻿import { layout } from './layout.js';
 import { footer } from './footer.js';
 
 const tools = [
   {
-    icon: '🖼️',
+    icon: 'ðŸ–¼ï¸',
     status: 'Active',
     category: 'Validation',
     accent: 'teal',
@@ -13,7 +13,7 @@ const tools = [
     active: true
   },
   {
-    icon: '🌐',
+    icon: 'ðŸŒ',
     status: 'Active',
     category: 'HTTP',
     accent: 'blue',
@@ -23,7 +23,7 @@ const tools = [
     active: true
   },
   {
-    icon: '🔍',
+    icon: 'ðŸ”',
     status: 'Active',
     category: 'Network',
     accent: 'mauve',
@@ -33,7 +33,7 @@ const tools = [
     active: true
   },
   {
-    icon: '🔗',
+    icon: 'ðŸ”—',
     status: 'Active',
     category: 'Text',
     accent: 'green',
@@ -43,7 +43,7 @@ const tools = [
     active: true
   },
   {
-    icon: '🧩',
+    icon: 'ðŸ§©',
     status: 'Active',
     category: 'Regex',
     accent: 'mauve',
@@ -53,7 +53,7 @@ const tools = [
     active: true
   },
   {
-    icon: '📊',
+    icon: 'ðŸ“Š',
     status: 'Active',
     category: 'Data',
     accent: 'green',
@@ -63,7 +63,7 @@ const tools = [
     active: true
   },
   {
-    icon: '📝',
+    icon: 'ðŸ“',
     status: 'Active',
     category: 'Writing',
     accent: 'blue',
@@ -73,13 +73,43 @@ const tools = [
     active: true
   },
   {
-    icon: '🌩️',
+    icon: 'ðŸŒ©ï¸',
     status: 'Active',
     category: 'Fun',
     accent: 'red',
     title: 'DDoS Simulator',
-    desc: 'Farm a botnet by clicking the map, manage your trace, buy upgrades, and pwn 7 targets — or play defense against waves. 100% simulated.',
+    desc: 'Farm a botnet by clicking the map, manage your trace, buy upgrades, and pwn 7 targets â€” or play defense against waves. 100% simulated.',
     href: '/ddos-simulator',
+    active: true
+  },
+  {
+    icon: '🔤',
+    status: 'Active',
+    category: 'Encoding',
+    accent: 'peach',
+    title: 'Base64 Encoder / Decoder',
+    desc: 'Encode text or files to Base64 and decode Base64 back to text, with URL-safe and data URI options.',
+    href: '/base64',
+    active: true
+  },
+  {
+    icon: '📋',
+    status: 'Active',
+    category: 'Data',
+    accent: 'blue',
+    title: 'JSON Formatter',
+    desc: 'Format, validate, and minify JSON with syntax highlighting, tree view, and statistics.',
+    href: '/json-formatter',
+    active: true
+  },
+  {
+    icon: '🆔',
+    status: 'Active',
+    category: 'Data',
+    accent: 'green',
+    title: 'UUID Generator',
+    desc: 'Generate UUIDs v1, v4, and v7 entirely in your browser — no data leaves your device.',
+    href: '/uuid-generator',
     active: true
   },
 ];
@@ -112,8 +142,9 @@ const toolCard = (tool: typeof tools[0], index: number) => `
 `;
 
 export const homeView = (): string => layout({
-  title: 'Skiddle Toolbox · Cloudflare Workers Hub',
-  description: 'A developer utility suite with 10+ tools for API testing, DNS lookup, regex, spreadsheets, and more — all running on Cloudflare Workers.',
+  title: 'Skiddle Toolbox Â· Cloudflare Workers Hub',
+  description: 'A developer utility suite with 13+ tools for API testing, DNS lookup, regex, spreadsheets, and more â€” all running on Cloudflare Workers.',
+  canonicalPath: '/',
   centered: true,
   compactHeader: true,
   themeVariant: 'pills',
