@@ -112,6 +112,46 @@ const tools = [
     href: '/uuid-generator',
     active: true
   },
+  {
+    icon: '⏱',
+    status: 'Active',
+    category: 'Date/Time',
+    accent: 'blue',
+    title: 'Unix Timestamp Converter',
+    desc: 'Convert between Unix timestamps, ISO 8601, UTC, and human-readable dates — supports seconds, milliseconds, and nanoseconds.',
+    href: '/timestamp-converter',
+    active: true
+  },
+  {
+    icon: '🔒',
+    status: 'Active',
+    category: 'Security',
+    accent: 'amber',
+    title: 'Hash Generator',
+    desc: 'Hash text or files with SHA-1, SHA-256, SHA-384, SHA-512, and MD5 — entirely in your browser via Web Crypto API.',
+    href: '/hash-generator',
+    active: true
+  },
+  {
+    icon: '🔓',
+    status: 'Active',
+    category: 'Security',
+    accent: 'mauve',
+    title: 'JWT Decoder',
+    desc: 'Decode JWT tokens and inspect header, payload, and signature — with registered claims analysis and expiration status.',
+    href: '/jwt-decoder',
+    active: true
+  },
+  {
+    icon: '🔡',
+    status: 'Active',
+    category: 'Encoding',
+    accent: 'peach',
+    title: 'HTML Entity Encoder',
+    desc: 'Encode and decode HTML entities, escape text for safe insertion, and convert between named, numeric, and hex formats.',
+    href: '/html-encoder',
+    active: true
+  },
 ];
 
 const categories = Array.from(new Set(tools.map(t => t.category)));
@@ -143,7 +183,7 @@ const toolCard = (tool: typeof tools[0], index: number) => `
 
 export const homeView = (): string => layout({
   title: 'Skiddle Toolbox Â· Cloudflare Workers Hub',
-  description: 'A developer utility suite with 13+ tools for API testing, DNS lookup, regex, spreadsheets, and more â€” all running on Cloudflare Workers.',
+  description: 'A developer utility suite with 17 tools for API testing, DNS lookup, regex, hashes, JWTs, spreadsheets, and more — all running on Cloudflare Workers.',
   canonicalPath: '/',
   centered: true,
   compactHeader: true,

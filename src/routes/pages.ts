@@ -14,6 +14,10 @@ import { ddosSimulatorView } from '../views/ddosSimulator.js';
 import { base64View } from '../views/base64.js';
 import { jsonFormatterView } from '../views/jsonFormatter.js';
 import { uuidGeneratorView } from '../views/uuidGenerator.js';
+import { timestampView } from '../views/timestampConverter.js';
+import { hashGeneratorView } from '../views/hashGenerator.js';
+import { jwtDecoderView } from '../views/jwtDecoder.js';
+import { htmlEncoderView } from '../views/htmlEncoder.js';
 
 export const pagesRoute = new Hono();
 
@@ -81,6 +85,22 @@ pagesRoute.get('/uuid-generator', (c) => {
   return c.html(uuidGeneratorView(), 200, { 'Content-Type': htmlContentType });
 });
 
+pagesRoute.get('/timestamp-converter', (c) => {
+  return c.html(timestampView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/hash-generator', (c) => {
+  return c.html(hashGeneratorView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/jwt-decoder', (c) => {
+  return c.html(jwtDecoderView(), 200, { 'Content-Type': htmlContentType });
+});
+
+pagesRoute.get('/html-encoder', (c) => {
+  return c.html(htmlEncoderView(), 200, { 'Content-Type': htmlContentType });
+});
+
 const STATIC_PAGES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/cdn-validator', priority: '0.8', changefreq: 'monthly' },
@@ -96,6 +116,10 @@ const STATIC_PAGES = [
   { path: '/base64', priority: '0.8', changefreq: 'monthly' },
   { path: '/json-formatter', priority: '0.8', changefreq: 'monthly' },
   { path: '/uuid-generator', priority: '0.8', changefreq: 'monthly' },
+  { path: '/timestamp-converter', priority: '0.8', changefreq: 'monthly' },
+  { path: '/hash-generator', priority: '0.8', changefreq: 'monthly' },
+  { path: '/jwt-decoder', priority: '0.8', changefreq: 'monthly' },
+  { path: '/html-encoder', priority: '0.8', changefreq: 'monthly' },
 ];
 
 pagesRoute.get('/sitemap.xml', (c) => {
