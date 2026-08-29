@@ -18,6 +18,8 @@ import { timestampView } from '../views/timestampConverter.js';
 import { hashGeneratorView } from '../views/hashGenerator.js';
 import { jwtDecoderView } from '../views/jwtDecoder.js';
 import { htmlEncoderView } from '../views/htmlEncoder.js';
+import { tools } from '../lib/tools.js';
+import { manifestJson, serviceWorkerJs, appIconSvg } from '../lib/pwa.js';
 
 export const pagesRoute = new Hono();
 
@@ -101,25 +103,38 @@ pagesRoute.get('/html-encoder', (c) => {
   return c.html(htmlEncoderView(), 200, { 'Content-Type': htmlContentType });
 });
 
+pagesRoute.get('/manifest.json', (c) => {
+  const env = c.env as { SITE_URL?: string };
+  const base = env.SITE_URL ?? 'https://skiddle-toolbox.pages.dev';
+  return c.body(manifestJson(base), 200, {
+    'Content-Type': 'application/manifest+json; charset=utf-8',
+    'Cache-Control': 'public, s-maxage=86400, max-age=3600',
+  });
+});
+
+pagesRoute.get('/sw.js', (c) => {
+  return c.body(serviceWorkerJs(), 200, {
+    'Content-Type': 'application/javascript; charset=utf-8',
+    'Cache-Control': 'public, s-maxage=0, max-age=0, must-revalidate',
+  });
+});
+
+pagesRoute.get('/icon.svg', (c) => {
+  return c.body(appIconSvg(), 200, {
+    'Content-Type': 'image/svg+xml; charset=utf-8',
+    'Cache-Control': 'public, s-maxage=604800, max-age=86400',
+  });
+});
+
 const STATIC_PAGES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
-  { path: '/cdn-validator', priority: '0.8', changefreq: 'monthly' },
-  { path: '/api-tester', priority: '0.8', changefreq: 'monthly' },
-  { path: '/dns-lookup', priority: '0.8', changefreq: 'monthly' },
-  { path: '/text-extractor', priority: '0.8', changefreq: 'monthly' },
-  { path: '/regex-playground', priority: '0.8', changefreq: 'monthly' },
-  { path: '/spreadsheet-viewer', priority: '0.8', changefreq: 'monthly' },
-  { path: '/markdown-editor', priority: '0.8', changefreq: 'monthly' },
-  { path: '/ddos-simulator', priority: '0.7', changefreq: 'monthly' },
+  ...tools.map(t => ({
+    path: t.href,
+    priority: t.priority ?? '0.8',
+    changefreq: t.changefreq ?? 'monthly',
+  })),
   { path: '/credits', priority: '0.5', changefreq: 'yearly' },
   { path: '/changelog', priority: '0.5', changefreq: 'weekly' },
-  { path: '/base64', priority: '0.8', changefreq: 'monthly' },
-  { path: '/json-formatter', priority: '0.8', changefreq: 'monthly' },
-  { path: '/uuid-generator', priority: '0.8', changefreq: 'monthly' },
-  { path: '/timestamp-converter', priority: '0.8', changefreq: 'monthly' },
-  { path: '/hash-generator', priority: '0.8', changefreq: 'monthly' },
-  { path: '/jwt-decoder', priority: '0.8', changefreq: 'monthly' },
-  { path: '/html-encoder', priority: '0.8', changefreq: 'monthly' },
 ];
 
 pagesRoute.get('/sitemap.xml', (c) => {

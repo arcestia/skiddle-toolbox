@@ -32,6 +32,7 @@
       if (el) return JSON.parse(el.textContent || '{}');
     } catch (e) {}
     return {
+      tools: [],
       themes: [{ id: 'mocha', name: 'Mocha', swatch: '#1e1e2e' }],
       layouts: [{ id: 'default', name: 'Default', description: 'Default layout' }],
       accents: [{ id: 'mauve', name: 'Mauve', hue: 267 }],
@@ -50,6 +51,7 @@
   }
 
   const config = loadConfig();
+  const TOOLS = config.tools || [];
   const THEMES = config.themes || [];
   const LAYOUTS = config.layouts || [];
   const ACCENTS = config.accents || [];
@@ -289,9 +291,364 @@
     document.getElementById('tb-settings-modal').classList.add('tb-hidden');
   }
 
+  // ── Command Palette (Ctrl+K) ────────────────────────────────
+  let _paletteActiveIndex = 0;
+  let _paletteItems = [];
+
+  function openPalette(initialQuery = '') {
+    closeSettings();
+    closeShortcutsModal();
+
+    const overlay = document.getElementById('tb-palette-overlay');
+    const modal = document.getElementById('tb-palette-modal');
+    const input = document.getElementById('tb-palette-input');
+    if (!overlay || !modal || !input) return;
+
+    overlay.classList.remove('tb-hidden');
+    modal.classList.remove('tb-hidden');
+    input.value = initialQuery;
+    filterPalette(initialQuery);
+
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 20);
+  }
+
+  function closePalette() {
+    const overlay = document.getElementById('tb-palette-overlay');
+    const modal = document.getElementById('tb-palette-modal');
+    if (overlay) overlay.classList.add('tb-hidden');
+    if (modal) modal.classList.add('tb-hidden');
+    _paletteActiveIndex = 0;
+    _paletteItems = [];
+  }
+
+  function clearPaletteInput() {
+    const input = document.getElementById('tb-palette-input');
+    if (input) {
+      input.value = '';
+      input.focus();
+      filterPalette('');
+    }
+  }
+
+  function getStaticPaletteActions() {
+    return [
+      {
+        id: 'action-home',
+        title: 'Home Page',
+        desc: 'Overview of all tools, statistics, and category filters',
+        icon: '🏠',
+        category: 'Navigation',
+        type: 'action',
+        action: () => { window.location.href = '/'; },
+      },
+      {
+        id: 'action-settings',
+        title: 'Open Settings',
+        desc: 'Customize theme, accent color, corner radius, density, and layout',
+        icon: '⚙️',
+        category: 'Preferences',
+        type: 'action',
+        action: () => { closePalette(); openSettings(); },
+      },
+      {
+        id: 'action-shortcuts',
+        title: 'Keyboard Shortcuts Help',
+        desc: 'View all global and tool-specific keyboard shortcuts',
+        icon: '⌨️',
+        category: 'Help',
+        type: 'action',
+        action: () => { closePalette(); openShortcutsModal(); },
+      },
+      {
+        id: 'action-changelog',
+        title: 'View Changelog',
+        desc: 'Release notes and version history for Skiddle Toolbox',
+        icon: '📋',
+        category: 'Information',
+        type: 'action',
+        action: () => { window.location.href = '/changelog'; },
+      },
+      {
+        id: 'action-credits',
+        title: 'View Credits',
+        desc: 'Open source libraries, fonts, and contributors',
+        icon: '✨',
+        category: 'Information',
+        type: 'action',
+        action: () => { window.location.href = '/credits'; },
+      },
+    ];
+  }
+
+  function filterPalette(rawQuery) {
+    const query = (rawQuery || '').toLowerCase().trim();
+    const clearBtn = document.getElementById('tb-palette-clear');
+    if (clearBtn) {
+      clearBtn.classList.toggle('tb-hidden', !query);
+    }
+
+    const items = [];
+    const recent = getRecentTools();
+    const actions = getStaticPaletteActions();
+
+    if (!query) {
+      // 1. Recent tools
+      if (recent.length > 0) {
+        recent.forEach(r => {
+          const tool = TOOLS.find(t => t.href === r.href);
+          items.push({
+            id: 'recent-' + r.href,
+            title: r.title,
+            desc: tool ? tool.desc : 'Recently used tool',
+            icon: r.icon || '⏱',
+            category: 'Recent Tools',
+            type: 'tool',
+            href: r.href,
+            isRecent: true,
+          });
+        });
+      }
+
+      // 2. All tools (excluding those already in recent)
+      TOOLS.forEach(tool => {
+        if (!recent.some(r => r.href === tool.href)) {
+          items.push({
+            id: tool.id,
+            title: tool.title,
+            desc: tool.desc,
+            icon: tool.icon,
+            category: tool.category || 'Tools',
+            type: 'tool',
+            href: tool.href,
+          });
+        }
+      });
+
+      // 3. Quick Actions
+      actions.forEach(a => items.push(a));
+    } else {
+      // Check for theme commands
+      const isThemeQuery = query.startsWith('theme') || query.startsWith('dark') || query.startsWith('light') || THEMES.some(t => t.id.includes(query) || t.name.toLowerCase().includes(query));
+      if (isThemeQuery) {
+        const themeSearch = query.replace(/^theme\s*/, '').trim();
+        THEMES.forEach(theme => {
+          if (!themeSearch || theme.name.toLowerCase().includes(themeSearch) || theme.id.includes(themeSearch)) {
+            items.push({
+              id: 'theme-' + theme.id,
+              title: 'Switch to ' + theme.name + ' Theme',
+              desc: 'Apply the ' + (theme.pack || 'Catppuccin') + ' ' + theme.name + ' color palette',
+              icon: '🎨',
+              category: 'Theme Commands',
+              type: 'action',
+              action: () => {
+                applyTheme(theme.id);
+                showToast('Theme set to ' + theme.name, 'success');
+                closePalette();
+              },
+            });
+          }
+        });
+      }
+
+      // Filter tools with relevance scoring
+      const scoredTools = [];
+      TOOLS.forEach(tool => {
+        const titleLower = tool.title.toLowerCase();
+        const categoryLower = (tool.category || '').toLowerCase();
+        const descLower = (tool.desc || '').toLowerCase();
+        const keywords = (tool.keywords || []).map(k => k.toLowerCase());
+
+        let score = 0;
+        if (titleLower === query) score += 100;
+        else if (titleLower.startsWith(query)) score += 60;
+        else if (titleLower.includes(query)) score += 40;
+
+        if (categoryLower.startsWith(query)) score += 30;
+        else if (categoryLower.includes(query)) score += 20;
+
+        if (keywords.some(k => k === query)) score += 45;
+        else if (keywords.some(k => k.includes(query))) score += 25;
+
+        if (descLower.includes(query)) score += 10;
+
+        if (score > 0) {
+          scoredTools.push({ tool, score });
+        }
+      });
+
+      scoredTools.sort((a, b) => b.score - a.score);
+      scoredTools.forEach(({ tool }) => {
+        items.push({
+          id: tool.id,
+          title: tool.title,
+          desc: tool.desc,
+          icon: tool.icon,
+          category: tool.category || 'Tools',
+          type: 'tool',
+          href: tool.href,
+        });
+      });
+
+      // Filter actions
+      actions.forEach(action => {
+        const titleLower = action.title.toLowerCase();
+        const descLower = action.desc.toLowerCase();
+        const categoryLower = action.category.toLowerCase();
+        if (titleLower.includes(query) || descLower.includes(query) || categoryLower.includes(query)) {
+          items.push(action);
+        }
+      });
+    }
+
+    _paletteItems = items;
+    _paletteActiveIndex = 0;
+    renderPaletteResults();
+  }
+
+  function renderPaletteResults() {
+    const container = document.getElementById('tb-palette-results');
+    const countEl = document.getElementById('tb-palette-count');
+    if (!container) return;
+
+    if (_paletteItems.length === 0) {
+      container.innerHTML = `
+        <div class="tb-palette-empty">
+          <p>No tools or commands found</p>
+          <span>Try searching for "timestamp", "jwt", "hash", "json", or "theme"</span>
+        </div>
+      `;
+      if (countEl) countEl.textContent = '0 results';
+      return;
+    }
+
+    if (countEl) {
+      countEl.textContent = _paletteItems.length + (_paletteItems.length === 1 ? ' result' : ' results');
+    }
+
+    let html = '';
+    let currentCategory = '';
+
+    _paletteItems.forEach((item, index) => {
+      const isCategoryChange = item.category !== currentCategory;
+      if (isCategoryChange) {
+        currentCategory = item.category;
+        html += '<div class="tb-palette-group-header">' + escapeHtml(currentCategory) + '</div>';
+      }
+
+      const isActive = index === _paletteActiveIndex;
+      html += `
+        <div class="tb-palette-item ${isActive ? 'active' : ''}" data-palette-index="${index}" onclick="window.toolbox.triggerPaletteItem(${index})" role="option" aria-selected="${isActive}">
+          <div class="tb-palette-item__icon">${item.icon || '🧰'}</div>
+          <div class="tb-palette-item__info">
+            <div class="tb-palette-item__title-row">
+              <span class="tb-palette-item__title">${escapeHtml(item.title)}</span>
+              ${item.isRecent ? '<span class="tb-palette-item__badge">Recent</span>' : ''}
+              <span class="tb-palette-item__category">${escapeHtml(item.category)}</span>
+            </div>
+            <p class="tb-palette-item__desc">${escapeHtml(item.desc)}</p>
+          </div>
+          <div class="tb-palette-item__action" aria-hidden="true">
+            <kbd>↵</kbd>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+    scrollActivePaletteItemIntoView();
+  }
+
+  function scrollActivePaletteItemIntoView() {
+    const container = document.getElementById('tb-palette-results');
+    const activeEl = container?.querySelector('.tb-palette-item.active');
+    if (activeEl && container) {
+      const itemTop = activeEl.offsetTop;
+      const itemBottom = itemTop + activeEl.offsetHeight;
+      const containerTop = container.scrollTop;
+      const containerBottom = containerTop + container.clientHeight;
+
+      if (itemTop < containerTop) {
+        container.scrollTop = itemTop;
+      } else if (itemBottom > containerBottom) {
+        container.scrollTop = itemBottom - container.clientHeight;
+      }
+    }
+  }
+
+  function triggerPaletteItem(index) {
+    const item = _paletteItems[index];
+    if (!item) return;
+
+    if (item.type === 'tool' && item.href) {
+      recordToolUse({ href: item.href, title: item.title, icon: item.icon });
+      closePalette();
+      window.location.href = item.href;
+    } else if (typeof item.action === 'function') {
+      item.action();
+    }
+  }
+
+  function handlePaletteKeydown(e) {
+    const modal = document.getElementById('tb-palette-modal');
+    if (!modal || modal.classList.contains('tb-hidden')) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (_paletteItems.length > 0) {
+        _paletteActiveIndex = (_paletteActiveIndex + 1) % _paletteItems.length;
+        updatePaletteActiveItem();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (_paletteItems.length > 0) {
+        _paletteActiveIndex = (_paletteActiveIndex - 1 + _paletteItems.length) % _paletteItems.length;
+        updatePaletteActiveItem();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      triggerPaletteItem(_paletteActiveIndex);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      closePalette();
+    }
+  }
+
+  function updatePaletteActiveItem() {
+    const container = document.getElementById('tb-palette-results');
+    if (!container) return;
+    container.querySelectorAll('.tb-palette-item').forEach(el => {
+      const idx = parseInt(el.dataset.paletteIndex, 10);
+      const isActive = idx === _paletteActiveIndex;
+      el.classList.toggle('active', isActive);
+      el.setAttribute('aria-selected', String(isActive));
+    });
+    scrollActivePaletteItemIntoView();
+  }
+
   // ── Keyboard shortcuts ──────────────────────────────────────
   // Global shortcuts (always active)
   const _globalShortcuts = [
+    {
+      key: 'ctrl+k',
+      group: 'Global',
+      label: 'Open command palette',
+      action: () => openPalette(),
+    },
+    {
+      key: 'meta+k',
+      group: 'Global',
+      label: 'Open command palette',
+      action: () => openPalette(),
+    },
+    {
+      key: '/',
+      group: 'Global',
+      label: 'Quick search tools',
+      action: () => openPalette(),
+    },
     {
       key: '?',
       group: 'Global',
@@ -315,7 +672,10 @@
       group: 'Global',
       label: 'Close modal / dismiss toast',
       action: function () {
-        // Close settings first, then shortcuts modal
+        if (!document.getElementById('tb-palette-modal')?.classList.contains('tb-hidden')) {
+          closePalette();
+          return;
+        }
         if (!document.getElementById('tb-settings-modal')?.classList.contains('tb-hidden')) {
           closeSettings();
           return;
@@ -435,21 +795,31 @@
   }
 
   function handleKeyboardShortcuts(event) {
-    // Don't fire shortcuts when typing in inputs/textareas (except Escape)
-    const tag = document.activeElement?.tagName;
-    const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     const key = normalizeKey(event);
 
-    // Always allow Escape
+    // Ctrl+K / Cmd+K always opens Command Palette
+    if (key === 'ctrl+k' || key === 'meta+k') {
+      event.preventDefault();
+      openPalette();
+      return;
+    }
+
+    // Always allow Escape to close top-most active modal
     if (key === 'escape') {
+      const paletteModal = document.getElementById('tb-palette-modal');
       const settingsModal = document.getElementById('tb-settings-modal');
       const shortcutsModal = document.getElementById('tb-shortcuts-modal');
-      if (!settingsModal?.classList.contains('tb-hidden')) {
+      if (paletteModal && !paletteModal.classList.contains('tb-hidden')) {
+        closePalette();
+        event.preventDefault();
+        return;
+      }
+      if (settingsModal && !settingsModal.classList.contains('tb-hidden')) {
         closeSettings();
         event.preventDefault();
         return;
       }
-      if (!shortcutsModal?.classList.contains('tb-hidden')) {
+      if (shortcutsModal && !shortcutsModal.classList.contains('tb-hidden')) {
         closeShortcutsModal();
         event.preventDefault();
         return;
@@ -457,7 +827,9 @@
       return;
     }
 
-    // Skip other shortcuts when typing
+    // Don't fire other shortcuts when typing in inputs/textareas
+    const tag = document.activeElement?.tagName;
+    const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     if (isTyping) return;
 
     // Check global shortcuts
@@ -564,6 +936,12 @@
       el.textContent = String(new Date().getFullYear());
     });
 
+    // Command palette input key listener
+    const paletteInput = document.getElementById('tb-palette-input');
+    if (paletteInput) {
+      paletteInput.addEventListener('keydown', handlePaletteKeydown);
+    }
+
     // Keep tabs in sync when localStorage changes elsewhere.
     window.addEventListener('storage', event => {
       if (event.key === THEME_KEY && THEME_IDS.includes(event.newValue)) {
@@ -667,6 +1045,11 @@
 
     // Expose a tiny public API.
     window.toolbox = {
+      openPalette: openPalette,
+      closePalette: closePalette,
+      filterPalette: filterPalette,
+      clearPaletteInput: clearPaletteInput,
+      triggerPaletteItem: triggerPaletteItem,
       toast: showToast,
       registerShortcut: registerShortcut,
       openShortcuts: openShortcutsModal,
@@ -690,7 +1073,8 @@
       closeSettings: closeSettings,
       toggleCompact: toggleCompact,
       clearRecentTools: clearRecentTools,
-      recordToolUse: recordToolUse
+      recordToolUse: recordToolUse,
+      tools: TOOLS,
     };
   }
 

@@ -4,6 +4,7 @@ import { defaultLayout, layouts, renderLayoutOptions } from '../lib/layouts.js';
 import { accents, defaultAccent } from '../lib/accents.js';
 import { defaultRadius, radii } from '../lib/radius.js';
 import { defaultDensity, densities } from '../lib/density.js';
+import { tools } from '../lib/tools.js';
 
 export interface PageContext {
   title: string;
@@ -23,6 +24,7 @@ const radiusIds = radii.map(r => r.id);
 const densityIds = densities.map(d => d.id);
 
 const runtimeConfig = JSON.stringify({
+  tools: tools.map(t => ({ id: t.id, title: t.title, desc: t.desc, href: t.href, icon: t.icon, category: t.category, keywords: t.keywords })),
   themes: themes.map(t => ({ id: t.id, name: t.name, swatch: t.swatch, pack: t.pack })),
   layouts: layouts.map(l => ({ id: l.id, name: l.name, description: l.description })),
   accents: accents.map(a => ({ id: a.id, name: a.name, hue: a.hue })),
@@ -51,6 +53,11 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <meta name="twitter:title" content="${ctx.title}">
   <meta name="twitter:description" content="${desc}">`;
   })()}
+  <meta name="theme-color" content="#1e1e2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -58,6 +65,15 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
   <script id="tb-config" type="application/json">${runtimeConfig}</script>
   ${scriptTag()}
   ${ctx.canonicalPath ? `<link rel="canonical" href="https://skiddle-toolbox.pages.dev${ctx.canonicalPath}">` : ''}
+  <script>
+    (function() {
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function() {});
+        });
+      }
+    })();
+  </script>
   <script>
     (function() {
       try {
@@ -102,6 +118,10 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
     </a>
     <div class="tb-top-bar__actions">
       <div class="tb-top-bar__actions-group">
+        <button type="button" class="tb-top-bar__action tb-palette-trigger" onclick="window.toolbox.openPalette()" aria-label="Search tools (Ctrl+K)" title="Quick search (Ctrl+K)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span class="tb-palette-trigger__kbd"><kbd>⌘K</kbd></span>
+        </button>
         ${ctx.backHref ? `
         <a href="${ctx.backHref}" class="tb-top-bar__action" aria-label="Back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -116,6 +136,28 @@ export const layout = (ctx: PageContext): string => `<!DOCTYPE html>
 
   <div id="tb-main-content" class="tb-container ${ctx.centered ? 'tb-container--centered' : ''}">
     ${ctx.body}
+  </div>
+
+  <div id="tb-palette-overlay" class="tb-overlay tb-hidden" onclick="if(event.target===this) window.toolbox.closePalette()"></div>
+  <div id="tb-palette-modal" class="tb-palette-modal tb-hidden" role="dialog" aria-modal="true" aria-label="Command Palette">
+    <div class="tb-palette-search">
+      <svg class="tb-palette-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="tb-palette-input" class="tb-palette-input" placeholder="Search tools or type a command... (/ to focus, ↑↓ to navigate)" autocomplete="off" spellcheck="false" oninput="window.toolbox.filterPalette(this.value)">
+      <button type="button" class="tb-palette-clear tb-hidden" id="tb-palette-clear" onclick="window.toolbox.clearPaletteInput()" aria-label="Clear search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div id="tb-palette-results" class="tb-palette-results" role="listbox">
+      <!-- Populated dynamically by toolbox.js -->
+    </div>
+    <div class="tb-palette-footer">
+      <div class="tb-palette-hints">
+        <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+        <span><kbd>↵</kbd> Select</span>
+        <span><kbd>Esc</kbd> Close</span>
+      </div>
+      <span class="tb-palette-count" id="tb-palette-count"></span>
+    </div>
   </div>
 
   <div id="tb-shortcuts-overlay" class="tb-overlay tb-hidden" onclick="if(event.target===this) window.toolbox.closeShortcuts()"></div>

@@ -11,6 +11,8 @@ export const changelogEntries: ChangelogEntry[] = [
     version: '1.2.0',
     date: '2026-08-28',
     added: [
+      'Global Command Palette (Ctrl+K / Cmd+K / /): search and jump between any of the 17 tools instantly with fuzzy matching, recent tool history, theme switching commands, and keyboard navigation (↑↓ and Enter).',
+      'PWA & 100% Offline Support: web app manifest, custom SVG branding icon, and Service Worker with precaching for standalone desktop and mobile installation.',
       'Unix Timestamp Converter: convert between Unix timestamps (s/ms/ns), ISO 8601, UTC, and local time with relative time and calendar metadata.',
       'Hash Generator: client-side text and file hashing with SHA-1, SHA-256, SHA-384, SHA-512, and MD5 via Web Crypto API with progress tracking.',
       'JWT Decoder: decode and inspect JWT tokens (header, payload, signature) with registered claims parsing and expiration chips.',

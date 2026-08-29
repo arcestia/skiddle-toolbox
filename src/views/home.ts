@@ -1,162 +1,8 @@
-﻿import { layout } from './layout.js';
+import { layout } from './layout.js';
 import { footer } from './footer.js';
+import { tools, categories, type Tool } from '../lib/tools.js';
 
-const tools = [
-  {
-    icon: 'ðŸ–¼ï¸',
-    status: 'Active',
-    category: 'Validation',
-    accent: 'teal',
-    title: 'Image CDN Validator',
-    desc: 'Bulk-check image URLs by provider, response code, and Content-Type. Concurrent validation with edge CORS proxying.',
-    href: '/cdn-validator',
-    active: true
-  },
-  {
-    icon: 'ðŸŒ',
-    status: 'Active',
-    category: 'HTTP',
-    accent: 'blue',
-    title: 'API Tester',
-    desc: 'Browser-local HTTP client with custom methods, headers, body editor, and optional CORS proxy for cross-origin debugging.',
-    href: '/api-tester',
-    active: true
-  },
-  {
-    icon: 'ðŸ”',
-    status: 'Active',
-    category: 'Network',
-    accent: 'mauve',
-    title: 'DNS Lookup',
-    desc: 'Query public DNS-over-HTTPS resolvers for A, AAAA, MX, TXT, CNAME, and other record types.',
-    href: '/dns-lookup',
-    active: true
-  },
-  {
-    icon: 'ðŸ”—',
-    status: 'Active',
-    category: 'Text',
-    accent: 'green',
-    title: 'Text Extractor',
-    desc: 'Paste logs, HTML, or markdown and extract URLs, emails, domains, or IP addresses with deduplication, sorting, and one-click copy.',
-    href: '/text-extractor',
-    active: true
-  },
-  {
-    icon: 'ðŸ§©',
-    status: 'Active',
-    category: 'Regex',
-    accent: 'mauve',
-    title: 'Regex Playground',
-    desc: 'Test, visualize, and debug regular expressions in real-time. Includes syntax highlighting, match breakdowns, and group captures.',
-    href: '/regex-playground',
-    active: true
-  },
-  {
-    icon: 'ðŸ“Š',
-    status: 'Active',
-    category: 'Data',
-    accent: 'green',
-    title: 'Spreadsheet Viewer',
-    desc: 'Open CSV, TSV, Excel, ODS, JSON, or Markdown tables locally. Sort, filter, paginate, and export to CSV.',
-    href: '/spreadsheet-viewer',
-    active: true
-  },
-  {
-    icon: 'ðŸ“',
-    status: 'Active',
-    category: 'Writing',
-    accent: 'blue',
-    title: 'Markdown Editor',
-    desc: 'Write Markdown with a live split-pane preview, formatting toolbar, and one-click HTML or .md export.',
-    href: '/markdown-editor',
-    active: true
-  },
-  {
-    icon: 'ðŸŒ©ï¸',
-    status: 'Active',
-    category: 'Fun',
-    accent: 'red',
-    title: 'DDoS Simulator',
-    desc: 'Farm a botnet by clicking the map, manage your trace, buy upgrades, and pwn 7 targets â€” or play defense against waves. 100% simulated.',
-    href: '/ddos-simulator',
-    active: true
-  },
-  {
-    icon: '🔤',
-    status: 'Active',
-    category: 'Encoding',
-    accent: 'peach',
-    title: 'Base64 Encoder / Decoder',
-    desc: 'Encode text or files to Base64 and decode Base64 back to text, with URL-safe and data URI options.',
-    href: '/base64',
-    active: true
-  },
-  {
-    icon: '📋',
-    status: 'Active',
-    category: 'Data',
-    accent: 'blue',
-    title: 'JSON Formatter',
-    desc: 'Format, validate, and minify JSON with syntax highlighting, tree view, and statistics.',
-    href: '/json-formatter',
-    active: true
-  },
-  {
-    icon: '🆔',
-    status: 'Active',
-    category: 'Data',
-    accent: 'green',
-    title: 'UUID Generator',
-    desc: 'Generate UUIDs v1, v4, and v7 entirely in your browser — no data leaves your device.',
-    href: '/uuid-generator',
-    active: true
-  },
-  {
-    icon: '⏱',
-    status: 'Active',
-    category: 'Date/Time',
-    accent: 'blue',
-    title: 'Unix Timestamp Converter',
-    desc: 'Convert between Unix timestamps, ISO 8601, UTC, and human-readable dates — supports seconds, milliseconds, and nanoseconds.',
-    href: '/timestamp-converter',
-    active: true
-  },
-  {
-    icon: '🔒',
-    status: 'Active',
-    category: 'Security',
-    accent: 'amber',
-    title: 'Hash Generator',
-    desc: 'Hash text or files with SHA-1, SHA-256, SHA-384, SHA-512, and MD5 — entirely in your browser via Web Crypto API.',
-    href: '/hash-generator',
-    active: true
-  },
-  {
-    icon: '🔓',
-    status: 'Active',
-    category: 'Security',
-    accent: 'mauve',
-    title: 'JWT Decoder',
-    desc: 'Decode JWT tokens and inspect header, payload, and signature — with registered claims analysis and expiration status.',
-    href: '/jwt-decoder',
-    active: true
-  },
-  {
-    icon: '🔡',
-    status: 'Active',
-    category: 'Encoding',
-    accent: 'peach',
-    title: 'HTML Entity Encoder',
-    desc: 'Encode and decode HTML entities, escape text for safe insertion, and convert between named, numeric, and hex formats.',
-    href: '/html-encoder',
-    active: true
-  },
-];
-
-const categories = Array.from(new Set(tools.map(t => t.category)));
-
-const toolCard = (tool: typeof tools[0], index: number) => `
+const toolCard = (tool: Tool, index: number) => `
   <div class="tb-card tool-card tool-card--${tool.accent} ${tool.active ? 'active' : ''}" style="animation-delay: ${index * 60}ms" data-tool-card data-tool-title="${tool.title}" data-tool-icon="${tool.icon}" data-tool-category="${tool.category}">
     <div class="card-top">
       <div class="card-header-row">
@@ -182,7 +28,7 @@ const toolCard = (tool: typeof tools[0], index: number) => `
 `;
 
 export const homeView = (): string => layout({
-  title: 'Skiddle Toolbox Â· Cloudflare Workers Hub',
+  title: 'Skiddle Toolbox · Cloudflare Workers Hub',
   description: 'A developer utility suite with 17 tools for API testing, DNS lookup, regex, hashes, JWTs, spreadsheets, and more — all running on Cloudflare Workers.',
   canonicalPath: '/',
   centered: true,
@@ -212,7 +58,7 @@ export const homeView = (): string => layout({
     <section class="tb-card home-controls">
       <div class="home-search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="home-search-input" class="tb-input" placeholder="Search tools by name or keyword..." oninput="filterHomeTools()">
+        <input type="text" id="home-search-input" class="tb-input" placeholder="Search tools by name or keyword... (Press / to focus, Ctrl+K for Palette)" oninput="filterHomeTools()">
         <button type="button" class="tb-btn tb-btn-secondary home-shortcuts-btn" onclick="window.toolbox.openShortcuts()" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8.01"></line><line x1="10" y1="8" x2="10" y2="8.01"></line><line x1="14" y1="8" x2="14" y2="8.01"></line><line x1="18" y1="8" x2="18" y2="8.01"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
           Shortcuts
@@ -538,6 +384,10 @@ export const homeView = (): string => layout({
       .tool-card--green {
         --card-accent: linear-gradient(135deg, var(--ctp-green), var(--ctp-teal));
         --card-accent-color: var(--ctp-green);
+      }
+      .tool-card--amber {
+        --card-accent: linear-gradient(135deg, var(--ctp-peach), var(--ctp-maroon));
+        --card-accent-color: var(--ctp-peach);
       }
       .card-top {
         margin-bottom: 24px;
