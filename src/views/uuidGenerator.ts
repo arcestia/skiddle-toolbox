@@ -114,40 +114,41 @@ export const uuidGeneratorView = (): string => layout({
 
       // Version 1: 100-ns timestamp since 1582-10-15 + random clock + random node
       function uuidv1() {
-        // UUID epoch: 100-ns intervals from 1582-10-15 00:00:00.000000000 to 1970-01-01 00:00:00.000000000
         var UUID_EPOCH = 0x01b21dd213814000n;
         var now = BigInt(Date.now());
-        // Timestamp in 100-ns intervals since UUID epoch (BigInt to avoid precision loss)
-        var ts = now * 12200000n + UUID_EPOCH;
+        var ts = now * 10000n + UUID_EPOCH;
 
         var clock_seq = getRandomBytes(2);
-        clock_seq[0] = (clock_seq[0] & 0x3f) | 0x80;
-        clock_seq[1] |= 0x80; // RFC 4122 variant: high bit set
+        var node = getRandomBytes(6);
         node[0] |= 0x01; // set multicast bit for privacy
 
         var b = new Uint8Array(16);
-        // time_low: 4 bytes little-endian
-        b[0] = Number(ts & 0xffn);
-        b[1] = Number((ts >> 8n) & 0xffn);
-        b[2] = Number((ts >> 16n) & 0xffn);
-        b[3] = Number((ts >> 24n) & 0xffn);
-        // time_mid: 2 bytes little-endian
-        b[4] = Number((ts >> 32n) & 0xffn);
-        b[5] = Number((ts >> 40n) & 0xffn);
-        // time_hi_and_version: 2 bytes little-endian, version 1
-        // time_hi (12 bits from timestamp) + version 1 (bits 12-15)
-        // time_hi_and_version: version 1 encoded in byte 7 high nibble
-        // Mask to 12 bits: upper 4 bits (version space) + lower 8 bits (clock seq)
-        // time_hi: 12-bit field from timestamp bits 48-59
-        var time_hi = ((ts >> 48n) >> 4n) & 0xfffn; // upper 4 bits + lower 8 bits of 12-bit field
-        // Byte 7 = 0x13 (version 1 in high nibble, variant bits in low nibble)
-        // Byte 6 = low byte of time_hi to make 3rd group start with 1
-        // time_hi_and_version = time_hi (from ts) | 0x1000, then extract bytes
-        var thav = (((ts >> 48n) >> 4n) & 0xfffn) | 0x1000n; // version 1
-        // Ensure byte 6 high nibble >= 1 so 3rd group starts with 1 (version nibble)
-        b[6] = Math.max(16, Number(thav & 0xffn)) | 0x10; // at least 0x10
+        // time_low (32 bits, big-endian in byte layout)
+        b[0] = Number((ts >> 24n) & 0xffn);
+        b[1] = Number((ts >> 16n) & 0xffn);
+        b[2] = Number((ts >> 8n) & 0xffn);
+        b[3] = Number(ts & 0xffn);
+        // time_mid (16 bits)
+        b[4] = Number((ts >> 40n) & 0xffn);
+        b[5] = Number((ts >> 32n) & 0xffn);
+        // time_hi_and_version (16 bits, version 1 in high nibble)
+        b[6] = 0x10 | Number((ts >> 56n) & 0x0fn);
+        b[7] = Number((ts >> 48n) & 0xffn);
+        // clock_seq (16 bits, variant 10xx_xxxx in high 2 bits)
+        b[8] = 0x80 | (clock_seq[0] & 0x3f);
+        b[9] = clock_seq[1];
+        // node (48 bits)
+        b[10] = node[0];
+        b[11] = node[1];
+        b[12] = node[2];
+        b[13] = node[3];
+        b[14] = node[4];
+        b[15] = node[5];
 
-      // Version 7: 48-bit Unix timestamp_ms + 76 random bits
+        return fmtUuid(bytesToHex(b));
+      }
+
+      // Version 7: 48-bit Unix timestamp_ms + 74 random bits + RFC 4122 variant
       function uuidv7() {
         var ts = BigInt(Date.now());
         var rand = getRandomBytes(10);
@@ -160,19 +161,20 @@ export const uuidGeneratorView = (): string => layout({
         b[3] = Number((ts >> 16n) & 0xffn);
         b[4] = Number((ts >> 8n) & 0xffn);
         b[5] = Number(ts & 0xffn);
-        // Byte 6: version 7 in high nibble
-        b[6] = 0x70 | ((rand[0] >> 4) & 0x0f);
-        // Byte 7: rand bits + variant (RFC 4122: high bits 10)
-        b[7] = ((rand[0] & 0x0f) << 4) | ((rand[1] >> 4) & 0x0f) | 0x80;
-        // Bytes 8-15: rand bits
-        b[8]  = ((rand[1] & 0x0f) << 4) | ((rand[2] >> 4) & 0x0f);
-        b[9]  = ((rand[2] & 0x0f) << 4) | ((rand[3] >> 4) & 0x0f);
-        b[10] = ((rand[3] & 0x0f) << 4) | ((rand[4] >> 4) & 0x0f);
-        b[11] = ((rand[4] & 0x0f) << 4) | ((rand[5] >> 4) & 0x0f);
-        b[12] = ((rand[5] & 0x0f) << 4) | ((rand[6] >> 4) & 0x0f);
-        b[13] = ((rand[6] & 0x0f) << 4) | ((rand[7] >> 4) & 0x0f);
-        b[14] = ((rand[7] & 0x0f) << 4) | ((rand[8] >> 4) & 0x0f);
-        b[15] = ((rand[8] & 0x0f) << 4) | ((rand[9] >> 4) & 0x0f);
+        // Byte 6: version 7 (0x70) in high nibble + 4 bits of rand
+        b[6] = 0x70 | (rand[0] & 0x0f);
+        // Byte 7: 8 bits of rand
+        b[7] = rand[1];
+        // Byte 8: variant (10xx_xxxx = 0x80) in high 2 bits + 6 bits of rand
+        b[8] = 0x80 | (rand[2] & 0x3f);
+        // Bytes 9-15: 56 bits of rand
+        b[9] = rand[3];
+        b[10] = rand[4];
+        b[11] = rand[5];
+        b[12] = rand[6];
+        b[13] = rand[7];
+        b[14] = rand[8];
+        b[15] = rand[9];
 
         return fmtUuid(bytesToHex(b));
       }
