@@ -12,12 +12,13 @@ function renderList(items: string[] | undefined, title: string): string {
   `;
 }
 
-function renderEntry(entry: ChangelogEntry): string {
+function renderEntry(entry: ChangelogEntry, index: number): string {
+  const isLatest = index === 0;
   return `
     <section class="tb-card changelog-card">
       <div class="changelog-header">
         <h2 class="changelog-version">${entry.version}</h2>
-        <span class="tb-badge tb-badge-pending">${entry.date}</span>
+        <span class="tb-badge ${isLatest ? 'tb-badge-active' : 'tb-badge-pending'}">${entry.date}</span>
       </div>
       ${renderList(entry.added, 'Added')}
       ${renderList(entry.changed, 'Changed')}
